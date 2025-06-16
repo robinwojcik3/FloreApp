@@ -172,3 +172,27 @@ main {
     background: transparent;
     border: none;
 }
+@media (max-width: 600px) {
+  #controls {
+    gap: 3px;
+    padding: 4px 6px;
+  }
+  #controls input,
+  #controls button {
+    padding: 6px;
+    font-size: 0.9em;
+  }
+  #radius-control {
+    gap: 3px;
+    padding: 2px 6px;
+    font-size: 0.85em;
+  }
+  #status-container {
+    padding: 3px;
+  }
+  #legend {
+    gap: 3px;
+    padding: 4px 6px;
+    font-size: 0.85em;
+  }
+}
