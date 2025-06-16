@@ -1,6 +1,6 @@
 /* ================================================================
-   CONFIGURATION GÉNÉRALE
-   ================================================================ */
+    CONFIGURATION GÉNÉRALE
+    ================================================================ */
 const API_KEY  = "2b10vfT6MvFC2lcAzqG1ZMKO";
 const PROJECT  = "all";
 const ENDPOINT = `https://my-api.plantnet.org/v2/identify/${PROJECT}?api-key=${API_KEY}`;
@@ -14,8 +14,8 @@ const TTS_ENDPOINT = `https://texttospeech.googleapis.com/v1/text:synthesize?key
 
 
 /* ================================================================
-   INITIALISATION ET GESTION DES DONNÉES
-   ================================================================ */
+    INITIALISATION ET GESTION DES DONNÉES
+    ================================================================ */
 let taxref = {};
 let taxrefNames = [];
 let trigramIndex = {};
@@ -58,8 +58,8 @@ function loadData() {
 
 
 /* ================================================================
-   FONCTIONS UTILITAIRES ET HELPERS
-   ================================================================ */
+    FONCTIONS UTILITAIRES ET HELPERS
+    ================================================================ */
 function norm(txt) {
   if (typeof txt !== 'string') return "";
   return txt.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim().replace(/\s+/g, "");
@@ -83,7 +83,7 @@ const slug = n => norm(n).replace(/ /g, "-");
 function capitalizeGenus(name) {
   if (typeof name !== 'string') return name;
   return name.replace(/^(?:[x×]\s*)?([a-z])/,
-                      (m, p1) => m.replace(p1, p1.toUpperCase()));
+                        (m, p1) => m.replace(p1, p1.toUpperCase()));
 }
 const infoFlora  = n => `https://www.infoflora.ch/fr/flore/${slug(n)}.html`;
 const inpnStatut = c => `https://inpn.mnhn.fr/espece/cd_nom/${c}/tab/statut`;
@@ -124,7 +124,7 @@ function makeTimestampedName(prefix = "") {
   const d = new Date();
   const pad = n => n.toString().padStart(2, "0");
   const timestamp = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ` +
-                    `${pad(d.getHours())}h${pad(d.getMinutes())}`;
+                        `${pad(d.getHours())}h${pad(d.getMinutes())}`;
   const safePrefix = prefix ? prefix.replace(/[\\/:*?"<>|]/g, "_").trim() + " " : "";
   return `${safePrefix}${timestamp}.jpg`;
 }
@@ -211,8 +211,8 @@ async function taxrefFuzzyMatch(term) {
 
 
 /* ================================================================
-   NOUVEAU : FENÊTRE MODALE D'INFORMATION GÉNÉRIQUE
-   ================================================================ */
+    NOUVEAU : FENÊTRE MODALE D'INFORMATION GÉNÉRIQUE
+    ================================================================ */
 
 function showInfoModal(title, content) {
     const existingModal = document.getElementById('info-modal-overlay');
@@ -258,8 +258,8 @@ function showInfoModal(title, content) {
 
 
 /* ================================================================
-   NOUVEAU : FONCTIONS POUR LA FICHE DE SYNTHÈSE (TEXTE ET AUDIO)
-   ================================================================ */
+    NOUVEAU : FONCTIONS POUR LA FICHE DE SYNTHÈSE (TEXTE ET AUDIO)
+    ================================================================ */
 
 async function getSynthesisFromGemini(speciesName) {
     const prompt = `En tant qu'expert botaniste, rédige une fiche de synthèse narrative et fluide pour l'espèce "${speciesName}". Le style doit être oral, comme si tu t'adressais à des étudiants, pour une future conversion en audio. N'utilise ni tableau, ni formatage de code, ni listes à puces. Structure ta réponse en couvrant les points suivants de manière conversationnelle, sans utiliser de titres : commence par une introduction (nom commun, nom latin, famille), puis décris un ou deux critères d'identification clés pour la distinguer d'espèces proches. Mentionne ces espèces sources de confusion et comment les différencier. Ensuite, décris son écologie et habitat préférentiel. Termine par son statut de conservation en France (si pertinent) et sa répartition générale. Dans ta réponse, ne met aucun caractères qui ne soit pas du text directement. Je ne veux pas que tu mette de '*' ou de ":" ou de "/", met juste du texte conventionelle comme on écrirait naturellement quoi. Utilise ton savoir encyclopédique pour générer cette fiche.`;
@@ -301,7 +301,7 @@ function playAudioFromBase64(base64Audio) {
     const audio = new Audio(`data:audio/mp3;base64,${base64Audio}`);
     audio.play().catch(err => {
         console.error("Erreur lecture audio:", err);
-        showNotification("Impossible de lire l\'audio", 'error');
+        showNotification("Impossible de lire l'audio", 'error');
     });
 }
 
@@ -350,8 +350,8 @@ window.handleSynthesisClick = async function(event, element, speciesName) {
 
 
 /* ================================================================
-   NOUVEAU : FONCTIONS POUR L'ANALYSE COMPARATIVE
-   ================================================================ */
+    NOUVEAU : FONCTIONS POUR L'ANALYSE COMPARATIVE
+    ================================================================ */
 async function getComparisonFromGemini(speciesData) {
     const speciesDataString = speciesData.map(s => `Espèce: ${s.species}\nDonnées morphologiques (Physionomie): ${s.physio || 'Non renseignée'}\nDonnées écologiques: ${s.eco || 'Non renseignée'}`).join('\n\n');
     
@@ -501,8 +501,8 @@ async function handleComparisonClick() {
 
 
 /* ================================================================
-   LOGIQUE D'IDENTIFICATION ET D'AFFICHAGE
-   ================================================================ */
+    LOGIQUE D'IDENTIFICATION ET D'AFFICHAGE
+    ================================================================ */
 async function callPlantNetAPI(formData, retries = 2) {
     for (let attempt = 0; attempt <= retries; attempt++) {
         const data = await apiFetch(ENDPOINT, { method: 'POST', body: formData });
@@ -578,31 +578,31 @@ function buildTable(items){
     const escapedSci = displaySci.replace(/'/g, "\\'");
     const checkedAttr = item.autoCheck ? ' checked' : '';
     return `<tr>
-              <td class="col-checkbox">
-                <input type="checkbox" class="species-checkbox"${checkedAttr}
-                       data-species="${escapedSci}"
-                       data-physio="${encodeURIComponent(phys)}"
-                       data-eco="${encodeURIComponent(eco)}">
-              </td>
-              <td class="col-nom-latin" data-latin="${displaySci}">${displaySci}<br><span class="score">(${pct})</span></td>
-              <td class="col-link">${floreAlpesLink}</td>
-              <td class="col-link">${floraGallicaLink}</td>
-              <td class="col-link">${linkIcon(cd && inpnStatut(cd), "INPN.png", "INPN", "small-logo")}</td>
-              <td class="col-criteres">
-                <div class="text-popup-trigger" data-title="Critères physiologiques" data-fulltext="${encodeURIComponent(crit)}">${crit}</div>
-              </td>
-              <td class="col-ecologie">
-                 <div class="text-popup-trigger" data-title="Écologie" data-fulltext="${encodeURIComponent(eco)}">${eco}</div>
-              </td>
-              <td class="col-physionomie">
-                <div class="text-popup-trigger" data-title="Physionomie" data-fulltext="${encodeURIComponent(phys)}">${phys}</div>
-              </td>
-              <td class="col-link">${linkIcon(cd && openObs(cd), "OpenObs.png", "OpenObs", "small-logo")}</td>
-              <td class="col-link">${linkIcon(cd && aura(cd), "Biodiv'AURA.png", "Biodiv'AURA")}</td>
-              <td class="col-link">${linkIcon(infoFlora(sci), "Info Flora.png", "Info Flora")}</td>
-              <td class="col-link"><a href="#" onclick="handleSynthesisClick(event, this, '${escapedSci}')"><img src="assets/Audio.png" alt="Audio" class="logo-icon"></a></td>
-              <td class="col-link">${linkIcon(pfaf(sci), "PFAF.png", "PFAF")}</td>
-            </tr>`;
+                  <td class="col-checkbox">
+                    <input type="checkbox" class="species-checkbox"${checkedAttr}
+                           data-species="${escapedSci}"
+                           data-physio="${encodeURIComponent(phys)}"
+                           data-eco="${encodeURIComponent(eco)}">
+                  </td>
+                  <td class="col-nom-latin" data-latin="${displaySci}">${displaySci}<br><span class="score">(${pct})</span></td>
+                  <td class="col-link">${floreAlpesLink}</td>
+                  <td class="col-link">${floraGallicaLink}</td>
+                  <td class="col-link">${linkIcon(cd && inpnStatut(cd), "INPN.png", "INPN", "small-logo")}</td>
+                  <td class="col-criteres">
+                    <div class="text-popup-trigger" data-title="Critères physiologiques" data-fulltext="${encodeURIComponent(crit)}">${crit}</div>
+                  </td>
+                  <td class="col-ecologie">
+                      <div class="text-popup-trigger" data-title="Écologie" data-fulltext="${encodeURIComponent(eco)}">${eco}</div>
+                  </td>
+                  <td class="col-physionomie">
+                    <div class="text-popup-trigger" data-title="Physionomie" data-fulltext="${encodeURIComponent(phys)}">${phys}</div>
+                  </td>
+                  <td class="col-link">${linkIcon(cd && openObs(cd), "OpenObs.png", "OpenObs", "small-logo")}</td>
+                  <td class="col-link">${linkIcon(cd && aura(cd), "Biodiv'AURA.png", "Biodiv'AURA")}</td>
+                  <td class="col-link">${linkIcon(infoFlora(sci), "Info Flora.png", "Info Flora")}</td>
+                  <td class="col-link"><a href="#" onclick="handleSynthesisClick(event, this, '${escapedSci}')"><img src="assets/Audio.png" alt="Audio" class="logo-icon"></a></td>
+                  <td class="col-link">${linkIcon(pfaf(sci), "PFAF.png", "PFAF")}</td>
+                </tr>`;
   }).join("");
 
   const headerHtml = `<tr><th>Sél.</th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>OpenObs</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Fiche synthèse</th><th>PFAF</th></tr>`;
@@ -621,6 +621,7 @@ function buildTable(items){
       compareBtn.style.marginRight = '0.5rem';
       compareBtn.style.width = 'auto';
 
+      // AJOUTÉ : Création du bouton "Carte de localisation"
       const locationBtn = document.createElement('button');
       locationBtn.id = 'location-btn';
       locationBtn.textContent = 'Carte de localisation';
@@ -628,20 +629,32 @@ function buildTable(items){
       locationBtn.style.display = 'none';
       locationBtn.style.padding = '0.8rem 1.5rem';
       locationBtn.style.width = 'auto';
+      locationBtn.style.backgroundColor = '#0277BD'; // Couleur distincte
 
       footer.appendChild(compareBtn);
-      footer.appendChild(locationBtn);
+      footer.appendChild(locationBtn); // AJOUTÉ : Ajout du bouton au footer
 
       compareBtn.addEventListener('click', handleComparisonClick);
+      
+      // AJOUTÉ : Écouteur d'événement pour le bouton de la carte
+      locationBtn.addEventListener('click', () => {
+          const checkedBoxes = document.querySelectorAll('.species-checkbox:checked');
+          const speciesNames = Array.from(checkedBoxes).map(box => box.dataset.species).join(',');
+          if (speciesNames) {
+              const mapUrl = `carte_interactive/map_view.html?species=${encodeURIComponent(speciesNames)}`;
+              window.open(mapUrl, '_blank');
+          }
+      });
   }
 
   const updateCompareVisibility = () => {
       const checkedCount = wrap.querySelectorAll('.species-checkbox:checked').length;
       const compareBtn = document.getElementById('compare-btn');
-      const locationBtn = document.getElementById('location-btn');
+      const locationBtn = document.getElementById('location-btn'); // AJOUTÉ : Récupération du bouton
       if(compareBtn) {
         compareBtn.style.display = (checkedCount >= 2) ? 'inline-block' : 'none';
       }
+      // AJOUTÉ : Gestion de la visibilité du bouton de la carte
       if(locationBtn) {
         locationBtn.style.display = (checkedCount >= 2) ? 'inline-block' : 'none';
       }
@@ -658,32 +671,32 @@ function buildTable(items){
   const handleWrapClick = (e) => {
       const nameCell = e.target.closest('.col-nom-latin');
       if (nameCell) {
-          const latin = (nameCell.dataset.latin || '').trim();
-          const text = latin || nameCell.innerText.replace(/\s*\(.*/, '').replace(/\s+/g, ' ').trim();
-          const copy = (t) => {
-              if (navigator.clipboard && navigator.clipboard.writeText) {
-                  navigator.clipboard.writeText(t).then(() => {
-                      showNotification('Nom latin copié', 'success');
-                  }).catch(() => showNotification('Échec de la copie', 'error'));
-              } else {
-                  const ta = document.createElement('textarea');
-                  ta.value = t;
-                  ta.style.position = 'fixed';
-                  ta.style.opacity = '0';
-                  document.body.appendChild(ta);
-                  ta.focus();
-                  ta.select();
-                  try {
-                      document.execCommand('copy');
-                      showNotification('Nom latin copié', 'success');
-                  } catch(err) {
-                      showNotification('Échec de la copie', 'error');
-                  }
-                  document.body.removeChild(ta);
-              }
-          };
-          copy(text);
-          return;
+        const latin = (nameCell.dataset.latin || '').trim();
+        const text = latin || nameCell.innerText.replace(/\s*\(.*/, '').replace(/\s+/g, ' ').trim();
+        const copy = (t) => {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(t).then(() => {
+                    showNotification('Nom latin copié', 'success');
+                }).catch(() => showNotification('Échec de la copie', 'error'));
+            } else {
+                const ta = document.createElement('textarea');
+                ta.value = t;
+                ta.style.position = 'fixed';
+                ta.style.opacity = '0';
+                document.body.appendChild(ta);
+                ta.focus();
+                ta.select();
+                try {
+                    document.execCommand('copy');
+                    showNotification('Nom latin copié', 'success');
+                } catch(err) {
+                    showNotification('Échec de la copie', 'error');
+                }
+                document.body.removeChild(ta);
+            }
+        };
+        copy(text);
+        return;
       }
 
       const targetCell = e.target.closest('.text-popup-trigger');
@@ -753,8 +766,8 @@ function showSimilarSpeciesButton(speciesName) {
 }
 
 /* ================================================================
-   LOGIQUE SPÉCIFIQUE AUX PAGES (ÉCOUTEURS)
-   ================================================================ */
+    LOGIQUE SPÉCIFIQUE AUX PAGES (ÉCOUTEURS)
+    ================================================================ */
 function handleSingleFileSelect(file) {
   if (!file) return;
   resizeImageToDataURL(file).then(dataURL => {
