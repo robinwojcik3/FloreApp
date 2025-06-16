@@ -125,36 +125,6 @@ main {
     font-size: 0.9em;
 }
 
-@media (max-width: 600px) {
-    #controls {
-        gap: 3px;
-        padding: 4px 6px;
-    }
-    #speciesInput {
-        padding: 6px;
-        font-size: 0.9em;
-    }
-    #searchButton,
-    #clearButton {
-        padding: 6px 10px;
-        font-size: 0.9em;
-    }
-    #radius-control {
-        gap: 3px;
-        padding: 2px 6px;
-        font-size: 0.9em;
-    }
-    #status-container {
-        padding: 3px;
-        font-size: 0.8em;
-    }
-    #legend {
-        gap: 3px;
-        padding: 3px 6px;
-        font-size: 0.8em;
-    }
-}
-
 .legend-item {
     display: flex;
     align-items: center;
