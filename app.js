@@ -426,7 +426,7 @@ async function handleComparisonClick() {
     if (!resultsContainer) {
         console.error("Le conteneur de résultats (#comparison-results-container) est introuvable.");
         compareBtn.disabled = false;
-        compareBtn.textContent = 'Lancer la comparaison';
+        compareBtn.textContent = 'Comparer les espèces';
         return;
     }
     resultsContainer.innerHTML = '<i>Génération de la comparaison en cours...</i>';
@@ -496,7 +496,7 @@ async function handleComparisonClick() {
     resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     compareBtn.disabled = false;
-    compareBtn.textContent = 'Lancer la comparaison';
+    compareBtn.textContent = 'Comparer les espèces';
 }
 
 
@@ -614,12 +614,23 @@ function buildTable(items){
   if (footer) {
       const compareBtn = document.createElement('button');
       compareBtn.id = 'compare-btn';
-      compareBtn.textContent = 'Lancer la comparaison';
+      compareBtn.textContent = 'Comparer les espèces';
       compareBtn.className = 'action-button';
       compareBtn.style.display = 'none';
       compareBtn.style.padding = '0.8rem 1.5rem';
+      compareBtn.style.marginRight = '0.5rem';
+      compareBtn.style.width = 'auto';
+
+      const locationBtn = document.createElement('button');
+      locationBtn.id = 'location-btn';
+      locationBtn.textContent = 'Carte de localisation';
+      locationBtn.className = 'action-button';
+      locationBtn.style.display = 'none';
+      locationBtn.style.padding = '0.8rem 1.5rem';
+      locationBtn.style.width = 'auto';
 
       footer.appendChild(compareBtn);
+      footer.appendChild(locationBtn);
 
       compareBtn.addEventListener('click', handleComparisonClick);
   }
@@ -627,8 +638,12 @@ function buildTable(items){
   const updateCompareVisibility = () => {
       const checkedCount = wrap.querySelectorAll('.species-checkbox:checked').length;
       const compareBtn = document.getElementById('compare-btn');
+      const locationBtn = document.getElementById('location-btn');
       if(compareBtn) {
         compareBtn.style.display = (checkedCount >= 2) ? 'inline-block' : 'none';
+      }
+      if(locationBtn) {
+        locationBtn.style.display = (checkedCount >= 2) ? 'inline-block' : 'none';
       }
   };
 
