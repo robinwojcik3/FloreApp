@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte de Distribution des Espèces</title>
+    
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>Visualisateur d'occurrences d'espèces (GBIF)</h1>
+    </header>
+
+    <main>
+        <div id="controls">
+            <input type="text" id="speciesInput" placeholder="Nom scientifique de l'espèce (ex: Lamium purpureum)">
+            <button id="searchButton">Rechercher</button>
+            <button id="clearButton">Effacer</button>
+        </div>
+        <div id="radius-control">
+            <label for="radiusSlider">Rayon de recherche :</label>
+            <input type="range" id="radiusSlider" min="1" max="200" value="15">
+            <span id="radiusValue">15 km</span>
+        </div>
+        <div id="status-container">
+            <div id="spinner" style="display: none;"></div>
+            <div id="statusInfo">Prêt. Saisissez une espèce et lancez la recherche.</div>
+        </div>
+        <div id="legend"></div>
+        <div id="map"></div>
+    </main>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script src="script.js"></script>
+</body>
+</html>
