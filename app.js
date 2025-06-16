@@ -754,7 +754,7 @@ function showSimilarSpeciesButton(speciesName) {
     if (extras.length) {
       extras.forEach(n => {
         if (!displayedItems.some(it => it.species.scientificNameWithoutAuthor === n)) {
-          displayedItems.push({ score: 0, species: { scientificNameWithoutAuthor: n }, autoCheck: true });
+          displayedItems.push({ score: 0, species: { scientificNameWithoutAuthor: n }, autoCheck: false });
         }
       });
       buildTable(displayedItems);
