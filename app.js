@@ -699,21 +699,19 @@ function buildTable(items){
         return;
       }
 
+  };
+  const handleWrapDblClick = (e) => {
       const targetCell = e.target.closest('.text-popup-trigger');
       if (targetCell) {
           e.preventDefault();
-          const infoPanel = document.getElementById('info-panel');
-          if (infoPanel) {
-              const title = targetCell.dataset.title || '';
-              const fullText = decodeURIComponent(targetCell.dataset.fulltext);
-              infoPanel.innerHTML = `<h3 style="margin-top:0">${title}</h3><p>${fullText}</p>`;
-              infoPanel.style.display = 'block';
-              infoPanel.scrollIntoView({behavior:'smooth', block:'start'});
-          }
+          const title = targetCell.dataset.title || '';
+          const fullText = decodeURIComponent(targetCell.dataset.fulltext);
+          showInfoModal(title, fullText);
       }
   };
   wrap.addEventListener('click', handleWrapClick);
   wrap.addEventListener('touchend', handleWrapClick);
+  wrap.addEventListener('dblclick', handleWrapDblClick);
 }
 
 function buildCards(items){
