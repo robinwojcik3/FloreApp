@@ -593,7 +593,7 @@ function buildTable(items){
                 </tr>`;
   }).join("");
 
-  const headerHtml = `<tr><th>Sél.</th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Fiche synthèse</th><th>PFAF</th></tr>`;
+  const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Fiche synthèse</th><th>PFAF</th></tr>`;
   
   wrap.innerHTML = `<div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-footer" style="padding-top: 1rem; text-align: center;"></div><div id="comparison-results-container" style="display:none;"></div>`;
   enableDragScroll(wrap);
@@ -639,6 +639,7 @@ function buildTable(items){
       const checkedCount = wrap.querySelectorAll('.species-checkbox:checked').length;
       const compareBtn = document.getElementById('compare-btn');
       const locationBtn = document.getElementById('location-btn'); // AJOUTÉ : Récupération du bouton
+      const toggleBtn = document.getElementById('toggle-select-btn');
       if(compareBtn) {
         compareBtn.style.display = (checkedCount >= 2) ? 'inline-block' : 'none';
       }
@@ -646,9 +647,24 @@ function buildTable(items){
       if(locationBtn) {
         locationBtn.style.display = (checkedCount >= 2) ? 'inline-block' : 'none';
       }
+      if(toggleBtn) {
+        const total = wrap.querySelectorAll('.species-checkbox').length;
+        const allChecked = checkedCount === total && total > 0;
+        toggleBtn.textContent = allChecked ? 'Tout désélectionner' : 'Tout sélectionner';
+      }
   };
 
   updateCompareVisibility();
+
+  const toggleBtn = document.getElementById('toggle-select-btn');
+  if (toggleBtn) {
+      toggleBtn.addEventListener('click', () => {
+          const boxes = wrap.querySelectorAll('.species-checkbox');
+          const allChecked = Array.from(boxes).every(b => b.checked);
+          boxes.forEach(b => { b.checked = !allChecked; });
+          updateCompareVisibility();
+      });
+  }
 
   wrap.addEventListener('change', (e) => {
       if (e.target.classList.contains('species-checkbox')) {
