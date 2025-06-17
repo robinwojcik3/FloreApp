@@ -117,6 +117,9 @@ Follow the official Cloud Run documentation for detailed steps.
 - The results table includes buttons linking to INPN and Biodiv'AURA maps for
   quick reference.
 - Clicking a species name copies the Latin name to the clipboard.
+- Clicking a cell in the "Critères physiologiques", "Écologie" or "Physionomie"
+  columns now opens an overlay pop‑up with the full text. Clicking outside the
+  pop‑up closes it instantly.
 - Google Gemini can generate a comparison table with optional text‑to‑speech
   playback.
 - When a single species is searched, a button under the results can retrieve

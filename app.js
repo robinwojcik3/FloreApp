@@ -673,6 +673,25 @@ function buildTable(items){
   });
 
   const handleWrapClick = (e) => {
+      const popupTrigger = e.target.closest('.text-popup-trigger');
+      if (popupTrigger) {
+          const overlay = document.getElementById('popup-overlay');
+          const content = document.getElementById('popup-content');
+          if (overlay && content) {
+              const title = popupTrigger.dataset.title || '';
+              let fullText = decodeURIComponent(popupTrigger.dataset.fulltext || '');
+              const latinCell = popupTrigger.closest('tr')?.querySelector('.col-nom-latin');
+              const latin = latinCell ? (latinCell.dataset.latin || '').trim() : '';
+              if (latin) {
+                  const re = new RegExp(latin.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+                  fullText = fullText.replace(re, '').trim();
+              }
+              content.innerHTML = `<h3 style="margin-top:0">${title}</h3><p>${fullText}</p>`;
+              overlay.style.display = 'flex';
+          }
+          return;
+      }
+
       const nameCell = e.target.closest('.col-nom-latin');
       if (nameCell) {
         const latin = (nameCell.dataset.latin || '').trim();
@@ -705,24 +724,8 @@ function buildTable(items){
 
   };
 
-  const handleWrapDoubleClick = (e) => {
-      const targetCell = e.target.closest('.text-popup-trigger');
-      if (targetCell) {
-          e.preventDefault();
-          const overlay = document.getElementById('popup-overlay');
-          const content = document.getElementById('popup-content');
-          if (overlay && content) {
-              const title = targetCell.dataset.title || '';
-              const fullText = decodeURIComponent(targetCell.dataset.fulltext);
-              content.innerHTML = `<h3 style="margin-top:0">${title}</h3><p>${fullText}</p>`;
-              overlay.style.display = 'flex';
-          }
-      }
-  };
-
   wrap.addEventListener('click', handleWrapClick);
   wrap.addEventListener('touchend', handleWrapClick);
-  wrap.addEventListener('dblclick', handleWrapDoubleClick);
 
   const overlay = document.getElementById('popup-overlay');
   if (overlay) {
