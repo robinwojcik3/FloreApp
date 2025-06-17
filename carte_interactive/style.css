@@ -172,6 +172,7 @@ main {
     background: transparent;
     border: none;
 }
+
 @media (max-width: 600px) {
   #controls {
     gap: 3px;

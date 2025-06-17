@@ -175,8 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     fill: false
                 }).addTo(mainLayerGroup);
 
-                const userIcon = createColoredIcon('blue');
-                L.marker([coords.latitude, coords.longitude], { icon: userIcon })
+                L.marker([coords.latitude, coords.longitude])
                     .bindPopup('Votre position')
                     .addTo(mainLayerGroup);
 
