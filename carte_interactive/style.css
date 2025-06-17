@@ -172,6 +172,20 @@ main {
     background: transparent;
     border: none;
 }
+
+.custom-user-icon {
+    background: transparent;
+    border: none;
+}
+
+/* Icone de localisation de l'utilisateur */
+.user-location-icon {
+    width: 24px;
+    height: 24px;
+    background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzFlOTBmZiI+CjxjaXJjbGUgY3g9IjEyIiBjeT0iNiIgcj0iNCIvPgo8cGF0aCBkPSJNMTIgMTJjLTQgMC03IDIuNS03IDUuNVYyMmgxNHYtNC41YzAtMy0zLTUuNS03LTUuNXoiLz4KPC9zdmc+");
+    background-size: contain;
+    background-repeat: no-repeat;
+}
 @media (max-width: 600px) {
   #controls {
     gap: 3px;
