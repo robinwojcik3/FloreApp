@@ -88,6 +88,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return L.divIcon({ html, className: 'custom-div-icon', iconSize: [size, size], iconAnchor: [size / 2, size / 2], popupAnchor: [0, -size / 2] });
         };
 
+        const createUserIcon = () => {
+            const html = '<div class="user-location-icon"></div>';
+            return L.divIcon({ html, className: 'custom-user-icon', iconSize: [24, 24], iconAnchor: [12, 24], popupAnchor: [0, -24] });
+        };
+
         // --- 3. LOGIQUE DE RECHERCHE ET D'AFFICHAGE ---
 
         const searchSingleSpecies = async (speciesName, wktPolygon, color) => {
@@ -175,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     fill: false
                 }).addTo(mainLayerGroup);
 
-                const userIcon = createColoredIcon('blue');
+                const userIcon = createUserIcon();
                 L.marker([coords.latitude, coords.longitude], { icon: userIcon })
                     .bindPopup('Votre position')
                     .addTo(mainLayerGroup);
