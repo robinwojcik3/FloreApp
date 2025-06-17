@@ -50,9 +50,6 @@ exports.handler = async function(event, context) {
         if (type === 'carte' || type === 'statut') {
             if (!cd) return { statusCode: 400, body: 'Missing cd parameter' };
             url = `https://inpn.mnhn.fr/espece/cd_nom/${cd}/tab/${type}`;
-        } else if (type === 'openobs') {
-            if (!q) return { statusCode: 400, body: 'Missing q parameter' };
-            url = `https://openobs.mnhn.fr/openobs-hub/occurrences/search?q=${encodeURIComponent(q)}#tab_mapView`;
         } else {
             return { statusCode: 400, body: 'Unsupported type' };
         }
@@ -66,7 +63,7 @@ exports.handler = async function(event, context) {
             }
             const html = await response.text();
             let fragment = null;
-            if (type === 'carte' || type === 'openobs') {
+            if (type === 'carte') {
                 const m = html.match(/<canvas[^>]*class="[^"]*ol-unselectable[^"]*"[^>]*><\/canvas>/i);
                 if (m) fragment = m[0];
             } else if (type === 'statut') {

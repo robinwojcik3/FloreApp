@@ -26,7 +26,6 @@ const CORE_ASSETS = [
   "./assets/INPN.png",
   "./assets/Biodiv'AURA.png",
   "./assets/Info Flora.png",
-  "./assets/OpenObs.png",
   "./assets/Audio.png",
   "./assets/PFAF.png",
   // Bibliothèque PDF.js
