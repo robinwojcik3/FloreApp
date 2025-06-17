@@ -114,8 +114,8 @@ Follow the official Cloud Run documentation for detailed steps.
 
 ## Additional features
 
-- The results table includes buttons linking to INPN, Biodiv'AURA and OpenObs
-  maps for quick reference.
+- The results table includes buttons linking to INPN and Biodiv'AURA maps for
+  quick reference.
 - Clicking a species name copies the Latin name to the clipboard.
 - Google Gemini can generate a comparison table with optional text‑to‑speech
   playback.

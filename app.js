@@ -88,12 +88,6 @@ function capitalizeGenus(name) {
 const infoFlora  = n => `https://www.infoflora.ch/fr/flore/${slug(n)}.html`;
 const inpnStatut = c => `https://inpn.mnhn.fr/espece/cd_nom/${c}/tab/statut`;
 const aura       = c => `https://atlas.biodiversite-auvergne-rhone-alpes.fr/espece/${c}`;
-const openObs    = c => `https://openobs.mnhn.fr/openobs-hub/occurrences/search?q=lsid%3A${c}%20AND%20(dynamicProperties_diffusionGP%3A%22true%22)&qc=&radius=120.6&lat=45.188529&lon=5.724524#tab_mapView`;
-function openObsMulti(codes) {
-  if (!Array.isArray(codes) || codes.length === 0) return '';
-  const q = `(${codes.map(c => `lsid:${c}`).join(' OR ')}) AND (dynamicProperties_diffusionGP:"true")`;
-  return `https://openobs.mnhn.fr/openobs-hub/occurrences/search?q=${encodeURIComponent(q)}&qc=&radius=120.6&lat=45.188529&lon=5.724524#tab_mapView`;
-}
 const pfaf       = n => `https://pfaf.org/user/Plant.aspx?LatinName=${encodeURIComponent(n).replace(/%20/g, '+')}`;
 const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent);
 
@@ -440,7 +434,6 @@ async function handleComparisonClick() {
     }));
 
     const cdCodes = speciesData.map(s => cdRef(s.species)).filter(Boolean);
-    const mapUrl = cdCodes.length ? openObsMulti(cdCodes) : '';
 
     const comparisonText = await getComparisonFromGemini(speciesData);
     const { intro, tableMarkdown } = parseComparisonText(comparisonText);
@@ -464,9 +457,6 @@ async function handleComparisonClick() {
         </div>
         <hr style="border: none; border-top: 1px solid var(--border, #e0e0e0); margin: 1rem 0;">
         <div id="comparison-text-content"><p>${intro}</p>${tableHtml}</div>
-        ${mapUrl ? `<div class="map-fullwidth" style="margin-top:1.5rem;">
-            <iframe loading="lazy" src="${mapUrl}" title="Carte OpenObs" style="width:100%;height:1600px;border:none;"></iframe>
-        </div>` : ''}
     `;
 
     // Ajout de l'écouteur d'événement pour le nouveau bouton de synthèse vocale.
@@ -544,7 +534,6 @@ function buildTable(items){
   const wrap = document.getElementById("results");
   if (!wrap) return;
 
-  const headers = ['Sél.', 'Nom latin (score %)', 'FloreAlpes', 'Flora Gallica', 'INPN statut', 'Critères physiologiques', 'Écologie', 'Physionomie', 'OpenObs', "Biodiv'AURA", 'Info Flora', 'Fiche synthèse', 'PFAF'];
   const linkIcon = (url, img, alt, extraClass = '') => {
     if (!url) return "—";
     const encoded = img.split('/').map(s => encodeURIComponent(s)).join('/');
@@ -597,7 +586,6 @@ function buildTable(items){
                   <td class="col-physionomie">
                     <div class="text-popup-trigger" data-title="Physionomie" data-fulltext="${encodeURIComponent(phys)}">${phys}</div>
                   </td>
-                  <td class="col-link">${linkIcon(cd && openObs(cd), "OpenObs.png", "OpenObs", "small-logo")}</td>
                   <td class="col-link">${linkIcon(cd && aura(cd), "Biodiv'AURA.png", "Biodiv'AURA")}</td>
                   <td class="col-link">${linkIcon(infoFlora(sci), "Info Flora.png", "Info Flora")}</td>
                   <td class="col-link"><a href="#" onclick="handleSynthesisClick(event, this, '${escapedSci}')"><img src="assets/Audio.png" alt="Audio" class="logo-icon"></a></td>
@@ -605,7 +593,7 @@ function buildTable(items){
                 </tr>`;
   }).join("");
 
-  const headerHtml = `<tr><th>Sél.</th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>OpenObs</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Fiche synthèse</th><th>PFAF</th></tr>`;
+  const headerHtml = `<tr><th>Sél.</th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Fiche synthèse</th><th>PFAF</th></tr>`;
   
   wrap.innerHTML = `<div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-footer" style="padding-top: 1rem; text-align: center;"></div><div id="comparison-results-container" style="display:none;"></div>`;
   enableDragScroll(wrap);
@@ -730,7 +718,7 @@ function buildCards(items){
     const details = document.createElement("details");
     let iframeHTML = '';
     if (cd) {
-      iframeHTML = `<div class="iframe-grid"><iframe loading="lazy" src="${inpnStatut(cd)}" title="Statut INPN"></iframe><iframe loading="lazy" src="${aura(cd)}" title="Biodiv'AURA"></iframe><iframe loading="lazy" src="${openObs(cd)}" title="OpenObs"></iframe></div>`;
+      iframeHTML = `<div class="iframe-grid"><iframe loading="lazy" src="${inpnStatut(cd)}" title="Statut INPN"></iframe><iframe loading="lazy" src="${aura(cd)}" title="Biodiv'AURA"></iframe></div>`;
     }
     details.innerHTML = `<summary>${displaySci} — ${pct}${!isNameSearchResult ? '%' : ''}</summary><p style="padding:0 12px 8px;font-style:italic">${ecolOf(sci)}</p>${iframeHTML}`;
     zone.appendChild(details);
