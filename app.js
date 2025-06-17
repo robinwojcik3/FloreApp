@@ -687,21 +687,33 @@ function buildTable(items){
         return;
       }
 
+  };
+
+  const handleWrapDoubleClick = (e) => {
       const targetCell = e.target.closest('.text-popup-trigger');
       if (targetCell) {
           e.preventDefault();
-          const infoPanel = document.getElementById('info-panel');
-          if (infoPanel) {
+          const overlay = document.getElementById('popup-overlay');
+          const content = document.getElementById('popup-content');
+          if (overlay && content) {
               const title = targetCell.dataset.title || '';
               const fullText = decodeURIComponent(targetCell.dataset.fulltext);
-              infoPanel.innerHTML = `<h3 style="margin-top:0">${title}</h3><p>${fullText}</p>`;
-              infoPanel.style.display = 'block';
-              infoPanel.scrollIntoView({behavior:'smooth', block:'start'});
+              content.innerHTML = `<h3 style="margin-top:0">${title}</h3><p>${fullText}</p>`;
+              overlay.style.display = 'flex';
           }
       }
   };
+
   wrap.addEventListener('click', handleWrapClick);
   wrap.addEventListener('touchend', handleWrapClick);
+  wrap.addEventListener('dblclick', handleWrapDoubleClick);
+
+  const overlay = document.getElementById('popup-overlay');
+  if (overlay) {
+      overlay.addEventListener('click', (ev) => {
+          if (ev.target === overlay) overlay.style.display = 'none';
+      });
+  }
 }
 
 function buildCards(items){
