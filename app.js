@@ -774,6 +774,53 @@ const nameSearchButton = document.getElementById("name-search-button");
 const speciesSuggestions = document.getElementById("species-suggestions");
 
 const organBoxOnPage = document.getElementById("organ-choice");
+const openCameraBtn = document.getElementById("open-camera-btn");
+const cameraOverlay = document.getElementById("camera-overlay");
+const cameraVideo = document.getElementById("camera-stream");
+const cameraShoot = document.getElementById("camera-shoot");
+const cameraCancel = document.getElementById("camera-cancel");
+let cameraStream;
+
+function startCustomCamera() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    const fallback = document.getElementById("file-capture");
+    if (fallback) fallback.click();
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } })
+    .then(s => {
+      cameraStream = s;
+      if (cameraVideo) { cameraVideo.srcObject = s; cameraVideo.play(); }
+      if (cameraOverlay) cameraOverlay.style.display = "flex";
+    })
+    .catch(() => {
+      showNotification("Accès caméra refusé", "error");
+      const fallback = document.getElementById("file-capture");
+      if (fallback) fallback.click();
+    });
+}
+function stopCustomCamera() {
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(t => t.stop());
+    cameraStream = null;
+  }
+  if (cameraOverlay) cameraOverlay.style.display = "none";
+}
+function captureCustomPhoto() {
+  if (!cameraStream || !cameraVideo) return;
+  const c = document.createElement("canvas");
+  c.width = cameraVideo.videoWidth;
+  c.height = cameraVideo.videoHeight;
+  c.getContext("2d").drawImage(cameraVideo, 0, 0);
+  c.toBlob(b => {
+    stopCustomCamera();
+    if (b) handleSingleFileSelect(new File([b], "capture.jpg", { type: "image/jpeg" }));
+  }, "image/jpeg", 0.95);
+}
+if (openCameraBtn) openCameraBtn.addEventListener("click", startCustomCamera);
+if (cameraCancel) cameraCancel.addEventListener("click", stopCustomCamera);
+if (cameraShoot) cameraShoot.addEventListener("click", captureCustomPhoto);
+
 
 async function performNameSearch() {
   const raw = nameSearchInput.value.trim();

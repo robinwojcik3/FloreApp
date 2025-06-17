@@ -3,7 +3,7 @@
    ================================================================ */
 
 // Changez ce nom de version à chaque fois que vous mettez à jour les fichiers de l'application
-const CACHE_NAME = "plantid-v18";
+const CACHE_NAME = "plantid-v19";
 
 // Fichiers essentiels pour le fonctionnement de base de l'application
 const CORE_ASSETS = [
