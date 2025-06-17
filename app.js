@@ -657,6 +657,19 @@ function buildTable(items){
   });
 
   const handleWrapClick = (e) => {
+      const popupCell = e.target.closest('.text-popup-trigger');
+      if (popupCell) {
+          const overlay = document.getElementById('popup-overlay');
+          const content = document.getElementById('popup-content');
+          if (overlay && content) {
+              const title = popupCell.dataset.title || '';
+              const fullText = decodeURIComponent(popupCell.dataset.fulltext);
+              content.innerHTML = `<h3 style="margin-top:0">${title}</h3><p>${fullText}</p>`;
+              overlay.style.display = 'flex';
+          }
+          return;
+      }
+
       const nameCell = e.target.closest('.col-nom-latin');
       if (nameCell) {
         const latin = (nameCell.dataset.latin || '').trim();
@@ -687,21 +700,17 @@ function buildTable(items){
         return;
       }
 
-      const targetCell = e.target.closest('.text-popup-trigger');
-      if (targetCell) {
-          e.preventDefault();
-          const infoPanel = document.getElementById('info-panel');
-          if (infoPanel) {
-              const title = targetCell.dataset.title || '';
-              const fullText = decodeURIComponent(targetCell.dataset.fulltext);
-              infoPanel.innerHTML = `<h3 style="margin-top:0">${title}</h3><p>${fullText}</p>`;
-              infoPanel.style.display = 'block';
-              infoPanel.scrollIntoView({behavior:'smooth', block:'start'});
-          }
-      }
   };
+
   wrap.addEventListener('click', handleWrapClick);
   wrap.addEventListener('touchend', handleWrapClick);
+
+  const overlay = document.getElementById('popup-overlay');
+  if (overlay) {
+      overlay.addEventListener('click', (ev) => {
+          if (ev.target === overlay) overlay.style.display = 'none';
+      });
+  }
 }
 
 function buildCards(items){
