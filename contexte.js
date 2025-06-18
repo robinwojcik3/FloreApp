@@ -117,6 +117,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('address-input').addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') searchAddress();
         });
+        document.getElementById('copy-coords').addEventListener('click', copyCoords);
+        document.getElementById('open-gmaps').addEventListener('click', openInGmaps);
+        document.getElementById('reset-selection').addEventListener('click', resetSelection);
         initializeMap();
         const instruction = document.getElementById('map-instruction');
         instruction.style.display = 'block';
@@ -480,8 +483,39 @@ function addDynamicPopup(feature, layer) {
 
 // Fonction de notification générique
 function showNotification(message, type = 'info') {
-	console.log(`Notification (${type}): ${message}`);
-	alert(message); 
+        console.log(`Notification (${type}): ${message}`);
+        alert(message);
+}
+
+// Copie les coordonnées dans le presse-papiers
+function copyCoords() {
+    if (!selectedLat || !selectedLon) return;
+    const text = `${selectedLat.toFixed(6)}, ${selectedLon.toFixed(6)}`;
+    navigator.clipboard.writeText(text).then(() => {
+        showNotification('Coordonnées copiées');
+    });
+}
+
+// Ouvre la position dans Google Maps
+function openInGmaps() {
+    if (!selectedLat || !selectedLon) return;
+    window.open(`https://www.google.com/maps?q=${selectedLat},${selectedLon}`, '_blank');
+}
+
+// Réinitialise la sélection et masque les résultats
+function resetSelection() {
+    selectedLat = null;
+    selectedLon = null;
+    if (marker) { map.removeLayer(marker); marker = null; }
+    if (envMap) { envMap.remove(); envMap = null; }
+    envMarker = null;
+    document.getElementById('coordinates-display').style.display = 'none';
+    document.getElementById('selected-coords').textContent = '--';
+    document.getElementById('validate-location').style.display = 'none';
+    document.getElementById('results-section').style.display = 'none';
+    document.getElementById('env-map').style.display = 'none';
+    document.getElementById('map-container').style.display = 'none';
+    document.getElementById('choose-on-map').textContent = 'Ouvrir la carte';
 }
 
 // Gestionnaire pour le retour à la page d'accueil

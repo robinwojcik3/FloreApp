@@ -48,6 +48,9 @@
     /* Coordonnées sélectionnées */
     .coordinates-display { display: none; margin-top: 1rem; padding: 1rem; background: rgba(13, 110, 253, 0.1); border-radius: 6px; text-align: center; }
     .coordinates-display span { font-weight: 600; color: var(--primary); }
+    .coords-actions{margin-top:.5rem;display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;}
+    .small-button{padding:4px 8px;background:var(--primary);color:#fff;border:none;border-radius:4px;font-size:.9rem;cursor:pointer;}
+    .small-button:hover{background:#0b5ed7;}
     
     /* Résultats */
     .results-section { display: none; margin-top: 2rem; }
@@ -108,8 +111,15 @@
         </div>
         
       <div class="coordinates-display" id="coordinates-display">
-        Coordonnées sélectionnées :
-        <span id="selected-coords">--</span>
+        <div>
+          Coordonnées sélectionnées :
+          <span id="selected-coords">--</span>
+        </div>
+        <div class="coords-actions">
+          <button class="small-button" id="copy-coords">Copier</button>
+          <button class="small-button" id="open-gmaps">Google Maps</button>
+          <button class="small-button" id="reset-selection">Réinitialiser</button>
+        </div>
       </div>
 
       <button class="action-button" id="validate-location" style="display:none; margin-top:1rem;">
