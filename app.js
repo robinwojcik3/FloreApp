@@ -745,19 +745,8 @@ function buildTable(items){
 
   };
 
-  let startX = 0;
-  let startY = 0;
-  wrap.addEventListener('pointerdown', e => {
-      startX = e.clientX;
-      startY = e.clientY;
-  });
-  wrap.addEventListener('pointerup', e => {
-      const dx = Math.abs(e.clientX - startX);
-      const dy = Math.abs(e.clientY - startY);
-      if (dx < 5 && dy < 5) {
-          handleWrapClick(e);
-      }
-  });
+  wrap.addEventListener('click', handleWrapClick);
+  wrap.addEventListener('touchend', handleWrapClick);
 
   const overlay = document.getElementById('popup-overlay');
   if (overlay) {
