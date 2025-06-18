@@ -78,7 +78,7 @@ similarity score and can be selected directly from the search field.
 
 ## Node version
 
-The project is tested with **Node.js 18** in continuous integration. Use the same
+The project is tested with **Node.js 20** in continuous integration. Use the same
 version locally to avoid compatibility issues when running the serverless
 functions and the test suite.
 
