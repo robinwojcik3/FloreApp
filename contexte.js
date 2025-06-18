@@ -12,6 +12,10 @@ let marker = null;
 let selectedLat = null;
 let selectedLon = null;
 
+// Cache des couches déjà chargées pour accélérer les changements
+let layerCache = {};
+let lastCacheCoords = null;
+
 const GOOGLE_MAPS_LONG_PRESS_MS = 2000;
 
 // Configuration des services externes (liens)
@@ -360,6 +364,16 @@ async function displayInteractiveEnvMap() {
     mapDiv.style.display = 'block';
     document.getElementById('layer-controls').style.display = 'none'; // On n'utilise plus les contrôles manuels
 
+    // Vérifie si la localisation a changé de manière significative
+    const coordsChanged =
+        !lastCacheCoords ||
+        Math.abs(lastCacheCoords.lat - selectedLat) > 0.01 ||
+        Math.abs(lastCacheCoords.lon - selectedLon) > 0.01;
+    if (coordsChanged) {
+        layerCache = {};
+    }
+    lastCacheCoords = { lat: selectedLat, lon: selectedLon };
+
     // Initialisation ou réinitialisation de la carte
     if (!envMap) {
         envMap = L.map('env-map', { preferCanvas: true }).setView([selectedLat, selectedLon], 11);
@@ -410,12 +424,21 @@ async function displayInteractiveEnvMap() {
     updateLoading();
 
     Object.entries(APICARTO_LAYERS).forEach(([name, config]) => {
-        fetchAndDisplayApiLayer(name, config, selectedLat, selectedLon)
-            .catch((err) => console.error(err))
-            .finally(() => {
-                loaded += 1;
-                updateLoading();
-            });
+        if (layerCache[name]) {
+            layerControl.addOverlay(layerCache[name], name);
+            loaded += 1;
+            updateLoading();
+        } else {
+            fetchAndDisplayApiLayer(name, config, selectedLat, selectedLon)
+                .then((layer) => {
+                    if (layer) layerCache[name] = layer;
+                })
+                .catch((err) => console.error(err))
+                .finally(() => {
+                    loaded += 1;
+                    updateLoading();
+                });
+        }
     });
 }
 
@@ -441,15 +464,15 @@ async function fetchAndDisplayApiLayer(name, config, lat, lon) {
                 style: config.style,
                 onEachFeature: addDynamicPopup
             });
-            // Ajoute la couche au contrôleur
             layerControl.addOverlay(geoJsonLayer, name);
+            return geoJsonLayer;
         } else {
             console.log(`Aucune donnée de type "${name}" trouvée pour ce point.`);
         }
     } catch (error) {
-
         console.error(`Erreur lors du chargement de la couche ${name}:`, error);
     }
+    return null;
 }
 
 // Extrait un nom lisible à partir des propriétés d'une entité
@@ -521,6 +544,8 @@ function openInGmaps() {
 function resetSelection() {
     selectedLat = null;
     selectedLon = null;
+    layerCache = {};
+    lastCacheCoords = null;
     if (marker) { map.removeLayer(marker); marker = null; }
     if (envMap) { envMap.remove(); envMap = null; }
     envMarker = null;
