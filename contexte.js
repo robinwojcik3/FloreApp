@@ -76,7 +76,7 @@ const APICARTO_LAYERS = {
         style: { color: "#6A1B9A", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
     },
     // Couches supplémentaires pour le contexte environnemental
-    // (Réserves nationales et régionales, APPB, ENS, etc.)
+    // (Réserves nationales et régionales, APPB et ENS)
     'Réserves Naturelles Nationales': {
         endpoint: 'https://apicarto.ign.fr/api/nature/rnn',
         style: { color: "#7B1FA2", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
@@ -96,18 +96,6 @@ const APICARTO_LAYERS = {
     'Zones humides': {
         endpoint: 'https://apicarto.ign.fr/api/nature/zones_humides',
         style: { color: "#1565C0", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
-    },
-    'Réserves Naturelles de Corse': {
-        endpoint: 'https://apicarto.ign.fr/api/nature/rnc',
-        style: { color: "#4A148C", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
-    },
-    'Parcs Naturels Régionaux': {
-        endpoint: 'https://apicarto.ign.fr/api/nature/pnr',
-        style: { color: "#558B2F", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
-    },
-    'Réserves Nationales de Chasse et de Faune Sauvage': {
-        endpoint: 'https://apicarto.ign.fr/api/nature/rncf',
-        style: { color: "#D32F2F", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
     }
 };
 

@@ -111,10 +111,8 @@ This launches the Jest test suite which validates the helper utilities and the
   table with enhanced styling for better visibility.
 - The "Contexte environnemental" tab displays several geographic overlays
   retrieved from the IGN API Carto. It now includes layers for **Réserves
-  Naturelles Nationales et Régionales**, **Réserves naturelles de Corse**,
-  **Parcs Naturels Régionaux**, **Réserves Nationales de Chasse et de Faune
-  Sauvage**, **Arrêtés Préfectoraux de Protection de Biotope**, **Espaces
-  Naturels Sensibles** and **Zones humides**.
+  Naturelles Nationales et Régionales**, **Arrêtés Préfectoraux de Protection de
+  Biotope**, **Espaces Naturels Sensibles** and **Zones humides**.
 - A long press (about two seconds) on the environmental context map opens a
   pop‑up with a **Google Maps** link to the selected coordinates. The timer is
   cancelled if the user starts moving the map.
