@@ -362,7 +362,7 @@ async function displayInteractiveEnvMap() {
 
     // Initialisation ou réinitialisation de la carte
     if (!envMap) {
-        envMap = L.map('env-map').setView([selectedLat, selectedLon], 11);
+        envMap = L.map('env-map', { preferCanvas: true }).setView([selectedLat, selectedLon], 11);
         const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)',
             maxZoom: 17,
@@ -437,6 +437,7 @@ async function fetchAndDisplayApiLayer(name, config, lat, lon) {
 
         if (geojsonData && geojsonData.features && geojsonData.features.length > 0) {
             const geoJsonLayer = L.geoJSON(geojsonData, {
+                renderer: L.canvas(),
                 style: config.style,
                 onEachFeature: addDynamicPopup
             });
