@@ -16,12 +16,32 @@
     :root{ --primary:#0d6efd; --bg:#f6f9fb; --card:#ffffff; --border:#e0e0e0; --text:#202124; --max-width:600px; }
     html[data-theme="dark"]{ --bg:#181a1b; --card:#262b2f; --border:#333; --text:#ececec; }
     *{box-sizing:border-box;}
-    body{ background:var(--bg); color:var(--text); font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; margin:0; padding:0; display:flex; flex-direction:column; min-height:100vh; }
+    body{
+      background:linear-gradient(to bottom,var(--bg),#e9f5e9);
+      color:var(--text);
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+      margin:0; padding:0;
+      display:flex; flex-direction:column; min-height:100vh;
+    }
+    html[data-theme="dark"] body{
+      background:linear-gradient(to bottom,var(--bg),#1f2b2d);
+    }
     
     /* Navigation par onglets */
-    .tabs-container { background: var(--card); box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; display:flex; align-items:center; justify-content:space-between; }
+    .tabs-container {
+      background: var(--card);
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      position: sticky; top: 0; z-index: 100;
+      display:flex; align-items:center; justify-content:space-between;
+      border-radius:0 0 8px 8px;
+    }
     .tabs { display: flex; border-bottom: 2px solid var(--border); flex-grow:1; }
-    .tab { flex: 1; padding: 1rem; text-align: center; cursor: pointer; background: none; border: none; font-size: 1rem; color: var(--text); transition: all 0.3s; position: relative; }
+    .tab {
+      flex: 1; padding: 1rem; text-align: center; cursor: pointer;
+      background: none; border: none; font-size: 1rem; color: var(--text);
+      transition: background .3s,color .3s; position: relative;
+      border-radius:8px 8px 0 0;
+    }
     .tab:hover { background: rgba(13, 110, 253, 0.1); }
     .tab.active { color: var(--primary); font-weight: 600; }
     .tab.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: var(--primary); }
@@ -41,21 +61,37 @@
     .action-button:disabled { background: #ccc; cursor: not-allowed; transform: none; }
     
     /* Carte interactive */
-    #map-container { display: none; margin-top: 1rem; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    #map-container {
+      display: none; margin-top: 1rem; border-radius: 8px;
+      overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      border:1px solid var(--border);
+    }
     #map { height: 300px; width: 100%; }
     .map-fullwidth{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;}
     
     /* Coordonnées sélectionnées */
-    .coordinates-display { display: none; margin-top: 1rem; padding: 1rem; background: rgba(13, 110, 253, 0.1); border-radius: 6px; text-align: center; }
+    .coordinates-display {
+      display: none; margin-top: 1rem; padding: 1rem;
+      background: rgba(13, 110, 253, 0.1); border-radius: 6px;
+      border:1px solid var(--border); text-align: center;
+    }
     .coordinates-display span { font-weight: 600; color: var(--primary); }
     .coords-actions{margin-top:.5rem;display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;}
-    .small-button{padding:4px 8px;background:var(--primary);color:#fff;border:none;border-radius:4px;font-size:.9rem;cursor:pointer;}
-    .small-button:hover{background:#0b5ed7;}
+    .small-button{
+      padding:4px 8px;background:var(--primary);color:#fff;border:none;
+      border-radius:4px;font-size:.9rem;cursor:pointer;
+      transition:background .3s,transform .3s;
+    }
+    .small-button:hover{background:#0b5ed7;transform:scale(1.05);}
     
     /* Résultats */
     .results-section { display: none; margin-top: 2rem; }
     .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-top: 1rem; }
-    .result-card { background: var(--card); border-radius: 8px; padding: 1rem; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+    .result-card {
+      background: var(--card); border-radius: 8px; padding: 1rem;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: transform .2s;
+    }
+    .result-card:hover{ transform: scale(1.02); }
     .result-card h3 { color: var(--primary); margin: 0 0 0.5rem; font-size: 1.1rem; }
     .result-card a { display: inline-block; margin-top: 0.5rem; color: var(--primary); text-decoration: none; }
     .result-card a:hover { text-decoration: underline; }
