@@ -747,8 +747,6 @@ function buildTable(items){
 
   let startX = 0;
   let startY = 0;
-  let lastClickTime = 0;
-  let lastClickTarget = null;
   wrap.addEventListener('pointerdown', e => {
       startX = e.clientX;
       startY = e.clientY;
@@ -757,25 +755,7 @@ function buildTable(items){
       const dx = Math.abs(e.clientX - startX);
       const dy = Math.abs(e.clientY - startY);
       if (dx < 5 && dy < 5) {
-          const trigger = e.target.closest('.text-popup-trigger');
-          const now = performance.now();
-          if (trigger) {
-              if (lastClickTarget === trigger && (now - lastClickTime) < 400) {
-                  handleWrapClick(e);
-                  lastClickTarget = null;
-                  lastClickTime = 0;
-              } else {
-                  lastClickTarget = trigger;
-                  lastClickTime = now;
-              }
-          } else {
-              handleWrapClick(e);
-              lastClickTarget = null;
-              lastClickTime = 0;
-          }
-      } else {
-          lastClickTarget = null;
-          lastClickTime = 0;
+          handleWrapClick(e);
       }
   });
 
