@@ -86,7 +86,7 @@ const APICARTO_LAYERS = {
         style: { color: "#9C27B0", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
     },
     'Arrêtés de Protection de Biotope': {
-        endpoint: 'https://apicarto.ign.fr/api/nature/appb',
+        endpoint: 'https://apicarto.ign.fr/api/nature/apb',
         style: { color: "#1B5E20", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
     },
     'Espaces Naturels Sensibles': {
@@ -96,6 +96,10 @@ const APICARTO_LAYERS = {
     'Zones humides': {
         endpoint: 'https://apicarto.ign.fr/api/nature/zones_humides',
         style: { color: "#1565C0", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+    },
+    'Pelouses sèches': {
+        endpoint: 'https://apicarto.ign.fr/api/nature/pelouses_seches',
+        style: { color: "#8BC34A", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
     }
 };
 
