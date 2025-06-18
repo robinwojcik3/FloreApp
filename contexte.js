@@ -207,11 +207,21 @@ function toggleMap() {
 function initializeMap() {
 	const defaultLat = 45.188529;
 	const defaultLon = 5.724524;
-	map = L.map('map').setView([defaultLat, defaultLon], 13);
-	L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-		attribution: '© OpenStreetMap contributors',
-		maxZoom: 19
-	}).addTo(map);
+        map = L.map('map').setView([defaultLat, defaultLon], 13);
+        const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)',
+                maxZoom: 17,
+                crossOrigin: true
+        }).addTo(map);
+        topoLayer.on('tileerror', () => {
+                if (map.hasLayer(topoLayer)) {
+                        map.removeLayer(topoLayer);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                                attribution: '© OpenStreetMap contributors',
+                                maxZoom: 19
+                        }).addTo(map);
+                }
+        });
 	
 	let pressTimer;
 	let isPressing = false;
