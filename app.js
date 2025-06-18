@@ -747,23 +747,36 @@ function buildTable(items){
 
   let startX = 0;
   let startY = 0;
-  let downTarget = null;
+  let lastClickTime = 0;
+  let lastClickTarget = null;
   wrap.addEventListener('pointerdown', e => {
       startX = e.clientX;
       startY = e.clientY;
-      downTarget = e.target;
   });
-  const resetPointer = () => { downTarget = null; };
-  wrap.addEventListener('pointercancel', resetPointer);
-  wrap.addEventListener('pointerleave', resetPointer);
   wrap.addEventListener('pointerup', e => {
       const dx = Math.abs(e.clientX - startX);
       const dy = Math.abs(e.clientY - startY);
-      const sameTarget = downTarget && e.target === downTarget;
-      if (dx < 5 && dy < 5 && sameTarget) {
-          handleWrapClick(e);
+      if (dx < 5 && dy < 5) {
+          const trigger = e.target.closest('.text-popup-trigger');
+          const now = performance.now();
+          if (trigger) {
+              if (lastClickTarget === trigger && (now - lastClickTime) < 400) {
+                  handleWrapClick(e);
+                  lastClickTarget = null;
+                  lastClickTime = 0;
+              } else {
+                  lastClickTarget = trigger;
+                  lastClickTime = now;
+              }
+          } else {
+              handleWrapClick(e);
+              lastClickTarget = null;
+              lastClickTime = 0;
+          }
+      } else {
+          lastClickTarget = null;
+          lastClickTime = 0;
       }
-      resetPointer();
   });
 
   const overlay = document.getElementById('popup-overlay');
