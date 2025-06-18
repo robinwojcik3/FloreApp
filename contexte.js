@@ -312,16 +312,18 @@ function enableGoogleMapsLongPress(targetMap) {
     let timer;
     let startEvent;
 
+    function openPopup() {
+        const lat = startEvent.latlng.lat.toFixed(6);
+        const lon = startEvent.latlng.lng.toFixed(6);
+        L.popup()
+            .setLatLng(startEvent.latlng)
+            .setContent(`<a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" rel="noopener noreferrer">Google Maps</a>`)
+            .openOn(targetMap);
+    }
+
     function start(e) {
         startEvent = e;
-        timer = setTimeout(() => {
-            const lat = startEvent.latlng.lat.toFixed(6);
-            const lon = startEvent.latlng.lng.toFixed(6);
-            L.popup()
-                .setLatLng(startEvent.latlng)
-                .setContent(`<a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" rel="noopener noreferrer">Google Maps</a>`)
-                .openOn(targetMap);
-        }, GOOGLE_MAPS_LONG_PRESS_MS);
+        timer = setTimeout(openPopup, GOOGLE_MAPS_LONG_PRESS_MS);
     }
 
     function cancel() {
@@ -335,6 +337,11 @@ function enableGoogleMapsLongPress(targetMap) {
     targetMap.on('dragstart', cancel);
     targetMap.on('move', cancel);
     targetMap.on('zoomstart', cancel);
+    targetMap.on('contextmenu', (e) => {
+        e.originalEvent.preventDefault();
+        startEvent = e;
+        openPopup();
+    });
 }
 
 /**
