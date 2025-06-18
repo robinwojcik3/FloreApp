@@ -94,23 +94,6 @@ npm test
 This launches the Jest test suite which validates the helper utilities and the
 `inpn-proxy.js` serverless function.
 
-## Deploying the PCA Habitat API
-
-The PCA Habitat analysis runs in a separate FastAPI service located in the
-`PCA Habitat/` directory. Because Netlify cannot execute Python code, this
-service must be containerised and deployed independently.
-
-1. Build the Docker image from the provided `Dockerfile`:
-
-   ```bash
-   docker build -t pca-habitat-api .
-   ```
-
-2. Deploy the container on a platform such as **Google Cloud Run**. The
-   deployment will give you a public URL (e.g. `https://your-api-unique.a.run.app`)
-   that you can reference in `pca.js`.
-
-Follow the official Cloud Run documentation for detailed steps.
 
 ## Additional features
 

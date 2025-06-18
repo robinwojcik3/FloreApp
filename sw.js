@@ -11,7 +11,6 @@ const CORE_ASSETS = [
   "./index.html",
   "./organ.html",
   "./viewer.html",
-  "./pca.html",
   "./contexte.html",                // NOUVEAU : page contexte environnemental
   "./app.js",
   "./contexte.js",                   // NOUVEAU : script contexte environnemental
