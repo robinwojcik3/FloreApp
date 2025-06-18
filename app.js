@@ -361,7 +361,7 @@ Commence par une phrase unique (1 à 2 lignes maximum) qui met en évidence le c
 
 Ensuite, présente un tableau comparatif en format Markdown. Ce tableau doit regrouper pour chaque espèce les principaux critères morphologiques (forme, taille, couleur des organes, etc.) et écologiques (habitat, type de sol, altitude), en t’appuyant sur les informations des colonnes « Physionomie » et « Écologie ». Organise les lignes du tableau en commençant par les critères les plus simples et discriminants à observer. Le contenu du tableau doit rester clair, sans utiliser de gras, italique ou autres styles typographiques.
 
-Après le tableau, ajoute un court paragraphe de synthèse (deux à trois phrases maximum) rédigé dans un style oral et naturel, comme si tu expliquais à l'oral les différences majeures. N'utilise aucun élément de mise en forme ni liste, uniquement du texte simple.`;
+Après le tableau, ajoute un paragraphe de synthèse plus développé (cinq à six phrases environ) rédigé dans un style oral mais technique. Fais ressortir les éléments clés qui différencient les espèces. N'utilise aucun élément de mise en forme ni liste, uniquement du texte simple.`;
 
     const requestBody = { 
         "contents": [{ "parts": [{ "text": promptTemplate }] }], 
