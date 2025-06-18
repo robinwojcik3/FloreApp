@@ -359,7 +359,9 @@ Ta réponse doit être structurée en deux parties distinctes, sans aucun texte 
 
 Commence par une phrase unique (1 à 2 lignes maximum) qui met en évidence le critère morphologique le plus facilement observable et le plus discriminant pour distinguer les espèces analysées.
 
-Ensuite, présente un tableau comparatif en format Markdown. Ce tableau doit regrouper pour chaque espèce les principaux critères morphologiques (forme, taille, couleur des organes, etc.) et écologiques (habitat, type de sol, altitude), en t’appuyant sur les informations des colonnes « Physionomie » et « Écologie ». Organise les lignes du tableau en commençant par les critères les plus simples et discriminants à observer. Le contenu du tableau doit rester clair, sans utiliser de gras, italique ou autres styles typographiques.`;
+Ensuite, présente un tableau comparatif en format Markdown. Ce tableau doit regrouper pour chaque espèce les principaux critères morphologiques (forme, taille, couleur des organes, etc.) et écologiques (habitat, type de sol, altitude), en t’appuyant sur les informations des colonnes « Physionomie » et « Écologie ». Organise les lignes du tableau en commençant par les critères les plus simples et discriminants à observer. Le contenu du tableau doit rester clair, sans utiliser de gras, italique ou autres styles typographiques.
+
+Après le tableau, ajoute un paragraphe de synthèse plus développé (cinq à six phrases environ) rédigé dans un style oral mais technique. Fais ressortir les éléments clés qui différencient les espèces. N'utilise aucun élément de mise en forme ni liste, uniquement du texte simple.`;
 
     const requestBody = { 
         "contents": [{ "parts": [{ "text": promptTemplate }] }], 
@@ -390,13 +392,29 @@ function parseComparisonText(text) {
     const lines = text.split(/\n+/);
     let introLines = [];
     let tableLines = [];
-    let inTable = false;
+    let summaryLines = [];
+    let mode = 'intro';
     for (const line of lines) {
-        if (!inTable && line.trim().startsWith('|')) inTable = true;
-        if (inTable) tableLines.push(line);
-        else if (line.trim()) introLines.push(line.trim());
+        const trimmed = line.trim();
+        if (mode === 'intro' && trimmed.startsWith('|')) {
+            mode = 'table';
+        }
+        if (mode === 'table' && !trimmed.startsWith('|') && tableLines.length) {
+            mode = 'summary';
+        }
+        if (mode === 'intro') {
+            if (trimmed) introLines.push(trimmed);
+        } else if (mode === 'table') {
+            tableLines.push(line);
+        } else if (trimmed) {
+            summaryLines.push(trimmed);
+        }
     }
-    return { intro: introLines.join(' '), tableMarkdown: tableLines.join('\n') };
+    return {
+        intro: introLines.join(' '),
+        tableMarkdown: tableLines.join('\n'),
+        summary: summaryLines.join(' ')
+    };
 }
 
 function markdownTableToHtml(md) {
@@ -436,7 +454,7 @@ async function handleComparisonClick() {
     const cdCodes = speciesData.map(s => cdRef(s.species)).filter(Boolean);
 
     const comparisonText = await getComparisonFromGemini(speciesData);
-    const { intro, tableMarkdown } = parseComparisonText(comparisonText);
+    const { intro, tableMarkdown, summary } = parseComparisonText(comparisonText);
     const tableHtml = markdownTableToHtml(tableMarkdown);
 
     // MODIFICATION : La structure HTML inclut maintenant le bouton de synthèse vocale.
@@ -451,19 +469,22 @@ async function handleComparisonClick() {
     resultsContainer.innerHTML = `
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
             <h2 style="margin:0; color:var(--primary, #388e3c);">Analyse Comparative des Espèces</h2>
-            <a href="#" id="comparison-tts-btn" title="Écouter la synthèse" style="flex-shrink: 0;">
+        </div>
+        <hr style="border: none; border-top: 1px solid var(--border, #e0e0e0); margin: 1rem 0;">
+        <div id="comparison-table-content"><p>${intro}</p>${tableHtml}</div>
+        <div id="comparison-summary" style="margin-top:1rem; display:flex; align-items:flex-start; gap:0.5rem;">
+            <p id="comparison-summary-text" style="margin:0;">${summary}</p>
+            <a href="#" id="comparison-tts-btn" title="Écouter la synthèse" style="flex-shrink:0;">
                 <img src="assets/Audio.png" alt="Écouter" class="logo-icon" style="height: 32px;">
             </a>
         </div>
-        <hr style="border: none; border-top: 1px solid var(--border, #e0e0e0); margin: 1rem 0;">
-        <div id="comparison-text-content"><p>${intro}</p>${tableHtml}</div>
     `;
 
     // Ajout de l'écouteur d'événement pour le nouveau bouton de synthèse vocale.
     document.getElementById('comparison-tts-btn').addEventListener('click', async (e) => {
         e.preventDefault();
         const btn = e.currentTarget;
-        const textElement = document.getElementById('comparison-text-content');
+        const textElement = document.getElementById('comparison-summary-text');
         if (!textElement) return;
 
         const textToSynthesize = textElement.innerText;
