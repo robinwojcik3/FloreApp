@@ -94,11 +94,11 @@ const isIOS = () => typeof navigator !== 'undefined' &&
 
 const floraHelveticaUrl = n => {
   const code = cdRef(n);
-  if (code) {
-    return `florahelvetica://species/${code}`;
+  const base = code ? `species/${code}` : `species?name=${encodeURIComponent(n)}`;
+  if (isIOS()) {
+    return `florahelvetica://${base}`;
   }
-  const encoded = encodeURIComponent(n);
-  return `florahelvetica://species?name=${encoded}`;
+  return `intent://${base}#Intent;scheme=florahelvetica;end`;
 };
 
 function enableDragScroll(el) {
