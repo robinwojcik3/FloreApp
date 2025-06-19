@@ -308,7 +308,7 @@ function playAudioFromBase64(base64Audio) {
 
 async function getSimilarSpeciesFromGemini(speciesName, limit = 5) {
     const genus = speciesName.split(/\s+/)[0];
-    const prompt = `Donne une liste de ${limit} espèces du genre ${genus} avec lesquelles ${speciesName} peut être confondu pour des raisons morphologiques. Réponds uniquement par une liste séparée par des virgules.`;
+    const prompt = `Donne une liste de ${limit} espèces du genre ${genus} avec lesquelles ${speciesName} peut être confondu pour des raisons morphologiques en région Rhône-Alpes ou PACA. Réponds uniquement par une liste séparée par des virgules.`;
     const requestBody = {
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: { temperature: 0.4, maxOutputTokens: 60 }
@@ -792,7 +792,7 @@ function showSimilarSpeciesButton(speciesName) {
   area.innerHTML = '';
   const btn = document.createElement('button');
   btn.id = 'similar-btn';
-  btn.textContent = 'Montrer des espèces similaires';
+  btn.textContent = 'Montrer des espèces similaires (Rhône-Alpes/PACA)';
   btn.className = 'action-button';
   area.appendChild(btn);
   btn.addEventListener('click', async () => {

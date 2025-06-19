@@ -107,8 +107,10 @@ This launches the Jest test suite which validates the helper utilities and the
   playback.
 - When a single species is searched, a button under the results can retrieve
   suggestions of up to **five** morphologically similar species from the same
-  genus using the Gemini API. This button now sits directly under the results
-  table with enhanced styling for better visibility.
+  genus using the Gemini API. These suggestions correspondent à des espèces
+  avec lesquelles elle peut être confondue en région Rhône-Alpes ou PACA. This
+  button now sits directly under the results table with enhanced styling for
+  better visibility.
 - The "Contexte environnemental" tab displays several geographic overlays
   retrieved from the IGN API Carto. It now includes layers for **Réserves
   Naturelles Nationales et Régionales**, **Arrêtés Préfectoraux de Protection de
