@@ -587,7 +587,7 @@ function buildTable(items){
     }
     const escapedSci = displaySci.replace(/'/g, "\\'");
     const checkedAttr = item.autoCheck ? ' checked' : '';
-    const floraHelveticaLink = `<a href="florahelvetica://search?query=${encodeURIComponent(sci)}">FH</a>`;
+    const floraHelveticaLink = `<a href="https://play.google.com/store/apps/details?id=de.haupt.florahelvetica.pro.de" target="_blank" rel="noopener">FH</a>`;
     return `<tr>
                   <td class="col-checkbox">
                     <input type="checkbox" class="species-checkbox"${checkedAttr}
