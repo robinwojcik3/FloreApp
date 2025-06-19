@@ -94,10 +94,7 @@ const isIOS = () => typeof navigator !== 'undefined' &&
 
 const floraHelveticaUrl = n => {
   const encoded = encodeURIComponent(n);
-  if (isIOS()) {
-    return `florahelvetica://species?name=${encoded}`;
-  }
-  return `intent://species?name=${encoded}#Intent;scheme=florahelvetica;package=de.haupt.florahelvetica.pro.de;end`;
+  return `florahelvetica://species?name=${encoded}`;
 };
 
 function enableDragScroll(el) {
