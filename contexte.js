@@ -16,6 +16,12 @@ let selectedLon = null;
 let layerCache = {};
 let lastCacheCoords = null;
 
+// Variables pour la mesure de distance
+let measuring = false;
+let measurePoints = [];
+let measureLine = null;
+let measureTooltip = null;
+
 const GOOGLE_MAPS_LONG_PRESS_MS = 2000;
 
 // Configuration des services externes (liens)
@@ -141,6 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('copy-coords').addEventListener('click', copyCoords);
         document.getElementById('open-gmaps').addEventListener('click', openInGmaps);
         document.getElementById('reset-selection').addEventListener('click', resetSelection);
+        document.getElementById('measure-distance').addEventListener('click', toggleMeasure);
         initializeMap();
         const instruction = document.getElementById('map-instruction');
         instruction.style.display = 'block';
@@ -386,6 +393,7 @@ async function displayInteractiveEnvMap() {
     const mapDiv = document.getElementById('env-map');
     mapDiv.style.display = 'block';
     document.getElementById('layer-controls').style.display = 'none'; // On n'utilise plus les contrôles manuels
+    document.getElementById('measure-distance').style.display = 'inline-block';
 
     // Vérifie si la localisation a changé de manière significative
     const coordsChanged =
@@ -563,6 +571,53 @@ function openInGmaps() {
     window.open(`https://www.google.com/maps?q=${selectedLat},${selectedLon}`, '_blank');
 }
 
+// Active ou désactive le mode de mesure sur la carte
+function toggleMeasure() {
+    if (!envMap) return;
+    measuring = !measuring;
+    const btn = document.getElementById('measure-distance');
+    if (measuring) {
+        btn.textContent = 'Arrêter la mesure';
+        measurePoints = [];
+        if (measureLine) { envMap.removeLayer(measureLine); measureLine = null; }
+        if (measureTooltip) { envMap.removeLayer(measureTooltip); measureTooltip = null; }
+        envMap.on('click', addMeasurePoint);
+        envMap.doubleClickZoom.disable();
+    } else {
+        btn.textContent = 'Mesurer une distance';
+        envMap.off('click', addMeasurePoint);
+        envMap.doubleClickZoom.enable();
+        if (measureLine) { envMap.removeLayer(measureLine); measureLine = null; }
+        if (measureTooltip) { envMap.removeLayer(measureTooltip); measureTooltip = null; }
+        measurePoints = [];
+    }
+}
+
+// Ajoute un point de mesure et met à jour la distance affichée
+function addMeasurePoint(e) {
+    measurePoints.push(e.latlng);
+    if (measureLine) {
+        measureLine.setLatLngs(measurePoints);
+    } else {
+        measureLine = L.polyline(measurePoints, { color: '#ff0000' }).addTo(envMap);
+    }
+    let dist = 0;
+    for (let i = 1; i < measurePoints.length; i++) {
+        dist += measurePoints[i - 1].distanceTo(measurePoints[i]);
+    }
+    const text = dist < 1000 ? `${dist.toFixed(0)} m` : `${(dist/1000).toFixed(2)} km`;
+    if (!measureTooltip) {
+        measureTooltip = L.marker(e.latlng, {
+            interactive: false,
+            icon: L.divIcon({ className: 'measure-tooltip', html: text })
+        }).addTo(envMap);
+    } else {
+        measureTooltip.setLatLng(e.latlng);
+        const el = measureTooltip.getElement();
+        if (el) el.innerHTML = text;
+    }
+}
+
 // Réinitialise la sélection et masque les résultats
 function resetSelection() {
     selectedLat = null;
@@ -579,6 +634,8 @@ function resetSelection() {
     document.getElementById('env-map').style.display = 'none';
     document.getElementById('map-container').style.display = 'none';
     document.getElementById('choose-on-map').textContent = 'Ouvrir la carte';
+    document.getElementById('measure-distance').style.display = 'none';
+    if (measuring && envMap) toggleMeasure();
 }
 
 // Gestionnaire pour le retour à la page d'accueil

@@ -103,6 +103,14 @@
     
     /* Message d'instruction sur la carte */
     .map-instruction { display: none; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); background: rgba(0, 0, 0, 0.7); color: white; padding: 8px 16px; border-radius: 20px; font-size: 14px; z-index: 1000; pointer-events: none; }
+
+    .measure-tooltip {
+      background: var(--primary);
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
     
     @media (prefers-color-scheme:dark) {
       :root{--bg:#181a1b;--card:#262b2f;--border:#333;--text:#ececec}
@@ -179,6 +187,7 @@
       <!-- Carte interactive avant les ressources -->
       <h2 style="margin-top:2rem;">Carte interactive</h2>
       <div id="layer-controls" style="margin-bottom:0.5rem;"></div>
+      <button id="measure-distance" class="small-button" style="display:none;margin-bottom:0.5rem;">Mesurer une distance</button>
       <div id="env-map" class="map-fullwidth" style="height:800px;display:none;"></div>
 
       <h2>Ressources environnementales</h2>
