@@ -139,24 +139,56 @@ async function fetchAuraImages(cd) {
   }
 }
 
-function initializeImageGalleries() {
+function openImageModal(urls) {
+  const modal = document.getElementById('image-modal');
+  const gallery = document.getElementById('image-modal-gallery');
+  if (!modal || !gallery) return;
+  gallery.innerHTML = '';
+  urls.forEach(url => {
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.src = url;
+    gallery.appendChild(img);
+  });
+  enableDragScroll(gallery);
+  modal.style.display = 'flex';
+}
+
+function closeImageModal() {
+  const modal = document.getElementById('image-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function setupImageModal() {
+  const modal = document.getElementById('image-modal');
+  const closeBtn = document.getElementById('image-modal-close');
+  if (closeBtn) closeBtn.addEventListener('click', closeImageModal);
+  if (modal) {
+    modal.addEventListener('click', e => {
+      if (e.target === modal) closeImageModal();
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') closeImageModal();
+    });
+  }
+}
+
+function initializeImageButtons() {
   const cells = document.querySelectorAll('td.col-image[data-cd]');
-  cells.forEach(async cell => {
+  cells.forEach(cell => {
     const cd = cell.dataset.cd;
     if (!cd) return;
-    const urls = await fetchAuraImages(cd);
-    if (!urls.length) return;
-    const box = document.createElement('div');
-    box.className = 'image-gallery';
-    urls.forEach(url => {
-      const img = document.createElement('img');
-      img.loading = 'lazy';
-      img.src = url;
-      box.appendChild(img);
+    const btn = document.createElement('button');
+    btn.textContent = 'Voir';
+    btn.className = 'image-btn';
+    btn.addEventListener('click', async () => {
+      const urls = await fetchAuraImages(cd);
+      if (!urls.length) return;
+      openImageModal(urls);
     });
-    cell.appendChild(box);
-    enableDragScroll(box);
+    cell.appendChild(btn);
   });
+  setupImageModal();
 }
 // Génère un nom de fichier basé sur la date et l'heure courantes
 function makeTimestampedName(prefix = "") {
@@ -666,7 +698,7 @@ function buildTable(items){
   
   wrap.innerHTML = `<div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-footer" style="padding-top: 1rem; text-align: center;"></div><div id="comparison-results-container" style="display:none;"></div>`;
   enableDragScroll(wrap);
-  initializeImageGalleries();
+  initializeImageButtons();
 
   const footer = document.getElementById('comparison-footer');
   if (footer) {
