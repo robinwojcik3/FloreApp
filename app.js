@@ -120,6 +120,39 @@ function enableDragScroll(el) {
   el.addEventListener('pointercancel', stop);
   el.addEventListener('pointerleave', stop);
 }
+
+async function fetchAuraImages(cd) {
+  if (!cd) return [];
+  try {
+    const res = await fetch(`/.netlify/functions/aura-images?cd=${cd}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data.images) ? data.images.filter(u => u.endsWith('.png')) : [];
+  } catch (err) {
+    console.error('fetchAuraImages error', err);
+    return [];
+  }
+}
+
+function initializeImageGalleries() {
+  const cells = document.querySelectorAll('td.col-image[data-cd]');
+  cells.forEach(async cell => {
+    const cd = cell.dataset.cd;
+    if (!cd) return;
+    const urls = await fetchAuraImages(cd);
+    if (!urls.length) return;
+    const box = document.createElement('div');
+    box.className = 'image-gallery';
+    urls.forEach(url => {
+      const img = document.createElement('img');
+      img.loading = 'lazy';
+      img.src = url;
+      box.appendChild(img);
+    });
+    cell.appendChild(box);
+    enableDragScroll(box);
+  });
+}
 // Génère un nom de fichier basé sur la date et l'heure courantes
 function makeTimestampedName(prefix = "") {
   const d = new Date();
@@ -602,6 +635,7 @@ function buildTable(items){
                            data-physio="${encodeURIComponent(phys)}"
                            data-eco="${encodeURIComponent(eco)}">
                   </td>
+                  <td class="col-image" data-cd="${cd || ''}"></td>
                   <td class="col-nom-latin" data-latin="${displaySci}">${displaySci}<br><span class="score">(${pct})</span></td>
                   <td class="col-link">${floreAlpesLink}</td>
                   <td class="col-link">${floraGallicaLink}</td>
@@ -623,10 +657,11 @@ function buildTable(items){
                 </tr>`;
   }).join("");
 
-  const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th></tr>`;
+  const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Image</th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th></tr>`;
   
   wrap.innerHTML = `<div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-footer" style="padding-top: 1rem; text-align: center;"></div><div id="comparison-results-container" style="display:none;"></div>`;
   enableDragScroll(wrap);
+  initializeImageGalleries();
 
   const footer = document.getElementById('comparison-footer');
   if (footer) {
