@@ -34,22 +34,6 @@
         spinnerOverlay.innerHTML = '<div class="spinner"></div>';
         document.body.appendChild(spinnerOverlay);
 
-        const themeBtn = document.getElementById('theme-toggle');
-        if (themeBtn) {
-            const applyTheme = theme => {
-                document.documentElement.dataset.theme = theme;
-                localStorage.setItem('theme', theme);
-                themeBtn.textContent = theme === 'dark' ? '☀️' : '🌙';
-            };
-            const savedTheme = localStorage.getItem('theme');
-            if (savedTheme) {
-                applyTheme(savedTheme);
-            }
-            themeBtn.addEventListener('click', () => {
-                const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
-                applyTheme(nextTheme);
-            });
-        }
     });
 
     window.showNotification = function(message, type = 'info') {
