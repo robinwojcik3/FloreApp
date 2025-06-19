@@ -95,20 +95,39 @@ const APICARTO_LAYERS = {
         endpoint: 'https://apicarto.ign.fr/api/nature/rnr',
         style: { color: "#9C27B0", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
     },
-    'Arrêtés de Protection de Biotope': {
-        endpoint: 'https://apicarto.ign.fr/api/nature/apb',
+    'Arrêtés de Protection de Biotope (APPB)': {
+        endpoint: 'https://wxs.ign.fr/geoportail/wfs',
         style: { color: "#1B5E20", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+        params: {
+            service: 'WFS',
+            version: '2.0.0',
+            request: 'GetFeature',
+            typeName: 'ep:Arretes_de_protection_de_biotope',
+            srsName: 'EPSG:4326',
+            outputFormat: 'application/json'
+        }
     },
-    'Espaces Naturels Sensibles': {
-        endpoint: 'https://apicarto.ign.fr/api/nature/ens',
+    'Zones Humides (Inventaires validés)': {
+        endpoint: '/.netlify/functions/generic-proxy',
+        style: { color: "#1565C0", weight: 2, opacity: 0.9, fillOpacity: 0.3 },
+        params: {
+            targetService: 'http://wms.reseau-zones-humides.org/cgi-bin/wmsfma',
+            service: 'WFS',
+            version: '2.0.0',
+            request: 'GetFeature',
+            typeName: 'zones_humides_effectives',
+            srsName: 'EPSG:4326',
+            outputFormat: 'application/json'
+        }
+    },
+    'Espaces Naturels Sensibles (ENS)': {
+        disabled: true,
+        reason: "Données gérées au niveau départemental. Pas de service national unifié.",
         style: { color: "#004D40", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
     },
-    'Zones humides': {
-        endpoint: 'https://apicarto.ign.fr/api/nature/zones_humides',
-        style: { color: "#1565C0", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
-    },
     'Pelouses sèches': {
-        endpoint: 'https://apicarto.ign.fr/api/nature/pelouses_seches',
+        disabled: true,
+        reason: "Type d'habitat inclus dans des couches plus larges. Pas de service dédié.",
         style: { color: "#8BC34A", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
     },
     // Nouvelles couches de biodiversité
@@ -455,6 +474,27 @@ async function displayInteractiveEnvMap() {
     updateLoading();
 
     Object.entries(APICARTO_LAYERS).forEach(([name, config]) => {
+        if (config.disabled) {
+            const dummy = L.layerGroup();
+            layerControl.addOverlay(dummy, name);
+            setTimeout(() => {
+                const labels = layerControl.getContainer().querySelectorAll('label');
+                labels.forEach(lab => {
+                    if (lab.textContent.trim() === name) {
+                        lab.style.opacity = '0.5';
+                        lab.style.pointerEvents = 'none';
+                        const info = document.createElement('span');
+                        info.textContent = ' \u2139\uFE0F';
+                        info.title = config.reason || '';
+                        lab.appendChild(info);
+                    }
+                });
+            }, 0);
+            loaded += 1;
+            updateLoading();
+            return;
+        }
+
         if (layerCache[name]) {
             layerControl.addOverlay(layerCache[name], name);
             loaded += 1;
@@ -482,7 +522,22 @@ async function displayInteractiveEnvMap() {
  */
 async function fetchAndDisplayApiLayer(name, config, lat, lon) {
     try {
-        const url = `${config.endpoint}?lon=${lon}&lat=${lat}`;
+        let url;
+        if (!config.params) {
+            url = `${config.endpoint}?lon=${lon}&lat=${lat}`;
+        } else {
+            const params = new URLSearchParams(config.params);
+            const buffer = 10; // metres
+            const latDiff = buffer / 111320;
+            const lonDiff = buffer / (111320 * Math.cos(lat * Math.PI / 180));
+            const minLat = lat - latDiff;
+            const maxLat = lat + latDiff;
+            const minLon = lon - lonDiff;
+            const maxLon = lon + lonDiff;
+            const bbox = `${minLon} ${minLat}, ${maxLon} ${minLat}, ${maxLon} ${maxLat}, ${minLon} ${maxLat}, ${minLon} ${minLat}`;
+            params.set('cql_filter', `INTERSECTS(geom, POLYGON((${bbox})))`);
+            url = `${config.endpoint}?${params.toString()}`;
+        }
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`Réponse réseau non OK: ${response.statusText}`);
