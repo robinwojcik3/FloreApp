@@ -91,10 +91,15 @@ const aura       = c => `https://atlas.biodiversite-auvergne-rhone-alpes.fr/espe
 const pfaf       = n => `https://pfaf.org/user/Plant.aspx?LatinName=${encodeURIComponent(n).replace(/%20/g, '+')}`;
 const isIOS = () => typeof navigator !== 'undefined' &&
   /iPad|iPhone|iPod/.test(navigator.userAgent);
+const isAndroid = () => typeof navigator !== 'undefined' && /Android/.test(navigator.userAgent);
+const floraHelveticaPackage = 'de.haupt.florahelvetica.pro.fr';
 
 const floraHelveticaUrl = n => {
   const code = cdRef(n);
   const base = code ? `species/${code}` : `species?name=${encodeURIComponent(n)}`;
+  if (isAndroid()) {
+    return `intent://${base}#Intent;scheme=florahelvetica;package=${floraHelveticaPackage};end`;
+  }
   return `florahelvetica://${base}`;
 };
 
