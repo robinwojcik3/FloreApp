@@ -104,6 +104,19 @@ const APICARTO_LAYERS = {
     'Pelouses sèches': {
         endpoint: 'https://apicarto.ign.fr/api/nature/pelouses_seches',
         style: { color: "#8BC34A", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+    },
+    // Nouvelles couches de biodiversité
+    'Parcs Naturels Régionaux': {
+        endpoint: 'https://apicarto.ign.fr/api/nature/pnr',
+        style: { color: "#558B2F", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+    },
+    'Sites Ramsar': {
+        endpoint: 'https://apicarto.ign.fr/api/nature/ramsar',
+        style: { color: "#00ACC1", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+    },
+    'ZICO (Zones importantes pour la conservation des oiseaux)': {
+        endpoint: 'https://apicarto.ign.fr/api/nature/zico',
+        style: { color: "#FF9800", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
     }
 };
 
