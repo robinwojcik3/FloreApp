@@ -93,6 +93,10 @@ const isIOS = () => typeof navigator !== 'undefined' &&
   /iPad|iPhone|iPod/.test(navigator.userAgent);
 
 const floraHelveticaUrl = n => {
+  const code = cdRef(n);
+  if (code) {
+    return `florahelvetica://species/${code}`;
+  }
   const encoded = encodeURIComponent(n);
   return `florahelvetica://species?name=${encoded}`;
 };
