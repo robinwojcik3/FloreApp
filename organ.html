@@ -1,219 +1,218 @@
 <!doctype html>
 <html lang="fr">
 <head>
-   <meta charset="utf-8">
-   <meta name="viewport" content="width=device-width,initial-scale=1">
- 
-   <title>Plante App</title>
- 
-   <link rel="manifest" href="manifest.json">
-   <link rel="icon" href="icons/icon-192.png">
-   <script defer src="ui.js"></script>
-   <script defer src="app.js"></script>
-   <script defer src="sw-register.js"></script>
-   <style>
-     :root{--primary:#388e3c;--bg:#f6f9fb;--card:#ffffff;--border:#e0e0e0;--text:#202124}
-     html[data-theme="dark"]{--bg:#181a1b;--card:#262b2f;--border:#333;--text:#ececec}
-     *{box-sizing:border-box;}
-     /* MODIFICATION : Le body prend toute la largeur, suppression de max-width et margin:auto */
-     body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;margin:0;padding:1.2rem;}
-     h1{margin:0 0 1rem;font-size:1.6rem;color:var(--primary)}
-     #preview{max-width:100%;height:auto;display:block;margin:0 auto 1rem;}
-     #preview.thumbnail{max-width:150px;cursor:pointer;}
-     #preview.enlarged{max-width:90vw;}
-     #organ-choice{display:flex;justify-content:center;gap:.5rem;margin:1rem 0;}
-     #organ-choice button{margin:0;padding:.4rem .8rem;border:1px solid var(--primary);background:var(--primary);color:#fff;border-radius:4px;cursor:pointer;display:inline-flex;flex-direction:column;align-items:center;font-size:1rem;}
-     #organ-choice button .emoji{font-size:3rem;line-height:1;}
-     #organ-choice button .label{margin-top:.25rem;}
-     
-     .table-wrapper{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-     #results{overflow-x:auto;-webkit-overflow-scrolling:touch;}
-     #results::after{content:"";display:block;height:1rem;}
-     @media (max-width:600px){
-       #results::after{height:2rem;}
-     }
-     table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.05);margin-bottom:1.2rem;table-layout:auto;}
-     
-     th,td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle;word-wrap:break-word;}
-     th{background:#f5f5f5;color:#000;font-weight:600;text-align:left}
-     tr:last-child td{border-bottom:none}
-     tbody tr:nth-child(odd){background-color:#f9f9f9;}
-     td a{color:var(--primary);text-decoration:none}
-     td a:hover{text-decoration:underline}
-     .col-criteres, .col-ecologie, .col-physionomie { width: 17%; }
-     .col-image { width: 80px; }
-     
-     .text-popup-trigger {
-         display: -webkit-box;
-         -webkit-line-clamp: 3;
-         -webkit-box-orient: vertical;
-         overflow: hidden;
-         text-overflow: ellipsis;
-         cursor: zoom-in;
-         max-height: 4.8em;
-         -webkit-user-select: none;
-         -moz-user-select: none;
-         -ms-user-select: none;
-         user-select: none;
-     }
-     
-     td.col-link {
-         text-align: center;
-         min-width: 50px; 
-     }
- 
-       img.logo-icon {
-           height: 48px;
-           width: auto;
-           display: block;
-           margin: 0 auto;
-       }
-       img.small-logo { height: 24px; width: auto; }
- 
-       .search-inline{display:flex;gap:.5rem;align-items:center;width:90vw;max-width:450px;margin-left:auto;margin-bottom:1rem;}
-       .search-inline input[type="search"]{flex-grow:1;padding:10px;border:1px solid var(--border);border-radius:6px;font-size:1rem;margin:0;background-color:#fff;}
- 
-     .info-panel{display:none;padding:1rem;background:var(--card);border:1px solid var(--border);border-radius:6px;margin-top:1rem;}
- 
-     .popup-overlay {
-         position: fixed;
-         top: 0;
-         left: 0;
-         width: 100%;
-         height: 100%;
-         background: rgba(0,0,0,0.5);
-         display: none;
-         align-items: center;
-         justify-content: center;
-         z-index: 1000;
-     }
- 
-     .popup-content {
-         max-width: 90%;
-         max-height: 80%;
-         overflow: auto;
-         background: var(--card);
-         border: 1px solid var(--border);
-         border-radius: 8px;
-         padding: 1rem;
-     }
- 
-     .image-btn {
-         padding: 4px 8px;
-         font-size: 0.9rem;
-         background: #388e3c;
-         color: #fff;
-         border: none;
-         border-radius: 4px;
-         cursor: pointer;
-     }
-     .image-btn:hover { background: #2e7d32; }
- 
-     .image-modal-overlay {
-         position: fixed;
-         top: 0;
-         left: 0;
-         width: 100%;
-         height: 100%;
-         background: rgba(0,0,0,0.7);
-         display: none;
-         justify-content: center;
-         align-items: center;
-         z-index: 1000;
-         padding: 1rem;
-     }
-     .image-modal-content {
-         background: var(--card);
-         padding: 1rem;
-         border-radius: 8px;
-         max-width: 90%;
-         max-height: 90%;
-         overflow: hidden;
-         position: relative;
-     }
-     .image-modal-close {
-         position: absolute;
-         top: 10px;
-         right: 15px;
-         font-size: 2rem;
-         font-weight: bold;
-         cursor: pointer;
-         border: none;
-         background: none;
-         color: var(--text);
-         line-height: 1;
-     }
-     .image-modal-gallery {
-         display: flex;
-         overflow-x: auto;
-         -webkit-overflow-scrolling: touch;
-         gap: 8px;
-     }
-     .image-modal-gallery img {
-         max-height: 80vh;
-         flex-shrink: 0;
-         border-radius: 8px;
-     }
- 
-     #similar-btn-area { text-align: center; margin-top: 0; }
-     #similar-btn {
-       display: inline-block;
-       width: auto;
-       padding: 0.7rem 1.4rem;
-       margin: 0.5rem auto 1rem;
-       background-color: #ff9800;
-       border: 1px solid #fb8c00;
-       color: #fff;
-       font-weight: 600;
-       border-radius: 6px;
-       font-size: 1rem;
-       cursor: pointer;
-     }
-     #similar-btn:hover {
-       background-color: #fb8c00;
-     }
- 
-     details{margin-bottom:1rem;background:var(--card);border:1px solid var(--border);border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,.05);}
-     summary{padding:10px 12px;cursor:pointer;font-weight:500;color:var(--primary);list-style:none;}
-     summary::after{content:"▸";float:right;transition:transform .2s;}
-     details[open] summary::after{transform:rotate(90deg);}
-     summary::-webkit-details-marker{display:none;}
-     summary:hover{background:rgba(0,0,0,.04);}
-     .iframe-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;padding:12px;}
-     iframe{width:100%;height:280px;border:none;border-radius:4px;}
-     @media (prefers-color-scheme:dark){:root{--bg:#181a1b;--card:#262b2f;--border:#333;--text:#ececec}table,details{border-color:#333}th{background:#30363c;color:#ececec} tbody tr:nth-child(odd){background-color:rgba(255,255,255,0.05);} .search-inline input[type="search"]{background-color:#fff;color:#000;border-color:#555;}}
-     .select-toggle-btn{background:none;border:none;cursor:pointer;color:var(--primary);font-size:0.9rem;padding:0;}
-     .select-toggle-btn:hover{text-decoration:underline;}
-   </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>Plante App</title>
+
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
+  <script defer src="ui.js"></script>
+  <script defer src="app.js"></script>
+  <script defer src="sw-register.js"></script>
+  <style>
+    :root{--primary:#388e3c;--bg:#f6f9fb;--card:#ffffff;--border:#e0e0e0;--text:#202124}
+    html[data-theme="dark"]{--bg:#181a1b;--card:#262b2f;--border:#333;--text:#ececec}
+    *{box-sizing:border-box;}
+    /* MODIFICATION : Le body prend toute la largeur, suppression de max-width et margin:auto */
+    body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;margin:0;padding:1.2rem;}
+    h1{margin:0 0 1rem;font-size:1.6rem;color:var(--primary)}
+    #preview{max-width:100%;height:auto;display:block;margin:0 auto 1rem;}
+    #preview.thumbnail{max-width:150px;cursor:pointer;}
+    #preview.enlarged{max-width:90vw;}
+    #organ-choice{display:flex;justify-content:center;gap:.5rem;margin:1rem 0;}
+    #organ-choice button{margin:0;padding:.4rem .8rem;border:1px solid var(--primary);background:var(--primary);color:#fff;border-radius:4px;cursor:pointer;display:inline-flex;flex-direction:column;align-items:center;font-size:1rem;}
+    #organ-choice button .emoji{font-size:3rem;line-height:1;}
+    #organ-choice button .label{margin-top:.25rem;}
+    
+    .table-wrapper{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+    #results{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+    #results::after{content:"";display:block;height:1rem;}
+    @media (max-width:600px){
+      #results::after{height:2rem;}
+    }
+    table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.05);margin-bottom:1.2rem;table-layout:auto;}
+    
+    th,td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle;word-wrap:break-word;}
+    th{background:#f5f5f5;color:#000;font-weight:600;text-align:left}
+    tr:last-child td{border-bottom:none}
+    tbody tr:nth-child(odd){background-color:#f9f9f9;}
+    td a{color:var(--primary);text-decoration:none}
+    td a:hover{text-decoration:underline}
+    .col-criteres, .col-ecologie, .col-physionomie { width: 17%; }
+    
+    .text-popup-trigger {
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: zoom-in;
+        max-height: 4.8em;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+    }
+    
+    td.col-link {
+        text-align: center;
+        min-width: 50px; 
+    }
+
+      img.logo-icon {
+          height: 48px;
+          width: auto;
+          display: block;
+          margin: 0 auto;
+      }
+      img.small-logo { height: 24px; width: auto; }
+
+      .search-inline{display:flex;gap:.5rem;align-items:center;width:90vw;max-width:450px;margin-left:auto;margin-bottom:1rem;}
+      .search-inline input[type="search"]{flex-grow:1;padding:10px;border:1px solid var(--border);border-radius:6px;font-size:1rem;margin:0;background-color:#fff;}
+
+    .info-panel{display:none;padding:1rem;background:var(--card);border:1px solid var(--border);border-radius:6px;margin-top:1rem;}
+
+    .popup-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+    }
+
+    .popup-content {
+        max-width: 90%;
+        max-height: 80%;
+        overflow: auto;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 1rem;
+    }
+
+    .image-btn {
+        padding: 4px 8px;
+        font-size: 0.9rem;
+        background: #388e3c;
+        color: #fff;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .image-btn:hover { background: #2e7d32; }
+
+    .image-modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.7);
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        padding: 1rem;
+    }
+    .image-modal-content {
+        background: var(--card);
+        padding: 1rem;
+        border-radius: 8px;
+        max-width: 90%;
+        max-height: 90%;
+        overflow: hidden;
+        position: relative;
+    }
+    .image-modal-close {
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        font-size: 2rem;
+        font-weight: bold;
+        cursor: pointer;
+        border: none;
+        background: none;
+        color: var(--text);
+        line-height: 1;
+    }
+    .image-modal-gallery {
+        display: flex;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        gap: 8px;
+    }
+    .image-modal-gallery img {
+        max-height: 80vh;
+        flex-shrink: 0;
+        border-radius: 8px;
+    }
+
+    #similar-btn-area { text-align: center; margin-top: 0; }
+    #similar-btn {
+      display: inline-block;
+      width: auto;
+      padding: 0.7rem 1.4rem;
+      margin: 0.5rem auto 1rem;
+      background-color: #ff9800;
+      border: 1px solid #fb8c00;
+      color: #fff;
+      font-weight: 600;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    #similar-btn:hover {
+      background-color: #fb8c00;
+    }
+
+    details{margin-bottom:1rem;background:var(--card);border:1px solid var(--border);border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,.05);}
+    summary{padding:10px 12px;cursor:pointer;font-weight:500;color:var(--primary);list-style:none;}
+    summary::after{content:"▸";float:right;transition:transform .2s;}
+    details[open] summary::after{transform:rotate(90deg);}
+    summary::-webkit-details-marker{display:none;}
+    summary:hover{background:rgba(0,0,0,.04);}
+    .iframe-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;padding:12px;}
+    iframe{width:100%;height:280px;border:none;border-radius:4px;}
+    @media (prefers-color-scheme:dark){:root{--bg:#181a1b;--card:#262b2f;--border:#333;--text:#ececec}table,details{border-color:#333}th{background:#30363c;color:#ececec} tbody tr:nth-child(odd){background-color:rgba(255,255,255,0.05);} .search-inline input[type="search"]{background-color:#fff;color:#000;border-color:#555;}}
+    .select-toggle-btn{background:none;border:none;cursor:pointer;color:var(--primary);font-size:0.9rem;padding:0;}
+    .select-toggle-btn:hover{text-decoration:underline;}
+  </style>
 </head>
 <body class="home">
-   <div style="display:flex;justify-content:space-between;align-items:center;">
-     <h1 style="margin:0">Plante App</h1>
-   </div>
-   <img id="preview" alt="Prévisualisation">
-   <div id="organ-choice">
-     <p>Quelle partie de la plante est photographiée ?</p>
-     <button type="button" data-organ="flower" aria-label="Fleur"><span class="emoji">🌸</span><span class="label">Fleurs</span></button>
-     <button type="button" data-organ="leaf" aria-label="Feuille"><span class="emoji">🍃</span><span class="label">Feuilles</span></button>
-     <button type="button" data-organ="fruit" aria-label="Fruit"><span class="emoji">🍒</span><span class="label">Fruits</span></button>
-     <button type="button" data-organ="bark" aria-label="Écorce"><span class="emoji">🪵</span><span class="label">Écorce</span></button>
-   </div>
-   <div class="search-inline">
-     <input type="search" id="name-search-input" placeholder="Nom d'espèce ou de genre" list="species-suggestions">
-     <datalist id="species-suggestions"></datalist>
-     <button type="button" id="name-search-button" class="action-button">Rechercher</button>
-   </div>
-   <div id="results"></div>
-   <div id="similar-btn-area"></div>
-   <div id="info-panel" class="info-panel"></div>
-   <div id="popup-overlay" class="popup-overlay">
-     <div id="popup-content" class="popup-content"></div>
-   </div>
-   <div id="image-modal" class="image-modal-overlay">
-     <div class="image-modal-content">
-       <button id="image-modal-close" class="image-modal-close" title="Fermer">×</button>
-       <div id="image-modal-gallery" class="image-modal-gallery"></div>
-     </div>
-   </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <h1 style="margin:0">Plante App</h1>
+  </div>
+  <img id="preview" alt="Prévisualisation">
+  <div id="organ-choice">
+    <p>Quelle partie de la plante est photographiée&nbsp;?</p>
+    <button type="button" data-organ="flower" aria-label="Fleur"><span class="emoji">🌸</span><span class="label">Fleurs</span></button>
+    <button type="button" data-organ="leaf" aria-label="Feuille"><span class="emoji">🍃</span><span class="label">Feuilles</span></button>
+    <button type="button" data-organ="fruit" aria-label="Fruit"><span class="emoji">🍒</span><span class="label">Fruits</span></button>
+    <button type="button" data-organ="bark" aria-label="Écorce"><span class="emoji">🪵</span><span class="label">Écorce</span></button>
+  </div>
+  <div class="search-inline">
+    <input type="search" id="name-search-input" placeholder="Nom d'espèce ou de genre" list="species-suggestions">
+    <datalist id="species-suggestions"></datalist>
+    <button type="button" id="name-search-button" class="action-button">Rechercher</button>
+  </div>
+  <div id="results"></div>
+  <div id="similar-btn-area"></div>
+  <div id="info-panel" class="info-panel"></div>
+  <div id="popup-overlay" class="popup-overlay">
+    <div id="popup-content" class="popup-content"></div>
+  </div>
+  <div id="image-modal" class="image-modal-overlay">
+    <div class="image-modal-content">
+      <button id="image-modal-close" class="image-modal-close" title="Fermer">&times;</button>
+      <div id="image-modal-gallery" class="image-modal-gallery"></div>
+    </div>
+  </div>
 </body>
 </html>
