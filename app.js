@@ -89,7 +89,16 @@ const infoFlora  = n => `https://www.infoflora.ch/fr/flore/${slug(n)}.html`;
 const inpnStatut = c => `https://inpn.mnhn.fr/espece/cd_nom/${c}/tab/statut`;
 const aura       = c => `https://atlas.biodiversite-auvergne-rhone-alpes.fr/espece/${c}`;
 const pfaf       = n => `https://pfaf.org/user/Plant.aspx?LatinName=${encodeURIComponent(n).replace(/%20/g, '+')}`;
-const isIOS = () => /iPad|iPhone|iPod/.test(navigator.userAgent);
+const isIOS = () => typeof navigator !== 'undefined' &&
+  /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+const floraHelveticaUrl = n => {
+  const encoded = encodeURIComponent(n);
+  if (isIOS()) {
+    return `florahelvetica://species?name=${encoded}`;
+  }
+  return `intent://species?name=${encoded}#Intent;scheme=florahelvetica;package=de.haupt.florahelvetica.pro.de;end`;
+};
 
 function enableDragScroll(el) {
   if (!el) return;
@@ -587,7 +596,7 @@ function buildTable(items){
     }
     const escapedSci = displaySci.replace(/'/g, "\\'");
     const checkedAttr = item.autoCheck ? ' checked' : '';
-    const floraHelveticaLink = `<a href="https://play.google.com/store/apps/details?id=de.haupt.florahelvetica.pro.de" target="_blank" rel="noopener">FH</a>`;
+    const floraHelveticaLink = `<a href="${floraHelveticaUrl(sci)}">FH</a>`;
     return `<tr>
                   <td class="col-checkbox">
                     <input type="checkbox" class="species-checkbox"${checkedAttr}
