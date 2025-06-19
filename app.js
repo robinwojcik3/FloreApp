@@ -120,6 +120,60 @@ function enableDragScroll(el) {
   el.addEventListener('pointercancel', stop);
   el.addEventListener('pointerleave', stop);
 }
+
+async function fetchAuraImages(cd) {
+  if (!cd) return [];
+  try {
+    const res = await fetch(`/.netlify/functions/aura-images?cd=${cd}`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data.images) ? data.images.filter(u => u.endsWith('.png')) : [];
+  } catch (err) {
+    console.error('fetchAuraImages error', err);
+    return [];
+  }
+}
+
+function setupImageButtons() {
+  const cells = document.querySelectorAll('td.col-image[data-cd]');
+  cells.forEach(cell => {
+    const cd = cell.dataset.cd;
+    if (!cd) return;
+    const btn = document.createElement('button');
+    btn.textContent = 'Voir';
+    btn.className = 'action-button';
+    btn.style.padding = '0.2rem 0.5rem';
+    btn.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      openAuraImagePopup(cd);
+    });
+    cell.appendChild(btn);
+  });
+}
+
+async function openAuraImagePopup(cd) {
+  const overlay = document.getElementById('popup-overlay');
+  const content = document.getElementById('popup-content');
+  if (!overlay || !content || !cd) return;
+  content.innerHTML = '<p>Chargement...</p>';
+  overlay.style.display = 'flex';
+  const urls = await fetchAuraImages(cd);
+  if (!urls.length) {
+    content.innerHTML = '<p>Aucune image disponible</p>';
+    return;
+  }
+  const box = document.createElement('div');
+  box.className = 'image-gallery';
+  urls.forEach(url => {
+    const img = document.createElement('img');
+    img.loading = 'lazy';
+    img.src = url;
+    box.appendChild(img);
+  });
+  content.innerHTML = '';
+  content.appendChild(box);
+  enableDragScroll(box);
+}
 // Génère un nom de fichier basé sur la date et l'heure courantes
 function makeTimestampedName(prefix = "") {
   const d = new Date();
@@ -602,6 +656,7 @@ function buildTable(items){
                            data-physio="${encodeURIComponent(phys)}"
                            data-eco="${encodeURIComponent(eco)}">
                   </td>
+                  <td class="col-image" data-cd="${cd || ''}"></td>
                   <td class="col-nom-latin" data-latin="${displaySci}">${displaySci}<br><span class="score">(${pct})</span></td>
                   <td class="col-link">${floreAlpesLink}</td>
                   <td class="col-link">${floraGallicaLink}</td>
@@ -623,10 +678,11 @@ function buildTable(items){
                 </tr>`;
   }).join("");
 
-  const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th></tr>`;
+  const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Image</th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th></tr>`;
   
   wrap.innerHTML = `<div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-footer" style="padding-top: 1rem; text-align: center;"></div><div id="comparison-results-container" style="display:none;"></div>`;
   enableDragScroll(wrap);
+  setupImageButtons();
 
   const footer = document.getElementById('comparison-footer');
   if (footer) {
