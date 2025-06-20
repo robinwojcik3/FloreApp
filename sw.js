@@ -2,54 +2,54 @@
    Service-Worker – PlantID PWA (v3 - Avec contexte environnemental)
    ================================================================ */
 
-// Changez ce nom de version à chaque fois que vous mettez à jour les fichiers de l'application
-const CACHE_NAME = "plantid-v19";
+// MODIFIÉ : Version du cache incrémentée pour forcer la mise à jour
+const CACHE_NAME = "plantid-v20";
 
-// WebAssembly modules for PDF.js encoded in base64 to avoid binary files.
 const WASM_ASSETS = {
   "openjpeg.wasm": "./pdfjs/wasm/openjpeg.wasm.b64",
   "qcms_bg.wasm": "./pdfjs/wasm/qcms_bg.wasm.b64"
 };
 
-// Fichiers essentiels pour le fonctionnement de base de l'application
+// MODIFIÉ : Ajout des nouveaux assets pour Flore Méd et Régal Végétal
 const CORE_ASSETS = [
   "./",
   "./index.html",
   "./organ.html",
   "./viewer.html",
-  "./contexte.html",                // NOUVEAU : page contexte environnemental
+  "./contexte.html",
   "./app.js",
-  "./contexte.js",                   // NOUVEAU : script contexte environnemental
+  "./contexte.js",
   "./assets/viewer_app.js",
   "./manifest.json",
   "./assets/flora_gallica_toc.json",
+  "./assets/regal_vegetal_toc.json",
+  "./assets/flore_med_toc.json", // NOUVEAU : Fichier TOC pour Flore Méd
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./assets/Bandeau.jpg",
   "./assets/FloreAlpes.png",
   "./assets/Flora Gallica.png",
+  "./assets/Régal Végétal.png",   // NOUVEAU : Ajout de l'icône Régal Végétal
+  "./assets/Flore Med.png",       // NOUVEAU : Ajout de l'icône Flore Méd
   "./assets/INPN.png",
   "./assets/Biodiv'AURA.png",
   "./assets/Info Flora.png",
   "./assets/Audio.png",
   "./assets/PFAF.png",
-  // Bibliothèque PDF.js
   "./pdfjs/build/pdf.mjs",
   "./pdfjs/build/pdf.worker.mjs",
   "./pdfjs/wasm/openjpeg.wasm.b64",
   "./pdfjs/wasm/qcms_bg.wasm.b64",
-  // NOUVEAU : Leaflet pour la carte interactive (depuis CDN)
   "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
   "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
 ];
 
-// Fichiers de données
 const DATA_ASSETS = [
     "./taxref.json",
     "./ecology.json",
     "./assets/florealpes_index.json",
-    "./Criteres_herbier.json",      // NOUVEAU : ajout des critères
-    "./Physionomie.json"            // Nouvelle : descriptions de physionomie
+    "./Criteres_herbier.json",
+    "./Physionomie.json"
 ];
 
 
@@ -129,7 +129,6 @@ self.addEventListener("fetch", event => {
                         return cachedResponse;
                     }
                     return fetch(request).then(networkResponse => {
-                        // Mettre en cache uniquement les fichiers CSS/JS de Leaflet
                         if (request.url.includes("unpkg.com")) {
                             return caches.open(CACHE_NAME).then(cache => {
                                 cache.put(request, networkResponse.clone());
