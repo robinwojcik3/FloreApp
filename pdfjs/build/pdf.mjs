@@ -20351,7 +20351,8 @@ class SignatureExtractor {
     const ctx = offscreen.getContext("2d", {
       willReadFrequently: true
     });
-    ctx.filter = "grayscale(1)";
+    // Remove forced grayscale conversion to preserve original colors
+    // ctx.filter = "grayscale(1)";
     ctx.drawImage(bitmap, 0, 0, bitmap.width, bitmap.height, 0, 0, newWidth, newHeight);
     const grayImage = ctx.getImageData(0, 0, newWidth, newHeight).data;
     const uint8Buf = this.#toUint8(grayImage);
@@ -20386,7 +20387,8 @@ class SignatureExtractor {
       willReadFrequently: true
     });
     ctx.font = font;
-    ctx.filter = "grayscale(1)";
+    // Remove forced grayscale conversion to preserve original colors
+    // ctx.filter = "grayscale(1)";
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvasWidth, canvasHeight);
     ctx.fillStyle = "black";
