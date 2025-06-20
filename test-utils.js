@@ -45,6 +45,19 @@ function loadHandler(mockFetch) {
   return context.exports.handler;
 }
 
+function loadAuraHandler(mockFetch) {
+  const code = fs.readFileSync('netlify/functions/aura-images.js', 'utf-8');
+  const patched = code.replace(
+    /const fetch = \(\.\.\.args\) => import\(['"]node-fetch['"]\)\.then\(\(\{default: f\}\) => f\(\.\.\.args\)\);/,
+    'const fetch = (...args) => global.__fetch(...args);'
+  );
+  const context = { require, console, exports: {}, __fetch: mockFetch };
+  context.global = context;
+  vm.createContext(context);
+  vm.runInContext(patched, context);
+  return context.exports.handler;
+}
+
 function mockFetch(html) {
   return jest.fn().mockResolvedValue({
     ok: true,
@@ -52,4 +65,4 @@ function mockFetch(html) {
   });
 }
 
-module.exports = { loadApp, loadHandler, mockFetch };
+module.exports = { loadApp, loadHandler, loadAuraHandler, mockFetch };
