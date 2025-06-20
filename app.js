@@ -22,10 +22,10 @@ let nameTrigram = {};
 let ecology = {};
 let floraToc = {};
 let regalVegetalToc = {};
+let floreMedToc = {}; // Variable pour la table des matières de Flore Méd
 let floreAlpesIndex = {}; 
 let criteres = {};
 let physionomie = {};
-let floreMedToc = {}; // NOUVEAU : Table des matières pour Flore Méd
 let userLocation = { latitude: 45.188529, longitude: 5.724524 };
 
 let displayedItems = [];
@@ -45,7 +45,7 @@ function loadData() {
     fetch("ecology.json").then(r => r.json()).then(j => Object.entries(j).forEach(([k,v]) => ecology[norm(k.split(';')[0])] = v)),
     fetch("assets/flora_gallica_toc.json").then(r => r.json()).then(j => floraToc = j),
     fetch("assets/regal_vegetal_toc.json").then(r => r.json()).then(j => regalVegetalToc = j),
-    fetch("assets/flore_med_toc.json").then(r => r.json()).then(j => floreMedToc = j), // NOUVEAU : Chargement de la TOC de Flore Méd
+    fetch("assets/flore_med_toc.json").then(r => r.json()).then(j => floreMedToc = j), // Chargement de la TOC de Flore Méd
     fetch("assets/florealpes_index.json").then(r => r.json()).then(j => floreAlpesIndex = j),
     fetch("Criteres_herbier.json").then(r => r.json()).then(j => j.forEach(item => criteres[norm(item.species)] = item.description)),
     fetch("Physionomie.json").then(r => r.json()).then(j => j.forEach(item => physionomie[norm(item.nom_latin)] = item.physionomie))
@@ -659,7 +659,7 @@ function buildTable(items){
         regalVegetalLink = linkIcon(viewerUrl, "Régal Végétal.png", "Régal Végétal");
     }
 
-    // NOUVEAU : Logique pour Flore Méd
+    // LOGIQUE POUR FLORE MED
     const tocEntryFloreMed = floreMedToc[genus];
     let floreMedLink = "—";
     if (tocEntryFloreMed && tocEntryFloreMed.pdfFile && tocEntryFloreMed.page) {
@@ -678,7 +678,7 @@ function buildTable(items){
     const escapedSci = displaySci.replace(/'/g, "\\'");
     const checkedAttr = item.autoCheck ? ' checked' : '';
     const floraHelveticaLink = `<a href="${floraHelveticaUrl(sci)}">FH</a>`;
-    // MODIFIÉ: Ajout de la cellule pour Flore Méd
+    
     return `<tr>
               <td class="col-checkbox">
                 <input type="checkbox" class="species-checkbox"${checkedAttr}
@@ -710,7 +710,6 @@ function buildTable(items){
             </tr>`;
   }).join("");
 
-  // MODIFIÉ: Ajout du titre de colonne pour Flore Méd
   const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>Régal Végétal</th><th>Flore Méd</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th><th>Image</th></tr>`;
   
   wrap.innerHTML = `<div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-footer" style="padding-top: 1rem; text-align: center;"></div><div id="comparison-results-container" style="display:none;"></div>`;
