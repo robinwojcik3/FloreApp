@@ -1,0 +1,18 @@
+{
+  "quercus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 152
+  },
+  "cistus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 210
+  },
+  "lavandula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 345
+  },
+  "pinus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 88
+  }
+}
