@@ -3,7 +3,13 @@
    ================================================================ */
 
 // Changez ce nom de version à chaque fois que vous mettez à jour les fichiers de l'application
-const CACHE_NAME = "plantid-v18";
+const CACHE_NAME = "plantid-v19";
+
+// WebAssembly modules for PDF.js encoded in base64 to avoid binary files.
+const WASM_ASSETS = {
+  "openjpeg.wasm": "./pdfjs/wasm/openjpeg.wasm.b64",
+  "qcms_bg.wasm": "./pdfjs/wasm/qcms_bg.wasm.b64"
+};
 
 // Fichiers essentiels pour le fonctionnement de base de l'application
 const CORE_ASSETS = [
@@ -30,6 +36,8 @@ const CORE_ASSETS = [
   // Bibliothèque PDF.js
   "./pdfjs/build/pdf.mjs",
   "./pdfjs/build/pdf.worker.mjs",
+  "./pdfjs/wasm/openjpeg.wasm.b64",
+  "./pdfjs/wasm/qcms_bg.wasm.b64",
   // NOUVEAU : Leaflet pour la carte interactive (depuis CDN)
   "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
   "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
@@ -86,6 +94,28 @@ self.addEventListener("fetch", event => {
         request.url.includes("texttospeech.googleapis.com")) {
         event.respondWith(fetch(request));
         return;
+    }
+
+    // Fournir les modules WebAssembly pour PDF.js depuis les fichiers base64
+    if (url.pathname.startsWith('/pdfjs/wasm/')) {
+        const filename = url.pathname.split('/').pop();
+        const b64Path = WASM_ASSETS[filename];
+        if (b64Path) {
+            event.respondWith(
+                caches.match(b64Path)
+                    .then(r => r ? r.text() : fetch(b64Path).then(nr => {
+                        return caches.open(CACHE_NAME).then(c => {
+                            c.put(b64Path, nr.clone());
+                            return nr.text();
+                        });
+                    }))
+                    .then(b64 => {
+                        const bytes = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+                        return new Response(bytes, { headers: { 'Content-Type': 'application/wasm' } });
+                    })
+            );
+            return;
+        }
     }
 
     // Gérer les ressources externes (Leaflet, OpenStreetMap)
