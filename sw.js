@@ -2,15 +2,15 @@
    Service-Worker – PlantID PWA (v3 - Avec contexte environnemental)
    ================================================================ */
 
-// MODIFIÉ : Version du cache incrémentée pour forcer la mise à jour
-const CACHE_NAME = "plantid-v20";
+// MODIFICATION CRITIQUE : La version du cache est incrémentée pour forcer la mise à jour.
+const CACHE_NAME = "plantid-v21";
 
 const WASM_ASSETS = {
   "openjpeg.wasm": "./pdfjs/wasm/openjpeg.wasm.b64",
   "qcms_bg.wasm": "./pdfjs/wasm/qcms_bg.wasm.b64"
 };
 
-// MODIFIÉ : Ajout des nouveaux assets pour Flore Méd et Régal Végétal
+// MODIFIÉ : Ajout des assets pour Flore Méd et Régal Végétal
 const CORE_ASSETS = [
   "./",
   "./index.html",
@@ -23,14 +23,14 @@ const CORE_ASSETS = [
   "./manifest.json",
   "./assets/flora_gallica_toc.json",
   "./assets/regal_vegetal_toc.json",
-  "./assets/flore_med_toc.json", // NOUVEAU : Fichier TOC pour Flore Méd
+  "./assets/flore_med_toc.json", // Assure la présence du TOC Flore Méd
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./assets/Bandeau.jpg",
   "./assets/FloreAlpes.png",
   "./assets/Flora Gallica.png",
-  "./assets/Régal Végétal.png",   // NOUVEAU : Ajout de l'icône Régal Végétal
-  "./assets/Flore Med.png",       // NOUVEAU : Ajout de l'icône Flore Méd
+  "./assets/Régal Végétal.png",   // Assure la présence de l'icône Régal Végétal
+  "./assets/Flore Med.png",       // Assure la présence de l'icône Flore Méd
   "./assets/INPN.png",
   "./assets/Biodiv'AURA.png",
   "./assets/Info Flora.png",
