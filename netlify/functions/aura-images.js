@@ -16,8 +16,12 @@ exports.handler = async function(event) {
         const regex = /<img[^>]+src="([^"]+\.png)"/ig;
         const images = [];
         let m;
+        const base = 'https://atlas.biodiversite-auvergne-rhone-alpes.fr';
         while ((m = regex.exec(html)) !== null) {
-            const src = m[1];
+            let src = m[1];
+            if (!/^https?:\/\//i.test(src)) {
+                src = base + (src.startsWith('/') ? src : `/${src}`);
+            }
             if (!images.includes(src)) images.push(src);
         }
         return { statusCode: 200, headers: {'Content-Type':'application/json'}, body: JSON.stringify({ images }) };
