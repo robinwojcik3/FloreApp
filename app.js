@@ -134,7 +134,7 @@ async function fetchAuraImages(cd) {
     const res = await fetch(`/.netlify/functions/aura-images?cd=${cd}`);
     if (!res.ok) return [];
     const data = await res.json();
-    return Array.isArray(data.images) ? data.images.filter(u => u.endsWith('.png')) : [];
+    return Array.isArray(data.images) ? data.images.filter(u => /\.jpe?g$|\.png$/i.test(u)) : [];
   } catch (err) {
     console.error('fetchAuraImages error', err);
     return [];
