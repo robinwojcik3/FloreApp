@@ -22,6 +22,7 @@ let trigramIndex = {};
 let nameTrigram = {};
 let ecology = {};
 let floraToc = {};
+let regalVegetalToc = {}; // NOUVEAU : Table des matières pour Régal Végétal
 let floreAlpesIndex = {}; 
 let criteres = {}; // NOUVEAU : pour les critères physiologiques
 let physionomie = {}; // Nouvelle table pour la physionomie
@@ -43,6 +44,7 @@ function loadData() {
     })),
     fetch("ecology.json").then(r => r.json()).then(j => Object.entries(j).forEach(([k,v]) => ecology[norm(k.split(';')[0])] = v)),
     fetch("assets/flora_gallica_toc.json").then(r => r.json()).then(j => floraToc = j),
+    fetch("assets/regal_vegetal_toc.json").then(r => r.json()).then(j => regalVegetalToc = j), // NOUVEAU : Chargement de la TOC de Régal Végétal
     fetch("assets/florealpes_index.json").then(r => r.json()).then(j => floreAlpesIndex = j),
     // NOUVEAU : Chargement des critères physiologiques
     fetch("Criteres_herbier.json").then(r => r.json()).then(j => j.forEach(item => criteres[norm(item.species)] = item.description)),
@@ -304,7 +306,7 @@ function showInfoModal(title, content) {
     modalTitle.style.color = 'var(--primary, #388e3c)';
 
     const modalText = document.createElement('div');
-    modalText.innerHTML = content.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, '<br>');
+    modalText.innerHTML = content.replace(/</g, "<").replace(/>/g, ">").replace(/\n/g, '<br>');
     modalText.style.lineHeight = '1.6';
 
     const closeButton = document.createElement('button');
@@ -648,13 +650,25 @@ function buildTable(items){
     const crit = criteresOf(sci);
     const phys = physioOf(sci);
     const genus = sci.split(' ')[0].toLowerCase();
-    const tocEntry = floraToc[genus];
+    
+    const tocEntryFloraGallica = floraToc[genus];
     let floraGallicaLink = "—";
-    if (tocEntry && tocEntry.pdfFile && tocEntry.page) {
-      const pdfPath = `assets/flora_gallica_pdfs/${tocEntry.pdfFile}`;
-      const viewerUrl = `viewer.html?file=${encodeURIComponent(pdfPath)}&page=${tocEntry.page}`;
+    if (tocEntryFloraGallica && tocEntryFloraGallica.pdfFile && tocEntryFloraGallica.page) {
+      const pdfPath = `assets/flora_gallica_pdfs/${tocEntryFloraGallica.pdfFile}`;
+      const viewerUrl = `viewer.html?file=${encodeURIComponent(pdfPath)}&page=${tocEntryFloraGallica.page}`;
       floraGallicaLink = linkIcon(viewerUrl, "Flora Gallica.png", "Flora Gallica");
     }
+
+    // NOUVEAU : Logique pour Régal Végétal
+    const tocEntryRegalVegetal = regalVegetalToc[genus];
+    let regalVegetalLink = "—";
+    if (tocEntryRegalVegetal && tocEntryRegalVegetal.pdfFile && tocEntryRegalVegetal.page) {
+        const pdfPath = `assets/regal_vegetal_pdf/${tocEntryRegalVegetal.pdfFile}`;
+        const viewerUrl = `viewer.html?file=${encodeURIComponent(pdfPath)}&page=${tocEntryRegalVegetal.page}`;
+        // Assurez-vous d'avoir une icône "Régal Végétal.png" dans le dossier assets/
+        regalVegetalLink = linkIcon(viewerUrl, "Régal Végétal.png", "Régal Végétal");
+    }
+
     const normalizedSci = norm(sci);
     let floreAlpesLink = "—";
     const foundKey = Object.keys(floreAlpesIndex).find(key => norm(key.split('(')[0]) === normalizedSci);
@@ -675,6 +689,7 @@ function buildTable(items){
                   <td class="col-nom-latin" data-latin="${displaySci}">${displaySci}<br><span class="score">(${pct})</span></td>
                   <td class="col-link">${floreAlpesLink}</td>
                   <td class="col-link">${floraGallicaLink}</td>
+                  <td class="col-link">${regalVegetalLink}</td>
                   <td class="col-link">${linkIcon(cd && inpnStatut(cd), "INPN.png", "INPN", "small-logo")}</td>
                   <td class="col-criteres">
                     <div class="text-popup-trigger" data-title="Critères physiologiques" data-fulltext="${encodeURIComponent(crit)}">${crit}</div>
@@ -694,7 +709,7 @@ function buildTable(items){
                 </tr>`;
   }).join("");
 
-  const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th><th>Image</th></tr>`;
+  const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>Régal Végétal</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th><th>Image</th></tr>`;
   
   wrap.innerHTML = `<div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-footer" style="padding-top: 1rem; text-align: center;"></div><div id="comparison-results-container" style="display:none;"></div>`;
   enableDragScroll(wrap);
@@ -785,7 +800,7 @@ function buildTable(items){
               const latinCell = popupTrigger.closest('tr')?.querySelector('.col-nom-latin');
               const latin = latinCell ? (latinCell.dataset.latin || '').trim() : '';
               if (latin) {
-                  const re = new RegExp(latin.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+                  const re = new RegExp(latin.replace(/[.*+?^${}()|[\]\\]/g, '\\amp;'), 'gi');
                   fullText = fullText.replace(re, '').trim();
               }
               content.innerHTML = `<h3 style="margin-top:0">${title}</h3><p>${fullText}</p>`;
