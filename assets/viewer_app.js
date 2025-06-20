@@ -3,6 +3,9 @@ import * as pdfjsLib from '../pdfjs/build/pdf.mjs';
 // Configuration du worker
 try {
     pdfjsLib.GlobalWorkerOptions.workerSrc = `../pdfjs/build/pdf.worker.mjs`;
+    // Permet de charger les modules WebAssembly (JPEG2000, ICC) nécessaires
+    // pour le rendu complet du PDF.
+    pdfjsLib.GlobalWorkerOptions.wasmUrl = `../pdfjs/wasm/`;
 } catch (e) {
     console.error('Erreur de configuration du worker PDF.js:', e);
 }
