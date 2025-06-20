@@ -22,6 +22,7 @@ let trigramIndex = {};
 let nameTrigram = {};
 let ecology = {};
 let floraToc = {};
+let regalVegetalToc = {}; // NOUVEAU : Table des matières pour Régal Végétal
 let floreAlpesIndex = {}; 
 let criteres = {}; // NOUVEAU : pour les critères physiologiques
 let physionomie = {}; // Nouvelle table pour la physionomie
@@ -43,6 +44,7 @@ function loadData() {
     })),
     fetch("ecology.json").then(r => r.json()).then(j => Object.entries(j).forEach(([k,v]) => ecology[norm(k.split(';')[0])] = v)),
     fetch("assets/flora_gallica_toc.json").then(r => r.json()).then(j => floraToc = j),
+    fetch("assets/regal_vegetal_toc.json").then(r => r.json()).then(j => regalVegetalToc = j), // NOUVEAU : Chargement de la TOC de Régal Végétal
     fetch("assets/florealpes_index.json").then(r => r.json()).then(j => floreAlpesIndex = j),
     // NOUVEAU : Chargement des critères physiologiques
     fetch("Criteres_herbier.json").then(r => r.json()).then(j => j.forEach(item => criteres[norm(item.species)] = item.description)),
@@ -132,7 +134,7 @@ async function fetchAuraImages(cd) {
     const res = await fetch(`/.netlify/functions/aura-images?cd=${cd}`);
     if (!res.ok) return [];
     const data = await res.json();
-    return Array.isArray(data.images) ? data.images.filter(u => u.endsWith('.png')) : [];
+    return Array.isArray(data.images) ? data.images.filter(u => /\.jpe?g$|\.png$/i.test(u)) : [];
   } catch (err) {
     console.error('fetchAuraImages error', err);
     return [];
@@ -304,7 +306,7 @@ function showInfoModal(title, content) {
     modalTitle.style.color = 'var(--primary, #388e3c)';
 
     const modalText = document.createElement('div');
-    modalText.innerHTML = content.replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/\n/g, '<br>');
+    modalText.innerHTML = content.replace(/</g, "<").replace(/>/g, ">").replace(/\n/g, '<br>');
     modalText.style.lineHeight = '1.6';
 
     const closeButton = document.createElement('button');
@@ -333,7 +335,7 @@ function showInfoModal(title, content) {
     ================================================================ */
 
 async function getSynthesisFromGemini(speciesName) {
-    const prompt = `En tant qu'expert botaniste, rédige une fiche de synthèse narrative et fluide pour l'espèce "${speciesName}". Le style doit être oral, comme si tu t'adressais à des étudiants, pour une future conversion en audio. N'utilise ni tableau, ni formatage de code, ni listes à puces. Structure ta réponse en couvrant les points suivants de manière conversationnelle, sans utiliser de titres : commence par une introduction (nom commun, nom latin, famille), puis décris un ou deux critères d'identification clés pour la distinguer d'espèces proches. Mentionne ces espèces sources de confusion et comment les différencier. Ensuite, décris son écologie et habitat préférentiel. Termine par son statut de conservation en France (si pertinent) et sa répartition générale. Dans ta réponse, ne met aucun caractères qui ne soit pas du text directement. Je ne veux pas que tu mette de '*' ou de ":" ou de "/", met juste du texte conventionelle comme on écrirait naturellement quoi. Utilise ton savoir encyclopédique pour générer cette fiche.`;
+    const prompt = `En tant qu'expert botaniste, rédige une fiche de synthèse narrative et fluide pour l'espèce "${speciesName}". Le style doit être oral, comme si tu t'adressais à des étudiants, pour une future conversion en audio. N'utilise ni tableau, ni formatage de code, ni listes à puces. Structure ta réponse en couvrant les points suivants de manière conversationnelle, sans utiliser de titres : commence par une introduction (nom commun, nom latin, famille), puis décris un ou deux critères d'identification clés pour la distinguer d'espèces proches. Mentionne ces espèces sources de confusion et comment les différencier. Ensuite, décris son écologie et habitat préférentiel. Termine par son statut de conservation en France (si pertinent) et sa répartition générale. Dans ta réponse, n'utilise aucun formatage Markdown : pas de gras, italique, titres ou listes. Évite également d'insérer des caractères spéciaux tels que '*' ou ':' et réponds uniquement avec du texte simple qui sera mis en forme par le contexte. Utilise ton savoir encyclopédique pour générer cette fiche.`;
     const requestBody = { "contents": [{ "parts": [{ "text": prompt }] }], "generationConfig": { "temperature": 0.4, "maxOutputTokens": 800 } };
     try {
         const responseData = await apiFetch(GEMINI_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(requestBody) });
@@ -648,13 +650,25 @@ function buildTable(items){
     const crit = criteresOf(sci);
     const phys = physioOf(sci);
     const genus = sci.split(' ')[0].toLowerCase();
-    const tocEntry = floraToc[genus];
+    
+    const tocEntryFloraGallica = floraToc[genus];
     let floraGallicaLink = "—";
-    if (tocEntry && tocEntry.pdfFile && tocEntry.page) {
-      const pdfPath = `assets/flora_gallica_pdfs/${tocEntry.pdfFile}`;
-      const viewerUrl = `viewer.html?file=${encodeURIComponent(pdfPath)}&page=${tocEntry.page}`;
+    if (tocEntryFloraGallica && tocEntryFloraGallica.pdfFile && tocEntryFloraGallica.page) {
+      const pdfPath = `assets/flora_gallica_pdfs/${tocEntryFloraGallica.pdfFile}`;
+      const viewerUrl = `viewer.html?file=${encodeURIComponent(pdfPath)}&page=${tocEntryFloraGallica.page}`;
       floraGallicaLink = linkIcon(viewerUrl, "Flora Gallica.png", "Flora Gallica");
     }
+
+    // NOUVEAU : Logique pour Régal Végétal
+    const tocEntryRegalVegetal = regalVegetalToc[genus];
+    let regalVegetalLink = "—";
+    if (tocEntryRegalVegetal && tocEntryRegalVegetal.pdfFile && tocEntryRegalVegetal.page) {
+        const pdfPath = `assets/regal_vegetal_pdf/${tocEntryRegalVegetal.pdfFile}`;
+        const viewerUrl = `viewer.html?file=${encodeURIComponent(pdfPath)}&page=${tocEntryRegalVegetal.page}`;
+        // Assurez-vous d'avoir une icône "Régal Végétal.png" dans le dossier assets/
+        regalVegetalLink = linkIcon(viewerUrl, "Régal Végétal.png", "Régal Végétal");
+    }
+
     const normalizedSci = norm(sci);
     let floreAlpesLink = "—";
     const foundKey = Object.keys(floreAlpesIndex).find(key => norm(key.split('(')[0]) === normalizedSci);
@@ -691,10 +705,11 @@ function buildTable(items){
                   <td class="col-link"><a href="#" onclick="handleSynthesisClick(event, this, '${escapedSci}')"><img src="assets/Audio.png" alt="Audio" class="logo-icon"></a></td>
                   <td class="col-link">${linkIcon(pfaf(sci), "PFAF.png", "PFAF")}</td>
                   <td class="col-image" data-cd="${cd || ''}"></td>
+                  <td class="col-link">${regalVegetalLink}</td>
                 </tr>`;
   }).join("");
 
-  const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th><th>Image</th></tr>`;
+  const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th><th>Image</th><th>Régal Végétal</th></tr>`;
   
   wrap.innerHTML = `<div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-footer" style="padding-top: 1rem; text-align: center;"></div><div id="comparison-results-container" style="display:none;"></div>`;
   enableDragScroll(wrap);
@@ -785,7 +800,7 @@ function buildTable(items){
               const latinCell = popupTrigger.closest('tr')?.querySelector('.col-nom-latin');
               const latin = latinCell ? (latinCell.dataset.latin || '').trim() : '';
               if (latin) {
-                  const re = new RegExp(latin.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+                  const re = new RegExp(latin.replace(/[.*+?^${}()|[\]\\]/g, '\\amp;'), 'gi');
                   fullText = fullText.replace(re, '').trim();
               }
               content.innerHTML = `<h3 style="margin-top:0">${title}</h3><p>${fullText}</p>`;

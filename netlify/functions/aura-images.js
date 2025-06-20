@@ -13,7 +13,7 @@ exports.handler = async function(event) {
             return { statusCode: res.status, body: txt };
         }
         const html = await res.text();
-        const regex = /<img[^>]+src="([^"]+\.png)"/ig;
+        const regex = /<img[^>]+src="([^"]+\.(?:jpe?g|png))"[^>]*>/ig;
         const images = [];
         let m;
         while ((m = regex.exec(html)) !== null) {
@@ -22,6 +22,7 @@ exports.handler = async function(event) {
                 const prefix = 'https://atlas.biodiversite-auvergne-rhone-alpes.fr';
                 src = prefix + (src.startsWith('/') ? '' : '/') + src;
             }
+            if (/logo|icone?|icon|favicon/i.test(src)) continue;
             if (!images.includes(src)) images.push(src);
         }
         return { statusCode: 200, headers: {'Content-Type':'application/json'}, body: JSON.stringify({ images }) };
