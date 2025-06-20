@@ -13,7 +13,7 @@ exports.handler = async function(event) {
             return { statusCode: res.status, body: txt };
         }
         const html = await res.text();
-        const regex = /<img[^>]+src="([^"]+\.png)"/ig;
+        const regex = /<img[^>]+src="([^"]+\.jpe?g)"/ig;
         const images = [];
         let m;
         while ((m = regex.exec(html)) !== null) {
