@@ -1,0 +1,3686 @@
+{
+  "equisetum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 29
+  },
+  "osmunda": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 30
+  },
+  "anogramma": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 30
+  },
+  "adiantum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 30
+  },
+  "pteris": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 31
+  },
+  "cheilanthes": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 31
+  },
+  "asplenium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 31
+  },
+  "ceterach": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 32
+  },
+  "phyllitis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 32
+  },
+  "blechnum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 32
+  },
+  "woodsia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 32
+  },
+  "cystopteris": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 32
+  },
+  "gymnocarpium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 33
+  },
+  "polystichum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 33
+  },
+  "dryopteris": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 33
+  },
+  "thelypteris": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 34
+  },
+  "polypodium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 34
+  },
+  "ophioglossum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 34
+  },
+  "botrychium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 34
+  },
+  "marsilea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 34
+  },
+  "pilularia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 34
+  },
+  "abies": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 34
+  },
+  "cedrus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 35
+  },
+  "larix": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 35
+  },
+  "picea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 35
+  },
+  "pinus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 35
+  },
+  "cupressus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 37
+  },
+  "juniperus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 37
+  },
+  "taxus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 38
+  },
+  "ephedra": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 38
+  },
+  "nuphar": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 38
+  },
+  "nymphaea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 39
+  },
+  "ceratophyllum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 39
+  },
+  "laurus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 39
+  },
+  "aristolochia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 40
+  },
+  "asarum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 40
+  },
+  "ranunculus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 74
+  },
+  "myosurus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 79
+  },
+  "ceratocephala": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 80
+  },
+  "trollius": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 80
+  },
+  "helleborus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 80
+  },
+  "eranthus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 81
+  },
+  "nigella": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 81
+  },
+  "garidella": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 82
+  },
+  "aconitum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 82
+  },
+  "delphinium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 82
+  },
+  "consolida": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 83
+  },
+  "anemone": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 83
+  },
+  "pulsatilla": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 85
+  },
+  "hepatica": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 85
+  },
+  "clematis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 85
+  },
+  "adonide": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 86
+  },
+  "thalictrum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 87
+  },
+  "aquilegia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 88
+  },
+  "isopyrum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 89
+  },
+  "caltha": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 89
+  },
+  "paeonia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 89
+  },
+  "berberis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 90
+  },
+  "mahonia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 90
+  },
+  "leontice": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 90
+  },
+  "papaver": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 90
+  },
+  "roemeria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 91
+  },
+  "glaucium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 91
+  },
+  "chelidonium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 92
+  },
+  "hypecoum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 92
+  },
+  "corydalis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 92
+  },
+  "pseudofumaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 93
+  },
+  "ceratocapnos": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 93
+  },
+  "sarcocapnos": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 93
+  },
+  "fumaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 93
+  },
+  "platanus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 95
+  },
+  "buxus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 95
+  },
+  "ulmus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 96
+  },
+  "zelkova": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 97
+  },
+  "celtis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 97
+  },
+  "cannabis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 97
+  },
+  "humulus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 97
+  },
+  "morus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 97
+  },
+  "broussonetia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 98
+  },
+  "ficus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 98
+  },
+  "urtica": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 98
+  },
+  "parietaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 99
+  },
+  "gesnouinia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 99
+  },
+  "theligonum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 100
+  },
+  "fagus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 100
+  },
+  "castanea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 100
+  },
+  "quercus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 100
+  },
+  "juglans": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 104
+  },
+  "pterocarya": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 104
+  },
+  "betula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 104
+  },
+  "alnus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 105
+  },
+  "carpinus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 106
+  },
+  "ostrya": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 106
+  },
+  "corylus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 106
+  },
+  "myrica": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 106
+  },
+  "phytolacca": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 107
+  },
+  "chenopodium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 107
+  },
+  "dysphania": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 108
+  },
+  "atriplex": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 109
+  },
+  "halimione": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 111
+  },
+  "bassia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 111
+  },
+  "kochia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 112
+  },
+  "camphorosma": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 112
+  },
+  "salicornia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 112
+  },
+  "sarcocornia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 112
+  },
+  "suaeda": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 113
+  },
+  "salsola": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 113
+  },
+  "beta": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 114
+  },
+  "amaranthus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 114
+  },
+  "portulaca": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 116
+  },
+  "montia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 116
+  },
+  "dianthus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 116
+  },
+  "petrorhagia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 119
+  },
+  "gypsophila": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 120
+  },
+  "saponaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 120
+  },
+  "vaccaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 121
+  },
+  "silene": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 121
+  },
+  "lychnis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 127
+  },
+  "agrostemma": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 127
+  },
+  "cucubalus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 127
+  },
+  "minuartia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 127
+  },
+  "sabulina": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 129
+  },
+  "mcerhingia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 130
+  },
+  "honckenya": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 131
+  },
+  "arenaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 131
+  },
+  "holosteum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 133
+  },
+  "cerastium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 133
+  },
+  "myosoton": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 135
+  },
+  "stellaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 135
+  },
+  "sagina": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 137
+  },
+  "colobanthus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 138
+  },
+  "bufonia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 138
+  },
+  "spergula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 138
+  },
+  "spergularia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 139
+  },
+  "polycarpon": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 139
+  },
+  "loeflingia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 140
+  },
+  "paronychia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 140
+  },
+  "herniaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 141
+  },
+  "ilcebrum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 142
+  },
+  "scleranthus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 142
+  },
+  "corrigiola": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 142
+  },
+  "telephium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 143
+  },
+  "polygonum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 143
+  },
+  "fallopia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 144
+  },
+  "reynoutria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 145
+  },
+  "persicaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 145
+  },
+  "koenigia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 146
+  },
+  "bistorta": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 146
+  },
+  "rumex": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 146
+  },
+  "emex": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 151
+  },
+  "plumbago": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 151
+  },
+  "armeria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 151
+  },
+  "limonium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 152
+  },
+  "hypericum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 157
+  },
+  "elatine": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 160
+  },
+  "frankenia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 160
+  },
+  "tamarix": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 161
+  },
+  "myricaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 161
+  },
+  "drosera": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 162
+  },
+  "drosophyllum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 162
+  },
+  "opuntia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 162
+  },
+  "carpobrotus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 163
+  },
+  "mesembryanthemum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 163
+  },
+  "diospyros": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 163
+  },
+  "calluna": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 163
+  },
+  "erica": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 164
+  },
+  "rhododendron": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 165
+  },
+  "loiseleuria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 165
+  },
+  "andromeda": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 166
+  },
+  "arbutus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 166
+  },
+  "arctostaphylos": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 166
+  },
+  "vaccinium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 166
+  },
+  "orthilia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 167
+  },
+  "pyrola": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 167
+  },
+  "monotropa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 168
+  },
+  "primula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 168
+  },
+  "androsace": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 170
+  },
+  "vitaliana": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 171
+  },
+  "soldanella": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 171
+  },
+  "cyclamen": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 172
+  },
+  "lysimachia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 172
+  },
+  "anagallis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 173
+  },
+  "glaux": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 173
+  },
+  "asterolinon": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 174
+  },
+  "samolus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 174
+  },
+  "coris": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 174
+  },
+  "styrax": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 174
+  },
+  "vitis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 174
+  },
+  "parthenocissus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 175
+  },
+  "saxifraga": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 175
+  },
+  "chrysosplenium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 181
+  },
+  "parnassia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 181
+  },
+  "crassula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 182
+  },
+  "rhodiola": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 182
+  },
+  "sedum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 182
+  },
+  "petrosedum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 184
+  },
+  "phedimus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 185
+  },
+  "sempervivum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 185
+  },
+  "jovibarba": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 186
+  },
+  "umbilicus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 186
+  },
+  "ribes": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 187
+  },
+  "kerria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 188
+  },
+  "rubus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 188
+  },
+  "rosa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 196
+  },
+  "agrimonia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 201
+  },
+  "sanguisorba": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 201
+  },
+  "aphanes": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 202
+  },
+  "alchemilla": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 202
+  },
+  "potentilla": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 205
+  },
+  "sibbaldia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 210
+  },
+  "comarum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 210
+  },
+  "fragaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 210
+  },
+  "geum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 211
+  },
+  "dryas": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 212
+  },
+  "filipendula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 212
+  },
+  "aruncus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 212
+  },
+  "spiraea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 212
+  },
+  "pyrus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 213
+  },
+  "malus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 213
+  },
+  "sorbus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 213
+  },
+  "cydonia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 215
+  },
+  "chaenomeles": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 215
+  },
+  "cotoneaster": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 215
+  },
+  "amelanchier": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 216
+  },
+  "mespilus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 217
+  },
+  "crataegus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 217
+  },
+  "prunus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 218
+  },
+  "robinia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 221
+  },
+  "galega": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 221
+  },
+  "glycyrrhiza": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 221
+  },
+  "astragalus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 221
+  },
+  "oxytropis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 226
+  },
+  "biserrula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 227
+  },
+  "cicer": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 227
+  },
+  "vicia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 227
+  },
+  "lens": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 232
+  },
+  "lathyrus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 232
+  },
+  "pisum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 236
+  },
+  "ononis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 236
+  },
+  "trifolium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 238
+  },
+  "melilotus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 245
+  },
+  "trigonella": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 245
+  },
+  "medicago": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 246
+  },
+  "lotus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 250
+  },
+  "tetragonolobus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 252
+  },
+  "dorycnium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 252
+  },
+  "anthyllis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 253
+  },
+  "hymenocarpos": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 254
+  },
+  "securigera": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 254
+  },
+  "ornithopus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 255
+  },
+  "scorpiurus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 255
+  },
+  "coronilla": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 255
+  },
+  "hippocrepis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 256
+  },
+  "hedysarum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 257
+  },
+  "onobrychis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 257
+  },
+  "psoralea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 258
+  },
+  "amorpha": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 259
+  },
+  "wisteria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 259
+  },
+  "colutea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 259
+  },
+  "sphaerophysa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 259
+  },
+  "anagyris": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 259
+  },
+  "lupinus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 260
+  },
+  "genista": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 261
+  },
+  "ulex": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 265
+  },
+  "stauracanthus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 265
+  },
+  "calicotome": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 265
+  },
+  "spartium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 266
+  },
+  "cytisus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 266
+  },
+  "chamaecytisus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 267
+  },
+  "laburnum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 267
+  },
+  "adenocarpus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 268
+  },
+  "erinacea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 268
+  },
+  "gleditsia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 268
+  },
+  "ceratonia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 268
+  },
+  "cercis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 268
+  },
+  "acacia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 269
+  },
+  "prosopis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 269
+  },
+  "polygala": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 269
+  },
+  "krameria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 271
+  },
+  "linum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 271
+  },
+  "radiola": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 273
+  },
+  "geranium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 273
+  },
+  "erodium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 278
+  },
+  "oxalis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 280
+  },
+  "tribulus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 281
+  },
+  "peganum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 281
+  },
+  "fagonia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 281
+  },
+  "zanthoxylum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 281
+  },
+  "ruta": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 281
+  },
+  "ptelia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 282
+  },
+  "ailanthus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 282
+  },
+  "coriaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 282
+  },
+  "pistacia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 282
+  },
+  "cotinus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 283
+  },
+  "rhus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 283
+  },
+  "schinus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 283
+  },
+  "melia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 283
+  },
+  "acer": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 283
+  },
+  "aesculus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 285
+  },
+  "cardiospermum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 285
+  },
+  "ilex": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 285
+  },
+  "euonymus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 286
+  },
+  "rhamnus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 286
+  },
+  "frangula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 287
+  },
+  "ziziphus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 287
+  },
+  "paliurus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 287
+  },
+  "halesia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 287
+  },
+  "euphorbia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 288
+  },
+  "mercurialis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 296
+  },
+  "chrozophora": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 297
+  },
+  "ricinus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 297
+  },
+  "salix": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 297
+  },
+  "populus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 304
+  },
+  "viola": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 305
+  },
+  "cistus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 309
+  },
+  "halimium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 311
+  },
+  "tuberaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 311
+  },
+  "helianthemum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 312
+  },
+  "fumana": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 315
+  },
+  "cucurbita": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 315
+  },
+  "ecballium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 316
+  },
+  "bryonia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 316
+  },
+  "malva": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 316
+  },
+  "lavatera": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 318
+  },
+  "althaea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 318
+  },
+  "alcea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 319
+  },
+  "kitaibela": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 319
+  },
+  "hibiscus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 319
+  },
+  "abelmoschus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 319
+  },
+  "abutilon": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 319
+  },
+  "tilia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 320
+  },
+  "daphne": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 320
+  },
+  "thymelaea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 321
+  },
+  "elaeagnus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 322
+  },
+  "hippophae": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 322
+  },
+  "osiris": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 322
+  },
+  "thesium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 323
+  },
+  "viscum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 324
+  },
+  "arceuthobium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 324
+  },
+  "lythrum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 324
+  },
+  "peplis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 325
+  },
+  "punica": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 326
+  },
+  "trapa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 326
+  },
+  "epilobium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 326
+  },
+  "oenothera": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 329
+  },
+  "ludwigia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 330
+  },
+  "circaea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 330
+  },
+  "myrtus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 330
+  },
+  "eucalyptus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 331
+  },
+  "cornus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 331
+  },
+  "hedera": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 331
+  },
+  "hydrocotyle": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 332
+  },
+  "sanicula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 332
+  },
+  "astrantia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 332
+  },
+  "eryngium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 332
+  },
+  "chaerophyllum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 334
+  },
+  "anthriscus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 335
+  },
+  "scandix": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 335
+  },
+  "myrrhis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 336
+  },
+  "molopospermum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 336
+  },
+  "smyrnium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 336
+  },
+  "bunium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 336
+  },
+  "conopodium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 337
+  },
+  "pimpinella": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 337
+  },
+  "aegopodium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 338
+  },
+  "carum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 338
+  },
+  "sium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 338
+  },
+  "berula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 338
+  },
+  "seseli": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 338
+  },
+  "oenanthe": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 340
+  },
+  "aethusa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 341
+  },
+  "foeniculum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 341
+  },
+  "anethum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 341
+  },
+  "kundmannia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 341
+  },
+  "meum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 341
+  },
+  "selinum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 342
+  },
+  "ligusticum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 342
+  },
+  "cnidium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 342
+  },
+  "athamantha": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 342
+  },
+  "trochiscanthes": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 343
+  },
+  "physospermum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 343
+  },
+  "pleurospermum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 343
+  },
+  "conium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 343
+  },
+  "bifora": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 344
+  },
+  "coriandrum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 344
+  },
+  "bupleurum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 344
+  },
+  "trinia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 348
+  },
+  "apium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 348
+  },
+  "petroselinum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 348
+  },
+  "ridolfia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 349
+  },
+  "ammi": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 349
+  },
+  "falcaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 349
+  },
+  "crithmum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 349
+  },
+  "imperatoria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 349
+  },
+  "peucedanum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 350
+  },
+  "pastinaca": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 351
+  },
+  "heracleum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 352
+  },
+  "tordylium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 352
+  },
+  "zizia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 353
+  },
+  "laser": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 353
+  },
+  "laserpitium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 353
+  },
+  "thapsia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 354
+  },
+  "daucus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 354
+  },
+  "orreya": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 355
+  },
+  "turgenia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 355
+  },
+  "torilis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 355
+  },
+  "caucalis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 356
+  },
+  "ferula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 356
+  },
+  "ferulago": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 357
+  },
+  "angelica": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 357
+  },
+  "archangelica": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 357
+  },
+  "levisticum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 358
+  },
+  "gentiana": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 358
+  },
+  "gentianella": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 361
+  },
+  "centaurium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 362
+  },
+  "blackstonia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 363
+  },
+  "swertia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 363
+  },
+  "menyanthes": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 363
+  },
+  "nymphoides": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 364
+  },
+  "vinca": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 364
+  },
+  "nerium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 364
+  },
+  "gomphocarpus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 364
+  },
+  "vincetoxicum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 365
+  },
+  "cynanchum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 365
+  },
+  "periploca": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 365
+  },
+  "sherardia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 365
+  },
+  "crucianella": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 366
+  },
+  "asperula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 366
+  },
+  "galium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 368
+  },
+  "valantia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 374
+  },
+  "cruciata": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 374
+  },
+  "rubia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 375
+  },
+  "convolvulus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 375
+  },
+  "calystegia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 376
+  },
+  "ipomoea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 377
+  },
+  "cressa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 378
+  },
+  "cuscuta": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 378
+  },
+  "polemonium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 379
+  },
+  "heliotropium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 379
+  },
+  "lithospermum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 380
+  },
+  "buglossoides": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 380
+  },
+  "aegonychon": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 380
+  },
+  "glandora": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 381
+  },
+  "moltkia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 381
+  },
+  "echium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 381
+  },
+  "cerinthe": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 382
+  },
+  "symphytum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 383
+  },
+  "borago": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 384
+  },
+  "trachystemon": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 384
+  },
+  "anchusa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 384
+  },
+  "lycopsis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 385
+  },
+  "nonea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 385
+  },
+  "pulmonaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 385
+  },
+  "myosotis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 386
+  },
+  "omphalodes": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 389
+  },
+  "cynoglossum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 389
+  },
+  "asperugo": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 390
+  },
+  "lappula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 390
+  },
+  "callitriche": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 390
+  },
+  "verbena": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 392
+  },
+  "vitex": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 392
+  },
+  "ajuga": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 393
+  },
+  "teucrium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 394
+  },
+  "rosmarinus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 397
+  },
+  "lavandula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 397
+  },
+  "scutellaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 398
+  },
+  "prunella": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 399
+  },
+  "phlomis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 400
+  },
+  "galeopsis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 400
+  },
+  "lamium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 401
+  },
+  "lamiastrum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 403
+  },
+  "ballota": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 403
+  },
+  "marrubium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 404
+  },
+  "sideritis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 404
+  },
+  "stachys": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 405
+  },
+  "betonica": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 408
+  },
+  "nepeta": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 409
+  },
+  "glechoma": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 409
+  },
+  "dracocephalum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 409
+  },
+  "melittis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 410
+  },
+  "salvia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 410
+  },
+  "horminum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 413
+  },
+  "lycopus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 413
+  },
+  "mentha": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 413
+  },
+  "origanum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 416
+  },
+  "thymus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 416
+  },
+  "satureja": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 418
+  },
+  "calamintha": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 419
+  },
+  "clinopodium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 420
+  },
+  "acinos": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 420
+  },
+  "ziziphora": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 421
+  },
+  "hyssopus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 421
+  },
+  "micromeria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 421
+  },
+  "coridothymus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 422
+  },
+  "solanum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 422
+  },
+  "lycopersicon": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 423
+  },
+  "physalis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 424
+  },
+  "withania": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 424
+  },
+  "capsicum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 424
+  },
+  "lycium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 424
+  },
+  "atropa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 425
+  },
+  "mandragora": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 425
+  },
+  "hyoscyamus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 425
+  },
+  "datura": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 425
+  },
+  "nicotiana": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 426
+  },
+  "petunia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 426
+  },
+  "scrophularia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 426
+  },
+  "verbascum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 427
+  },
+  "cymbalaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 429
+  },
+  "kickxia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 430
+  },
+  "chaenorhinum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 430
+  },
+  "antirrhinum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 431
+  },
+  "misopates": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 432
+  },
+  "linaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 432
+  },
+  "gratiola": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 434
+  },
+  "lindernia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 435
+  },
+  "limosella": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 435
+  },
+  "digitalis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 435
+  },
+  "erin": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 436
+  },
+  "veronica": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 436
+  },
+  "melampyrum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 444
+  },
+  "tozzia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 445
+  },
+  "rhinanthus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 445
+  },
+  "parentucellia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 446
+  },
+  "bartsia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 446
+  },
+  "euphrasia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 447
+  },
+  "odontites": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 448
+  },
+  "pedicularis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 449
+  },
+  "orobanche": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 450
+  },
+  "phelipanche": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 452
+  },
+  "lathraea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 453
+  },
+  "bignonia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 453
+  },
+  "catalpa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 453
+  },
+  "paulownia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 454
+  },
+  "pinguicula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 454
+  },
+  "utricularia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 454
+  },
+  "globularia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 455
+  },
+  "acanthus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 456
+  },
+  "plantago": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 456
+  },
+  "littorella": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 459
+  },
+  "buddleja": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 459
+  },
+  "ligustrum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 459
+  },
+  "fraxinus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 460
+  },
+  "olea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 461
+  },
+  "phillyrea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 461
+  },
+  "jasminum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 461
+  },
+  "campanula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 461
+  },
+  "adenophora": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 466
+  },
+  "phyteuma": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 466
+  },
+  "physoplexis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 468
+  },
+  "ascyrum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 468
+  },
+  "legousia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 468
+  },
+  "jasione": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 469
+  },
+  "lobelia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 470
+  },
+  "valeriana": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 470
+  },
+  "centranthus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 471
+  },
+  "valerianella": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 472
+  },
+  "dipsacus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 473
+  },
+  "cephalaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 474
+  },
+  "knautia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 474
+  },
+  "succisa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 475
+  },
+  "succisella": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 475
+  },
+  "scabiosa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 475
+  },
+  "sixalix": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 477
+  },
+  "pterocephalus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 477
+  },
+  "sambucus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 477
+  },
+  "viburnum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 478
+  },
+  "linnaea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 478
+  },
+  "lonicera": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 479
+  },
+  "symphoricarpos": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 480
+  },
+  "eupatorium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 480
+  },
+  "ageratina": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 480
+  },
+  "solidago": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 480
+  },
+  "bellis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 481
+  },
+  "bellium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 481
+  },
+  "aster": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 481
+  },
+  "galatella": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 482
+  },
+  "tripolium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 483
+  },
+  "symphyotrichum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 483
+  },
+  "erigeron": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 484
+  },
+  "conyza": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 486
+  },
+  "baccharis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 486
+  },
+  "vittadinia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 486
+  },
+  "inula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 486
+  },
+  "dittrichia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 488
+  },
+  "pulicaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 488
+  },
+  "carpesium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 489
+  },
+  "asteriscus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 489
+  },
+  "pallenis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 489
+  },
+  "buphthalmum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 489
+  },
+  "telekia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 490
+  },
+  "helenium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 490
+  },
+  "arnica": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 490
+  },
+  "doronicum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 490
+  },
+  "calendula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 491
+  },
+  "senecio": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 492
+  },
+  "jacobaea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 496
+  },
+  "homogyne": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 497
+  },
+  "adenostyles": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 497
+  },
+  "petasites": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 498
+  },
+  "tussilago": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 498
+  },
+  "gnaphalium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 499
+  },
+  "omphalodes": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 499
+  },
+  "euchromazon": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 499
+  },
+  "logfia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 499
+  },
+  "filago": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 500
+  },
+  "bombycilaena": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 501
+  },
+  "micropus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 501
+  },
+  "helichrysum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 501
+  },
+  "leontopodium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 502
+  },
+  "antennaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 503
+  },
+  "phagnalon": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 503
+  },
+  "helianthus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 503
+  },
+  "rudbeckia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 504
+  },
+  "ambrosia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 504
+  },
+  "xanthium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 505
+  },
+  "bidens": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 505
+  },
+  "galinsoga": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 506
+  },
+  "tagetes": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 506
+  },
+  "anthemis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 506
+  },
+  "cota": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 508
+  },
+  "achillea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 508
+  },
+  "chamaemelum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 511
+  },
+  "clandestina": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 511
+  },
+  "anacyclus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 511
+  },
+  "tanacetum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 511
+  },
+  "leucanthemum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 512
+  },
+  "coleostephus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 513
+  },
+  "glebionis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 513
+  },
+  "matricaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 514
+  },
+  "tripleurospermum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 514
+  },
+  "artemisia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 515
+  },
+  "carduus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 518
+  },
+  "cirsium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 520
+  },
+  "galactites": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 523
+  },
+  "notobasis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 523
+  },
+  "picnomon": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 523
+  },
+  "cynara": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 523
+  },
+  "silybum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 524
+  },
+  "onopordum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 524
+  },
+  "tyrimnus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 525
+  },
+  "arctium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 525
+  },
+  "cousinia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 526
+  },
+  "saussurea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 526
+  },
+  "jurinea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 526
+  },
+  "echinops": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 527
+  },
+  "carlina": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 528
+  },
+  "atractylis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 529
+  },
+  "carduncellus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 529
+  },
+  "carthamus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 530
+  },
+  "cnicus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 530
+  },
+  "centaurea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 530
+  },
+  "carbeni": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 540
+  },
+  "psephellus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 540
+  },
+  "rhaponticoides": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 540
+  },
+  "mantisalca": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 540
+  },
+  "volutaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 540
+  },
+  "amberboa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 540
+  },
+  "crucina": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 540
+  },
+  "cichorium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 541
+  },
+  "lapsana": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 541
+  },
+  "tolpis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 541
+  },
+  "aroseris": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 541
+  },
+  "robertia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 542
+  },
+  "catananche": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 542
+  },
+  "scolymus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 542
+  },
+  "leontodon": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 542
+  },
+  "thrincia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 544
+  },
+  "picris": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 544
+  },
+  "helminthotheca": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 545
+  },
+  "hypochaeris": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 545
+  },
+  "seriola": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 546
+  },
+  "hedypnois": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 546
+  },
+  "taraxacum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 547
+  },
+  "chondrilla": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 548
+  },
+  "sonchus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 548
+  },
+  "launaea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 550
+  },
+  "reichardia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 550
+  },
+  "cicerbita": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 550
+  },
+  "mycelis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 551
+  },
+  "lactuca": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 551
+  },
+  "prenanthes": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 552
+  },
+  "hieracium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 552
+  },
+  "pilosella": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 561
+  },
+  "andryala": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 564
+  },
+  "crepis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 565
+  },
+  "aetheorhiza": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 569
+  },
+  "hyoseris": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 569
+  },
+  "rhagadiolus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 569
+  },
+  "scorzonera": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 570
+  },
+  "podospermum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 570
+  },
+  "gelasia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 571
+  },
+  "epilasia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 571
+  },
+  "tragopogon": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 571
+  },
+  "urospermum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 572
+  },
+  "geropogon": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 572
+  },
+  "butomus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 573
+  },
+  "hydrocharis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 573
+  },
+  "stratiotes": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 573
+  },
+  "vallisneria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 573
+  },
+  "elodea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 574
+  },
+  "hydrilla": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 574
+  },
+  "halophila": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 574
+  },
+  "limnobium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 574
+  },
+  "scheuchzeria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 574
+  },
+  "triglochin": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 574
+  },
+  "potamogeton": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 575
+  },
+  "grocenlandia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 576
+  },
+  "zannichellia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 576
+  },
+  "posidonia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 577
+  },
+  "zostera": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 577
+  },
+  "cymodocea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 577
+  },
+  "ruppia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 577
+  },
+  "althenia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 577
+  },
+  "najas": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 578
+  },
+  "colchicum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 578
+  },
+  "merendera": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 579
+  },
+  "bulbocodium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 579
+  },
+  "strelitzia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 579
+  },
+  "acorus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 579
+  },
+  "calla": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 580
+  },
+  "arum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 580
+  },
+  "dracunculus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 580
+  },
+  "helicodiceros": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 580
+  },
+  "biarum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 580
+  },
+  "ambrosinia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 581
+  },
+  "lemna": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 581
+  },
+  "landoltia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 581
+  },
+  "spirodela": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 581
+  },
+  "wolffia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 582
+  },
+  "alisma": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 582
+  },
+  "damasonium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 582
+  },
+  "baldellia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 582
+  },
+  "luronium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 583
+  },
+  "sagittaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 583
+  },
+  "asphodelus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 583
+  },
+  "asphodeline": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 584
+  },
+  "anthericum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 584
+  },
+  "simethis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 584
+  },
+  "hemerocallis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 585
+  },
+  "agapanthus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 585
+  },
+  "allium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 585
+  },
+  "nectaroscordum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 592
+  },
+  "agave": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 592
+  },
+  "furcraea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 592
+  },
+  "aspidistra": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 592
+  },
+  "polygonatum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 593
+  },
+  "maianthemum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 593
+  },
+  "asparag": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 593
+  },
+  "ruscus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 594
+  },
+  "danae": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 594
+  },
+  "convallaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 595
+  },
+  "ophiopogon": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 595
+  },
+  "liriope": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 595
+  },
+  "hyacinthoides": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 595
+  },
+  "scilla": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 595
+  },
+  "prospero": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 596
+  },
+  "puschkinia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 596
+  },
+  "hyacinthus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 596
+  },
+  "bellevalia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 596
+  },
+  "brimeura": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 597
+  },
+  "dipcadi": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 597
+  },
+  "ornithogalum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 597
+  },
+  "muscari": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 599
+  },
+  "leopoldia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 600
+  },
+  "dioscorea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 600
+  },
+  "tamus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 600
+  },
+  "smilax": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 600
+  },
+  "canna": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 601
+  },
+  "gladiolus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 601
+  },
+  "freesia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 602
+  },
+  "crocosmia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 602
+  },
+  "iris": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 602
+  },
+  "hermodactylus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 605
+  },
+  "gynandriris": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 605
+  },
+  "romulea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 605
+  },
+  "crocus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 606
+  },
+  "cyperus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 607
+  },
+  "schoenoplectus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 608
+  },
+  "scirpus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 609
+  },
+  "bolboschoenus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 609
+  },
+  "scirpoides": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 609
+  },
+  "blysmus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 610
+  },
+  "eleocharis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 610
+  },
+  "fimbristylis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 611
+  },
+  "fuirena": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 611
+  },
+  "eriophorum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 611
+  },
+  "trichophorum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 612
+  },
+  "cladium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 612
+  },
+  "schoenus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 612
+  },
+  "rhynchospora": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 612
+  },
+  "kobresia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 613
+  },
+  "carex": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 613
+  },
+  "narthecium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 625
+  },
+  "gagea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 625
+  },
+  "lloydia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 627
+  },
+  "erythronium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 627
+  },
+  "tulipa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 627
+  },
+  "fritillaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 628
+  },
+  "lilium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 628
+  },
+  "veratrum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 629
+  },
+  "triantha": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 629
+  },
+  "paradisea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 629
+  },
+  "paris": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 630
+  },
+  "streptopus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 630
+  },
+  "juncus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 630
+  },
+  "luzula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 636
+  },
+  "typha": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 637
+  },
+  "sparganium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 638
+  },
+  "arund": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 638
+  },
+  "cynodon": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 639
+  },
+  "spartina": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 639
+  },
+  "pennisetum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 639
+  },
+  "leersia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 639
+  },
+  "oryza": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 639
+  },
+  "stipa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 639
+  },
+  "piptatherum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 641
+  },
+  "oryzopsis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 641
+  },
+  "milium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 641
+  },
+  "phalaris": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 642
+  },
+  "hierochloe": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 642
+  },
+  "anthoxanthum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 642
+  },
+  "phleum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 643
+  },
+  "alopecurus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 644
+  },
+  "polypogon": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 645
+  },
+  "agrostis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 645
+  },
+  "calamagrostis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 647
+  },
+  "ammophila": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 648
+  },
+  "lagurus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 648
+  },
+  "phragmites": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 648
+  },
+  "molinia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 648
+  },
+  "avena": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 649
+  },
+  "avenula": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 649
+  },
+  "helictotrichon": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 650
+  },
+  "arrhenatherum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 650
+  },
+  "gaudinia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 651
+  },
+  "holcus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 651
+  },
+  "corynephorus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 651
+  },
+  "aira": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 651
+  },
+  "deschampsia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 652
+  },
+  "koeleria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 652
+  },
+  "trisetum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 653
+  },
+  "danthonia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 654
+  },
+  "sieglingia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 654
+  },
+  "nardus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 654
+  },
+  "melica": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 654
+  },
+  "glyceria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 655
+  },
+  "lygeum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 655
+  },
+  "brachypodium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 656
+  },
+  "bromus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 656
+  },
+  "elymus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 660
+  },
+  "hordeum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 661
+  },
+  "dasypyrum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 662
+  },
+  "secale": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 662
+  },
+  "triticum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 662
+  },
+  "aegilops": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 662
+  },
+  "elytrigia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 663
+  },
+  "agropyron": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 664
+  },
+  "eremopyrum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 664
+  },
+  "catapodium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 664
+  },
+  "micropyrum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 664
+  },
+  "festuca": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 665
+  },
+  "vulpia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 671
+  },
+  "lolium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 672
+  },
+  "poa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 673
+  },
+  "dactylis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 678
+  },
+  "cynosurus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 678
+  },
+  "lamaeckia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 678
+  },
+  "briza": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 679
+  },
+  "sesleria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 679
+  },
+  "echinaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 679
+  },
+  "eleusine": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 680
+  },
+  "dactyloctenium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 680
+  },
+  "leptochloa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 680
+  },
+  "crypsis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 680
+  },
+  "oplismenus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 680
+  },
+  "digitaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 681
+  },
+  "echinochloa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 681
+  },
+  "erichloa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 682
+  },
+  "paspalum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 682
+  },
+  "setaria": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 682
+  },
+  "panicum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 683
+  },
+  "sorghum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 683
+  },
+  "bothriochloa": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 684
+  },
+  "dichanthium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 684
+  },
+  "cymbopogon": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 684
+  },
+  "hyparrhenia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 684
+  },
+  "andropogon": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 684
+  },
+  "imperata": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 685
+  },
+  "saccharum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 685
+  },
+  "zea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 685
+  },
+  "coix": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 685
+  },
+  "narcissus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 685
+  },
+  "sternbergia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 686
+  },
+  "pancratium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 686
+  },
+  "galanthus": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 687
+  },
+  "leucojum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 687
+  },
+  "cypripedium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 687
+  },
+  "epipactis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 687
+  },
+  "cephalanthera": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 689
+  },
+  "limodorum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 689
+  },
+  "neottia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 690
+  },
+  "listera": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 690
+  },
+  "spiranthes": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 690
+  },
+  "goodyera": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 690
+  },
+  "platanthera": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 691
+  },
+  "gymnadenia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 691
+  },
+  "pseudorchis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 692
+  },
+  "coeloglossum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 692
+  },
+  "dactylorhiza": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 692
+  },
+  "corallorhiza": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 694
+  },
+  "epipogium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 694
+  },
+  "herminium": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 695
+  },
+  "ophrys": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 695
+  },
+  "serapias": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 700
+  },
+  "himantoglossum": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 701
+  },
+  "barlia": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 701
+  },
+  "anacamptis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 701
+  },
+  "neotinea": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 703
+  },
+  "orchis": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 703
+  },
+  "traunsteinera": {
+    "pdfFile": "Flore Med.pdf",
+    "page": 704
+  }
+}

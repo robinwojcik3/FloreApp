@@ -6,7 +6,6 @@ const PROJECT  = "all";
 const ENDPOINT = `https://my-api.plantnet.org/v2/identify/${PROJECT}?api-key=${API_KEY}`;
 const MAX_RESULTS = 5;
 const MAX_MULTI_IMAGES = 5;
-// NOUVEAU : Ajout des clés et points d'accès pour les API Google
 const GEMINI_API_KEY = "AIzaSyDDv4amCchpTXGqz6FGuY8mxPClkw-uwMs";
 const TTS_API_KEY = "AIzaSyCsmQ_n_JtrA1Ev2GkOZeldYsAmHpJvhZY";
 const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
@@ -22,10 +21,11 @@ let trigramIndex = {};
 let nameTrigram = {};
 let ecology = {};
 let floraToc = {};
-let regalVegetalToc = {}; // NOUVEAU : Table des matières pour Régal Végétal
+let regalVegetalToc = {};
+let floreMedToc = {}; // Variable pour la table des matières de Flore Méd
 let floreAlpesIndex = {}; 
-let criteres = {}; // NOUVEAU : pour les critères physiologiques
-let physionomie = {}; // Nouvelle table pour la physionomie
+let criteres = {};
+let physionomie = {};
 let userLocation = { latitude: 45.188529, longitude: 5.724524 };
 
 let displayedItems = [];
@@ -44,11 +44,10 @@ function loadData() {
     })),
     fetch("ecology.json").then(r => r.json()).then(j => Object.entries(j).forEach(([k,v]) => ecology[norm(k.split(';')[0])] = v)),
     fetch("assets/flora_gallica_toc.json").then(r => r.json()).then(j => floraToc = j),
-    fetch("assets/regal_vegetal_toc.json").then(r => r.json()).then(j => regalVegetalToc = j), // NOUVEAU : Chargement de la TOC de Régal Végétal
+    fetch("assets/regal_vegetal_toc.json").then(r => r.json()).then(j => regalVegetalToc = j),
+    fetch("assets/flore_med_toc.json").then(r => r.json()).then(j => floreMedToc = j), // Chargement de la TOC de Flore Méd
     fetch("assets/florealpes_index.json").then(r => r.json()).then(j => floreAlpesIndex = j),
-    // NOUVEAU : Chargement des critères physiologiques
     fetch("Criteres_herbier.json").then(r => r.json()).then(j => j.forEach(item => criteres[norm(item.species)] = item.description)),
-    // Nouvelle donnée : physionomie des espèces
     fetch("Physionomie.json").then(r => r.json()).then(j => j.forEach(item => physionomie[norm(item.nom_latin)] = item.physionomie))
   ]).then(() => { taxrefNames.sort(); console.log("Données prêtes."); })
     .catch(err => {
@@ -79,13 +78,13 @@ function makeTrigram(name) {
 }
 const cdRef = n => taxref[norm(n)];
 const ecolOf = n => ecology[norm(n)] || "—";
-const criteresOf = n => criteres[norm(n)] || "—"; // NOUVEAU : fonction pour récupérer les critères
-const physioOf = n => physionomie[norm(n)] || "—"; // Récupération de la physionomie
+const criteresOf = n => criteres[norm(n)] || "—";
+const physioOf = n => physionomie[norm(n)] || "—";
 const slug = n => norm(n).replace(/ /g, "-");
 function capitalizeGenus(name) {
   if (typeof name !== 'string') return name;
   return name.replace(/^(?:[x×]\s*)?([a-z])/,
-                        (m, p1) => m.replace(p1, p1.toUpperCase()));
+                      (m, p1) => m.replace(p1, p1.toUpperCase()));
 }
 const infoFlora  = n => `https://www.infoflora.ch/fr/flore/${slug(n)}.html`;
 const inpnStatut = c => `https://inpn.mnhn.fr/espece/cd_nom/${c}/tab/statut`;
@@ -192,16 +191,16 @@ function initializeImageButtons() {
   });
   setupImageModal();
 }
-// Génère un nom de fichier basé sur la date et l'heure courantes
+
 function makeTimestampedName(prefix = "") {
   const d = new Date();
   const pad = n => n.toString().padStart(2, "0");
   const timestamp = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ` +
-                        `${pad(d.getHours())}h${pad(d.getMinutes())}`;
+                    `${pad(d.getHours())}h${pad(d.getMinutes())}`;
   const safePrefix = prefix ? prefix.replace(/[\\/:*?"<>|]/g, "_").trim() + " " : "";
   return `${safePrefix}${timestamp}.jpg`;
 }
-// Enregistre une photo sur l'appareil en déclenchant un téléchargement
+
 function savePhotoLocally(blob, name) {
   try {
     const url = URL.createObjectURL(blob);
@@ -218,7 +217,6 @@ function savePhotoLocally(blob, name) {
   }
 }
 
-// Prépare une image en la redimensionnant pour limiter la taille stockée
 function resizeImageToDataURL(file, maxDim = 1600) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -272,7 +270,6 @@ async function apiFetch(url, options = {}) {
   }
 }
 
-// Interroge l'API TaxRef-Match pour proposer des noms valides
 async function taxrefFuzzyMatch(term) {
   const url = `https://taxref.mnhn.fr/api/taxa/fuzzyMatch?term=${encodeURIComponent(term)}`;
   const data = await apiFetch(url);
@@ -335,7 +332,7 @@ function showInfoModal(title, content) {
     ================================================================ */
 
 async function getSynthesisFromGemini(speciesName) {
-    const prompt = `En tant qu'expert botaniste, rédige une fiche de synthèse narrative et fluide pour l'espèce "${speciesName}". Le style doit être oral, comme si tu t'adressais à des étudiants, pour une future conversion en audio. N'utilise ni tableau, ni formatage de code, ni listes à puces. Structure ta réponse en couvrant les points suivants de manière conversationnelle, sans utiliser de titres : commence par une introduction (nom commun, nom latin, famille), puis décris un ou deux critères d'identification clés pour la distinguer d'espèces proches. Mentionne ces espèces sources de confusion et comment les différencier. Ensuite, décris son écologie et habitat préférentiel. Termine par son statut de conservation en France (si pertinent) et sa répartition générale. Dans ta réponse, n'utilise aucun formatage Markdown : pas de gras, italique, titres ou listes. Évite également d'insérer des caractères spéciaux tels que '*' ou ':' et réponds uniquement avec du texte simple qui sera mis en forme par le contexte. Utilise ton savoir encyclopédique pour générer cette fiche.`;
+    const prompt = `En tant qu'expert botaniste, rédige une fiche de synthèse narrative et fluide pour l'espèce "${speciesName}". Le style doit être oral, comme si tu t'adressais à des étudiants, pour une future conversion en audio. N'utilise ni tableau, ni formatage de code, ni listes à puces. Structure ta réponse en couvrant les points suivants de manière conversationnelle, sans utiliser de titres : commence par une introduction (nom commun, nom latin, famille), puis décris un ou deux critères d'identification clés pour la distinguer d'espèces proches. Mentionne ces espèces sources de confusion et comment les différencier. Ensuite, décris son écologie et habitat préférentiel. Termine par son statut de conservation en France (si pertinent) et sa répartition générale. Dans ta réponse, n'utilise aucun formatage Markdown : pas de gras, italique, titres ou listes. Évite également d'insérer des caractères spéciaux tels que '*' ou ':' et réponds uniquement avec du texte simple qui sera mis en forme par le contexte. Utilise ton savoir encyclopédique pour générer cette fiche.`;
     const requestBody = { "contents": [{ "parts": [{ "text": prompt }] }], "generationConfig": { "temperature": 0.4, "maxOutputTokens": 800 } };
     try {
         const responseData = await apiFetch(GEMINI_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(requestBody) });
@@ -368,7 +365,6 @@ async function synthesizeSpeech(text) {
     }
 }
 
-// Convertit une chaîne Base64 en audio et la joue
 function playAudioFromBase64(base64Audio) {
     if (!base64Audio) return;
     const audio = new Audio(`data:audio/mp3;base64,${base64Audio}`);
@@ -428,7 +424,6 @@ window.handleSynthesisClick = async function(event, element, speciesName) {
 async function getComparisonFromGemini(speciesData) {
     const speciesDataString = speciesData.map(s => `Espèce: ${s.species}\nDonnées morphologiques (Physionomie): ${s.physio || 'Non renseignée'}\nDonnées écologiques: ${s.eco || 'Non renseignée'}`).join('\n\n');
     
-    // MODIFICATION : Le prompt est mis à jour pour structurer la réponse en 3 parties.
     const promptTemplate = `En te basant sur les données fournies ci-dessous, rédige une analyse comparative dont l'objectif est de mettre en évidence les points de distinction clairs entre les espèces.
 Données :
 ---
@@ -536,7 +531,6 @@ async function handleComparisonClick() {
     const { intro, tableMarkdown, summary } = parseComparisonText(comparisonText);
     const tableHtml = markdownTableToHtml(tableMarkdown);
 
-    // MODIFICATION : La structure HTML inclut maintenant le bouton de synthèse vocale.
     resultsContainer.style.cssText = `
         margin-top: 2rem;
         padding: 1.5rem;
@@ -559,7 +553,6 @@ async function handleComparisonClick() {
         </div>
     `;
 
-    // Ajout de l'écouteur d'événement pour le nouveau bouton de synthèse vocale.
     document.getElementById('comparison-tts-btn').addEventListener('click', async (e) => {
         e.preventDefault();
         const btn = e.currentTarget;
@@ -578,7 +571,6 @@ async function handleComparisonClick() {
             showInfoModal("Échec de la synthèse audio", "La conversion du texte en audio a échoué.");
         }
 
-        // Restaurer le bouton
         btn.innerHTML = '<img src="assets/Audio.png" alt="Écouter" class="logo-icon" style="height: 32px;">';
         btn.style.pointerEvents = 'auto';
     });
@@ -659,14 +651,21 @@ function buildTable(items){
       floraGallicaLink = linkIcon(viewerUrl, "Flora Gallica.png", "Flora Gallica");
     }
 
-    // NOUVEAU : Logique pour Régal Végétal
     const tocEntryRegalVegetal = regalVegetalToc[genus];
     let regalVegetalLink = "—";
     if (tocEntryRegalVegetal && tocEntryRegalVegetal.pdfFile && tocEntryRegalVegetal.page) {
         const pdfPath = `assets/regal_vegetal_pdf/${tocEntryRegalVegetal.pdfFile}`;
         const viewerUrl = `viewer.html?file=${encodeURIComponent(pdfPath)}&page=${tocEntryRegalVegetal.page}`;
-        // Assurez-vous d'avoir une icône "Régal Végétal.png" dans le dossier assets/
         regalVegetalLink = linkIcon(viewerUrl, "Régal Végétal.png", "Régal Végétal");
+    }
+
+    // LOGIQUE POUR FLORE MED
+    const tocEntryFloreMed = floreMedToc[genus];
+    let floreMedLink = "—";
+    if (tocEntryFloreMed && tocEntryFloreMed.pdfFile && tocEntryFloreMed.page) {
+        const pdfPath = `assets/flore_med_pdf/${tocEntryFloreMed.pdfFile}`;
+        const viewerUrl = `viewer.html?file=${encodeURIComponent(pdfPath)}&page=${tocEntryFloreMed.page}`;
+        floreMedLink = linkIcon(viewerUrl, "Flore Med.png", "Flore Méd");
     }
 
     const normalizedSci = norm(sci);
@@ -679,37 +678,39 @@ function buildTable(items){
     const escapedSci = displaySci.replace(/'/g, "\\'");
     const checkedAttr = item.autoCheck ? ' checked' : '';
     const floraHelveticaLink = `<a href="${floraHelveticaUrl(sci)}">FH</a>`;
+    
     return `<tr>
-                  <td class="col-checkbox">
-                    <input type="checkbox" class="species-checkbox"${checkedAttr}
-                           data-species="${escapedSci}"
-                           data-physio="${encodeURIComponent(phys)}"
-                           data-eco="${encodeURIComponent(eco)}">
-                  </td>
-                  <td class="col-nom-latin" data-latin="${displaySci}">${displaySci}<br><span class="score">(${pct})</span></td>
-                  <td class="col-link">${floreAlpesLink}</td>
-                  <td class="col-link">${floraGallicaLink}</td>
-                  <td class="col-link">${linkIcon(cd && inpnStatut(cd), "INPN.png", "INPN", "small-logo")}</td>
-                  <td class="col-criteres">
-                    <div class="text-popup-trigger" data-title="Critères physiologiques" data-fulltext="${encodeURIComponent(crit)}">${crit}</div>
-                  </td>
-                  <td class="col-ecologie">
-                      <div class="text-popup-trigger" data-title="Écologie" data-fulltext="${encodeURIComponent(eco)}">${eco}</div>
-                  </td>
-                  <td class="col-physionomie">
-                    <div class="text-popup-trigger" data-title="Physionomie" data-fulltext="${encodeURIComponent(phys)}">${phys}</div>
-                  </td>
-                  <td class="col-link">${linkIcon(cd && aura(cd), "Biodiv'AURA.png", "Biodiv'AURA")}</td>
-                  <td class="col-link">${linkIcon(infoFlora(sci), "Info Flora.png", "Info Flora")}</td>
-                  <td class="col-link">${floraHelveticaLink}</td>
-                  <td class="col-link"><a href="#" onclick="handleSynthesisClick(event, this, '${escapedSci}')"><img src="assets/Audio.png" alt="Audio" class="logo-icon"></a></td>
-                  <td class="col-link">${linkIcon(pfaf(sci), "PFAF.png", "PFAF")}</td>
-                  <td class="col-image" data-cd="${cd || ''}"></td>
-                  <td class="col-link">${regalVegetalLink}</td>
-                </tr>`;
+              <td class="col-checkbox">
+                <input type="checkbox" class="species-checkbox"${checkedAttr}
+                       data-species="${escapedSci}"
+                       data-physio="${encodeURIComponent(phys)}"
+                       data-eco="${encodeURIComponent(eco)}">
+              </td>
+              <td class="col-nom-latin" data-latin="${displaySci}">${displaySci}<br><span class="score">(${pct})</span></td>
+              <td class="col-link">${floreAlpesLink}</td>
+              <td class="col-link">${floraGallicaLink}</td>
+              <td class="col-link">${regalVegetalLink}</td>
+              <td class="col-link">${floreMedLink}</td>
+              <td class="col-link">${linkIcon(cd && inpnStatut(cd), "INPN.png", "INPN", "small-logo")}</td>
+              <td class="col-criteres">
+                <div class="text-popup-trigger" data-title="Critères physiologiques" data-fulltext="${encodeURIComponent(crit)}">${crit}</div>
+              </td>
+              <td class="col-ecologie">
+                  <div class="text-popup-trigger" data-title="Écologie" data-fulltext="${encodeURIComponent(eco)}">${eco}</div>
+              </td>
+              <td class="col-physionomie">
+                <div class="text-popup-trigger" data-title="Physionomie" data-fulltext="${encodeURIComponent(phys)}">${phys}</div>
+              </td>
+              <td class="col-link">${linkIcon(cd && aura(cd), "Biodiv'AURA.png", "Biodiv'AURA")}</td>
+              <td class="col-link">${linkIcon(infoFlora(sci), "Info Flora.png", "Info Flora")}</td>
+              <td class="col-link">${floraHelveticaLink}</td>
+              <td class="col-link"><a href="#" onclick="handleSynthesisClick(event, this, '${escapedSci}')"><img src="assets/Audio.png" alt="Audio" class="logo-icon"></a></td>
+              <td class="col-link">${linkIcon(pfaf(sci), "PFAF.png", "PFAF")}</td>
+              <td class="col-image" data-cd="${cd || ''}"></td>
+            </tr>`;
   }).join("");
 
-  const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th><th>Image</th><th>Régal Végétal</th></tr>`;
+  const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>Régal Végétal</th><th>Flore Méd</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th><th>Image</th></tr>`;
   
   wrap.innerHTML = `<div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-footer" style="padding-top: 1rem; text-align: center;"></div><div id="comparison-results-container" style="display:none;"></div>`;
   enableDragScroll(wrap);
@@ -726,7 +727,6 @@ function buildTable(items){
       compareBtn.style.marginRight = '0.5rem';
       compareBtn.style.width = 'auto';
 
-      // AJOUTÉ : Création du bouton "Carte de localisation"
       const locationBtn = document.createElement('button');
       locationBtn.id = 'location-btn';
       locationBtn.textContent = 'Carte de localisation';
@@ -734,14 +734,13 @@ function buildTable(items){
       locationBtn.style.display = 'none';
       locationBtn.style.padding = '0.8rem 1.5rem';
       locationBtn.style.width = 'auto';
-      locationBtn.style.backgroundColor = '#0277BD'; // Couleur distincte
+      locationBtn.style.backgroundColor = '#0277BD';
 
       footer.appendChild(compareBtn);
-      footer.appendChild(locationBtn); // AJOUTÉ : Ajout du bouton au footer
+      footer.appendChild(locationBtn);
 
       compareBtn.addEventListener('click', handleComparisonClick);
       
-      // AJOUTÉ : Écouteur d'événement pour le bouton de la carte
       locationBtn.addEventListener('click', () => {
           const checkedBoxes = document.querySelectorAll('.species-checkbox:checked');
           const speciesNames = Array.from(checkedBoxes).map(box => box.dataset.species).join(',');
@@ -755,12 +754,11 @@ function buildTable(items){
   const updateCompareVisibility = () => {
       const checkedCount = wrap.querySelectorAll('.species-checkbox:checked').length;
       const compareBtn = document.getElementById('compare-btn');
-      const locationBtn = document.getElementById('location-btn'); // AJOUTÉ : Récupération du bouton
+      const locationBtn = document.getElementById('location-btn');
       const toggleBtn = document.getElementById('toggle-select-btn');
       if(compareBtn) {
         compareBtn.style.display = (checkedCount >= 2) ? 'inline-block' : 'none';
       }
-      // AJOUTÉ : Gestion de la visibilité du bouton de la carte
       if(locationBtn) {
         locationBtn.style.display = (checkedCount >= 2) ? 'inline-block' : 'none';
       }
