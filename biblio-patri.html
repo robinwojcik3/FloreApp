@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblio Patri - Espèces Patrimoniales</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="icons/icon-192.png">
+    <script defer src="ui.js"></script>
+    <script defer src="biblio-patri.js"></script>
+    <script defer src="sw-register.js"></script>
+    <style>
+        :root { --primary:#c62828; --bg:#f6f9fb; --card:#ffffff; --border:#e0e0e0; --text:#202124; --max-width:800px; }
+        html[data-theme="dark"] { --bg:#181a1b; --card:#262b2f; --border:#333; --text:#ececec; }
+        * { box-sizing: border-box; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0; padding: 0;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .tabs-container {
+            background: var(--card);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: sticky; top: 0; z-index: 100;
+            display:flex; align-items:center; justify-content:space-between;
+        }
+        .tabs { display: flex; border-bottom: 2px solid var(--border); flex-grow:1; }
+        .tab {
+            flex: 1; padding: 1rem; text-align: center; cursor: pointer;
+            background: none; border: none; font-size: 1rem; color: var(--text);
+            transition: background .3s,color .3s; position: relative;
+        }
+        .tab:hover { background: rgba(198, 40, 40, 0.1); }
+        .tab.active { color: var(--primary); font-weight: 600; }
+        .tab.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: var(--primary); }
+
+        .main-content { padding: 1rem; max-width: var(--max-width); margin: 0 auto; width: 100%; }
+        h1 { color: var(--primary); margin: 0 0 1.5rem; font-size: 1.6rem; text-align: center; }
+        
+        .action-button { padding: 12px 20px; background: var(--primary); color: white; border: none; border-radius: 6px; font-size: 1.1rem; cursor: pointer; transition: all 0.3s; width: 100%; max-width:300px; display:block; margin: 1rem auto; }
+        .action-button:hover { background: #b71c1c; }
+        .action-button:disabled { background: #ccc; cursor: not-allowed; }
+        
+        .status-container { text-align: center; margin: 1rem 0; font-size: 1rem; min-height: 24px; }
+        .loading::after { content: ''; display: inline-block; width: 24px; height: 24px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .results-container { overflow-x: auto; -webkit-overflow-scrolling:touch; }
+        table { width:100%; border-collapse:collapse; background:var(--card); border:1px solid var(--border); border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,.05); margin:1rem 0; }
+        th, td { padding: 10px 12px; border-bottom:1px solid var(--border); text-align:left; }
+        th { font-weight: 600; }
+        tbody tr:last-child td { border-bottom:none; }
+        td a { color: var(--primary); text-decoration: none; }
+        td a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <nav class="tabs-container">
+        <div class="tabs">
+            <button class="tab" onclick="window.location.href='index.html'">Identification</button>
+            <button class="tab" onclick="window.location.href='contexte.html'">Contexte environnemental</button>
+            <button class="tab active">Biblio Patri</button>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <h1>Espèces Patrimoniales à Proximité</h1>
+        <p style="text-align:center; max-width:600px; margin:0 auto 1rem;">
+            Cette section recherche les espèces végétales menacées (statuts UICN mondiaux) dans un rayon de 10 km autour de votre position. La recherche est lancée automatiquement.
+        </p>
+
+        <div id="status" class="status-container"></div>
+        <div id="results" class="results-container"></div>
+    </div>
+</body>
+</html>
