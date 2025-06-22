@@ -1,6 +1,6 @@
 # Plantouille Express
 
-Plantouille Express is a progressive web application for plant identification built using the PlantNet API. The project also integrates Google Gemini and Google Text‑to‑Speech for generating short descriptions and audio. The application now leverages the **Gemini&nbsp;2.5 Flash** model for all AI-generated content.
+Plantouille Express is a progressive web application for plant identification built using the PlantNet API. The project also integrates Google Gemini and Google Text‑to‑Speech for generating short descriptions and audio.
 
 ## Prerequisites
 
