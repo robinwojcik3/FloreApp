@@ -34,11 +34,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const getUserLocation = () => new Promise((resolve, reject) => {
         if (!navigator.geolocation) {
-            return reject(new Error("La géolocalisation n'est pas supportée."));
+            return reject(new Error("La géolocalisation n'est pas supportée par votre navigateur."));
         }
         navigator.geolocation.getCurrentPosition(
             (position) => resolve(position.coords),
-            () => reject(new Error("Permission de géolocalisation refusée.")),
+            () => reject(new Error("La permission de géolocalisation a été refusée.")),
             { timeout: 10000, enableHighAccuracy: true }
         );
     });
@@ -59,62 +59,70 @@ document.addEventListener('DOMContentLoaded', () => {
         return `POLYGON((${points.join(', ')}))`;
     };
 
+    // MODIFIÉ : Ajout d'une gestion d'erreur spécifique
     async function getRegionDepartement(lat, lon) {
-        const url = `https://geo.api.gouv.fr/communes?lat=${lat}&lon=${lon}&fields=nom,codeRegion,codeDepartement&format=json`;
-        const resp = await fetch(url);
-        if (!resp.ok) throw new Error('Géocodage inverse impossible');
-        const [info] = await resp.json();
-        if (!info) throw new Error('Aucune commune trouvée pour ces coordonnées.');
+        try {
+            const url = `https://geo.api.gouv.fr/communes?lat=${lat}&lon=${lon}&fields=nom,codeRegion,codeDepartement&format=json`;
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const [info] = await resp.json();
+            if (!info) throw new Error('Aucune commune trouvée pour ces coordonnées.');
 
-        const [regionResp, deptResp] = await Promise.all([
-            fetch(`https://geo.api.gouv.fr/regions/${info.codeRegion}`),
-            fetch(`https://geo.api.gouv.fr/departements/${info.codeDepartement}`)
-        ]);
-        const regionData = await regionResp.json();
-        const deptData = await deptResp.json();
-        
-        const regionName = OLD_REGION_MAP[regionData.nom] || regionData.nom;
-        return { region: regionName, departement: deptData.nom };
+            const [regionResp, deptResp] = await Promise.all([
+                fetch(`https://geo.api.gouv.fr/regions/${info.codeRegion}`),
+                fetch(`https://geo.api.gouv.fr/departements/${info.codeDepartement}`)
+            ]);
+            if (!regionResp.ok || !deptResp.ok) throw new Error('Impossible de charger les données de région/département.');
+
+            const regionData = await regionResp.json();
+            const deptData = await deptResp.json();
+            
+            const regionName = OLD_REGION_MAP[regionData.nom] || regionData.nom;
+            return { region: regionName, departement: deptData.nom };
+        } catch (e) {
+            console.error("Erreur dans getRegionDepartement:", e);
+            throw new Error(`Échec de la récupération des données administratives. (${e.message})`);
+        }
     }
 
-    /**
-     * MODIFIÉ : Charge et parse le fichier BDCstatut.csv en filtrant pour la flore.
-     * @returns {Promise<Array<Object>>}
-     */
+    // MODIFIÉ : Ajout d'une gestion d'erreur spécifique
     async function loadBDCstatut() {
-        const resp = await fetch('BDCstatut.csv');
-        if (!resp.ok) throw new Error("Le fichier BDCstatut.csv n'a pas pu être chargé.");
-        const text = await resp.text();
-        
-        const lines = text.trim().split(/\r?\n/);
-        const header = lines[0].split(';');
-        const regneIndex = header.indexOf('REGNE');
+        try {
+            const resp = await fetch('BDCstatut.csv');
+            if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+            const text = await resp.text();
+            
+            const lines = text.trim().split(/\r?\n/);
+            const header = lines[0].split(';');
+            const regneIndex = header.indexOf('REGNE');
 
-        if (regneIndex === -1) {
-             console.warn("La colonne 'REGNE' est absente du CSV. Le filtrage sur la flore ne peut être effectué.");
-             // Fallback : on retourne tout si la colonne n'existe pas
-             return lines.slice(1).map(line => {
-                const cols = line.split(';');
-                let rowData = {};
-                header.forEach((h, i) => rowData[h] = cols[i]);
-                return rowData;
-             });
-        }
-
-        // Filtre pour ne garder que le règne végétal et transforme en objets
-        return lines.slice(1).map(line => {
-            const cols = line.split(';');
-            if (cols[regneIndex] === 'Plantae') {
-                let rowData = {};
-                header.forEach((h, i) => rowData[h] = cols[i]);
-                return rowData;
+            if (regneIndex === -1) {
+                console.warn("La colonne 'REGNE' est absente du CSV. Le filtrage sur la flore ne peut être effectué.");
+                return lines.slice(1).map(line => {
+                    const cols = line.split(';');
+                    let rowData = {};
+                    header.forEach((h, i) => rowData[h] = cols[i]);
+                    return rowData;
+                });
             }
-            return null;
-        }).filter(Boolean); // retire les lignes null (non-Plantae)
+
+            return lines.slice(1).map(line => {
+                const cols = line.split(';');
+                if (cols[regneIndex] === 'Plantae') {
+                    let rowData = {};
+                    header.forEach((h, i) => rowData[h] = cols[i]);
+                    return rowData;
+                }
+                return null;
+            }).filter(Boolean);
+        } catch (e) {
+            console.error("Erreur dans loadBDCstatut:", e);
+            throw new Error(`Le fichier de statuts (BDCstatut.csv) n'a pas pu être chargé. (${e.message})`);
+        }
     }
 
     function priorityFor(type, code) {
-        if (type.includes('Directive')) return 6; // Priorité la plus haute pour les directives
+        if (type.includes('Directive')) return 6;
         if (['Protection nationale', 'Réglementation', 'Protection régionale', 'Protection départementale', 'Sensibilité régionale', 'Sensibilité départementale'].includes(type)) return 5;
         if (code === 'CR') return 4;
         if (code === 'EN') return 3;
@@ -123,13 +131,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return 0;
     }
 
-    /**
-     * MODIFIÉ : Filtre les espèces patrimoniales en incluant la Directive Habitats.
-     * @param {Array<Object>} data - Données brutes de BDCstatut.csv (déjà filtrées sur Plantae).
-     * @param {string} region - Région de l'utilisateur.
-     * @param {string} departement - Département de l'utilisateur.
-     * @returns {Array<Object>}
-     */
     function filterPatrimoniales(data, region, departement) {
         const result = new Map();
         const threatCodes = ['NT', 'VU', 'EN', 'CR'];
@@ -141,7 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
             let include = false;
             let level = row.NIVEAU_ADMIN;
 
-            // Conditions de sélection élargies
             const isRedList = type.toLowerCase().includes('liste rouge') && threatCodes.includes(code);
             const isProtection = type.toLowerCase().includes('protection') || type.toLowerCase().includes('sensibilité');
             const isRegulation = type.toLowerCase().includes('réglementation');
@@ -164,12 +164,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 const prio = priorityFor(type, code);
                 if (!result.has(row.LB_NOM) || result.get(row.LB_NOM).priority < prio) {
                     result.set(row.LB_NOM, { 
-                        name: row.LB_NOM, 
-                        status: code, 
-                        label: row.LABEL_STATUT, 
-                        level: level, 
-                        adminArea: adm,
-                        priority: prio 
+                        name: row.LB_NOM, status: code, label: row.LABEL_STATUT, 
+                        level: level, adminArea: adm, priority: prio 
                     });
                 }
             }
@@ -177,48 +173,49 @@ document.addEventListener('DOMContentLoaded', () => {
         return Array.from(result.values());
     }
     
+    // MODIFIÉ : Ajout d'une gestion d'erreur spécifique
     async function searchPatrimonialOccurrences(patrimonialesList, wktPolygon) {
-        setStatus(`Résolution des noms pour ${patrimonialesList.length} espèces...`, true);
+        try {
+            setStatus(`Résolution des noms pour ${patrimonialesList.length} espèces...`, true);
 
-        const speciesKeys = new Map();
-        const keyPromises = patrimonialesList.map(async (sp) => {
-            try {
+            const speciesKeys = new Map();
+            const keyPromises = patrimonialesList.map(async (sp) => {
                 const matchUrl = `https://api.gbif.org/v1/species/match?name=${encodeURIComponent(sp.name)}`;
                 const resp = await fetch(matchUrl);
+                if (!resp.ok) {
+                    console.warn(`La résolution du nom ${sp.name} a échoué (HTTP ${resp.status}).`);
+                    return null;
+                }
                 const data = await resp.json();
-                if (data.usageKey && data.kingdom === 'Plantae') { // Double vérification
+                if (data.usageKey && data.kingdom === 'Plantae') {
                     speciesKeys.set(data.usageKey, sp);
                     return data.usageKey;
                 }
-            } catch (e) {
-                console.error(`Erreur de résolution pour ${sp.name}:`, e);
-            }
-            return null;
-        });
-
-        const validKeys = (await Promise.all(keyPromises)).filter(Boolean);
-        if (validKeys.length === 0) {
-            throw new Error("Aucun nom d'espèce floristique n'a pu être résolu dans le référentiel GBIF.");
-        }
-
-        let allOccurrences = [];
-        let offset = 0;
-        const limit = 300;
-        let endOfRecords = false;
-
-        while (!endOfRecords) {
-            const countText = allOccurrences.length > 0 ? ` (${allOccurrences.length} trouvées)` : '';
-            setStatus(`Recherche des occurrences pour ${validKeys.length} espèces...${countText}`, true);
-            
-            const params = new URLSearchParams({
-                taxon_key: validKeys.join(','),
-                geometry: wktPolygon,
-                limit: limit,
-                offset: offset
+                return null;
             });
-            const url = `https://api.gbif.org/v1/occurrence/search?${params.toString()}`;
-            
-            try {
+
+            const validKeys = (await Promise.all(keyPromises)).filter(Boolean);
+            if (validKeys.length === 0) {
+                throw new Error("Aucun nom d'espèce floristique n'a pu être résolu dans le référentiel GBIF.");
+            }
+
+            let allOccurrences = [];
+            let offset = 0;
+            const limit = 300;
+            let endOfRecords = false;
+
+            while (!endOfRecords) {
+                const countText = allOccurrences.length > 0 ? ` (${allOccurrences.length} trouvées)` : '';
+                setStatus(`Recherche des occurrences pour ${validKeys.length} espèces...${countText}`, true);
+                
+                const params = new URLSearchParams({
+                    taxon_key: validKeys.join(','),
+                    geometry: wktPolygon,
+                    limit: limit,
+                    offset: offset
+                });
+                const url = `https://api.gbif.org/v1/occurrence/search?${params.toString()}`;
+                
                 const resp = await fetch(url);
                 if (!resp.ok) throw new Error(`Erreur API GBIF (${resp.status})`);
                 const data = await resp.json();
@@ -229,33 +226,31 @@ document.addEventListener('DOMContentLoaded', () => {
                 offset += data.results.length;
                 endOfRecords = data.endOfRecords;
                 if(data.results.length === 0) endOfRecords = true;
-
-            } catch (error) {
-                console.error("Échec de la récupération des occurrences:", error);
-                throw error;
             }
-        }
 
-        const resultsBySpecies = new Map();
-        allOccurrences.forEach(occ => {
-            if (occ.speciesKey && speciesKeys.has(occ.speciesKey)) {
-                const originalSpeciesData = speciesKeys.get(occ.speciesKey);
-                if (!resultsBySpecies.has(occ.speciesKey)) {
-                    resultsBySpecies.set(occ.speciesKey, {
-                        ...originalSpeciesData,
-                        speciesKey: occ.speciesKey,
-                        occurrences: []
+            const resultsBySpecies = new Map();
+            allOccurrences.forEach(occ => {
+                if (occ.speciesKey && speciesKeys.has(occ.speciesKey)) {
+                    const originalSpeciesData = speciesKeys.get(occ.speciesKey);
+                    if (!resultsBySpecies.has(occ.speciesKey)) {
+                        resultsBySpecies.set(occ.speciesKey, {
+                            ...originalSpeciesData,
+                            speciesKey: occ.speciesKey,
+                            occurrences: []
+                        });
+                    }
+                    resultsBySpecies.get(occ.speciesKey).occurrences.push({
+                        lat: occ.decimalLatitude, lon: occ.decimalLongitude,
+                        date: occ.eventDate ? new Date(occ.eventDate).toLocaleDateString() : 'N/A'
                     });
                 }
-                resultsBySpecies.get(occ.speciesKey).occurrences.push({
-                    lat: occ.decimalLatitude,
-                    lon: occ.decimalLongitude,
-                    date: occ.eventDate ? new Date(occ.eventDate).toLocaleDateString() : 'N/A'
-                });
-            }
-        });
+            });
 
-        return Array.from(resultsBySpecies.values()).sort((a,b) => a.name.localeCompare(b.name));
+            return Array.from(resultsBySpecies.values()).sort((a,b) => a.name.localeCompare(b.name));
+        } catch (e) {
+            console.error("Erreur dans searchPatrimonialOccurrences:", e);
+            throw new Error(`Échec de la communication avec la base de données GBIF. (${e.message})`);
+        }
     }
 
     function initializeMap(coords) {
@@ -326,6 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     async function main() {
+        // MODIFIÉ : Séquençage des étapes avec une gestion d'erreur détaillée
         try {
             setStatus("Récupération de votre position...", true);
             const coords = await getUserLocation();
@@ -333,10 +329,10 @@ document.addEventListener('DOMContentLoaded', () => {
             setStatus("Initialisation de la carte...", true);
             initializeMap(coords);
 
-            setStatus("Identification de votre région...", true);
+            setStatus("Identification de votre région administrative...", true);
             const { region, departement } = await getRegionDepartement(coords.latitude, coords.longitude);
             
-            setStatus("Analyse des statuts patrimoniaux pour la flore...", true);
+            setStatus("Chargement des statuts et filtrage sur la flore...", true);
             const floraDataset = await loadBDCstatut();
             const patrimoniales = filterPatrimoniales(floraDataset, region, departement);
             
@@ -354,6 +350,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         } catch (error) {
             console.error("Erreur dans le processus principal:", error);
+            // Affiche le message d'erreur spécifique qui a été généré
             setStatus(`Erreur : ${error.message}`);
             if (mapContainer) mapContainer.style.display = 'none';
         }
