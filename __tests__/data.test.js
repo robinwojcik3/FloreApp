@@ -23,8 +23,8 @@ describe('data loading', () => {
       if (url === 'Criteres_herbier.json') {
         return Promise.resolve({ ok: true, json: () => Promise.resolve([{ species: 'Abies alba', description: 'desc' }]) });
       }
-      if (url === 'Physionomie.json') {
-        return Promise.resolve({ ok: true, json: () => Promise.resolve([{ nom_latin: 'Abies alba', physionomie: 'phy' }]) });
+      if (url === 'Physionomie.csv') {
+        return Promise.resolve({ ok: true, text: () => Promise.resolve('Abies alba;phy\n') });
       }
       return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
     });

@@ -49,7 +49,7 @@ const DATA_ASSETS = [
     "./ecology.json",
     "./assets/florealpes_index.json",
     "./Criteres_herbier.json",
-    "./Physionomie.json"
+    "./Physionomie.csv"
 ];
 
 

@@ -48,7 +48,10 @@ function loadData() {
     fetch("assets/flore_med_toc.json").then(r => r.json()).then(j => floreMedToc = j), // Chargement de la TOC de Flore Méd
     fetch("assets/florealpes_index.json").then(r => r.json()).then(j => floreAlpesIndex = j),
     fetch("Criteres_herbier.json").then(r => r.json()).then(j => j.forEach(item => criteres[norm(item.species)] = item.description)),
-    fetch("Physionomie.json").then(r => r.json()).then(j => j.forEach(item => physionomie[norm(item.nom_latin)] = item.physionomie))
+    fetch("Physionomie.csv").then(r => r.text()).then(t => parseCsv(t).forEach(row => {
+      const [name, desc] = row;
+      if (name) physionomie[norm(name)] = desc;
+    }))
   ]).then(() => { taxrefNames.sort(); console.log("Données prêtes."); })
     .catch(err => {
       dataPromise = null;
@@ -81,6 +84,42 @@ const ecolOf = n => ecology[norm(n)] || "—";
 const criteresOf = n => criteres[norm(n)] || "—";
 const physioOf = n => physionomie[norm(n)] || "—";
 const slug = n => norm(n).replace(/ /g, "-");
+
+function parseCsv(text) {
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+  const rows = [];
+  let field = '';
+  let row = [];
+  let inQuotes = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (c === '"') {
+      if (inQuotes && text[i + 1] === '"') {
+        field += '"';
+        i++;
+      } else {
+        inQuotes = !inQuotes;
+      }
+    } else if (c === ';' && !inQuotes) {
+      row.push(field);
+      field = '';
+    } else if ((c === '\n' || c === '\r') && !inQuotes) {
+      if (c === '\r' && text[i + 1] === '\n') i++;
+      row.push(field);
+      if (row.length) rows.push(row);
+      row = [];
+      field = '';
+    } else {
+      field += c;
+    }
+  }
+  if (field || row.length) {
+    row.push(field);
+    rows.push(row);
+  }
+  return rows;
+}
+
 function capitalizeGenus(name) {
   if (typeof name !== 'string') return name;
   return name.replace(/^(?:[x×]\s*)?([a-z])/,
