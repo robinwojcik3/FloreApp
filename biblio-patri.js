@@ -62,42 +62,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // MODIFIÉ : La fonction n'exige plus la colonne 'REGNE'
     async function loadBDCstatut() {
         try {
             const resp = await fetch('BDCstatut.csv');
             if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
             let text = await resp.text();
-
-            if (text.charCodeAt(0) === 0xFEFF) {
-                text = text.substring(1);
-            }
-
+            if (text.charCodeAt(0) === 0xFEFF) text = text.substring(1);
             const lines = text.trim().split(/\r?\n/);
             if (lines.length < 1) throw new Error("Le fichier CSV est vide.");
-            
             const header = lines[0].split(';').map(h => h.trim());
-            
-            // La colonne 'REGNE' a été retirée des exigences
             const requiredColumns = ['LB_ADM_TR', 'LB_NOM', 'CODE_STATUT', 'LB_TYPE_STATUT', 'LABEL_STATUT'];
-            
             const missingColumns = requiredColumns.filter(col => !header.includes(col));
-            if (missingColumns.length > 0) {
-                throw new Error(`Colonnes requises manquantes: [${missingColumns.join(', ')}]. Colonnes trouvées: [${header.join(', ')}]`);
-            }
-
+            if (missingColumns.length > 0) throw new Error(`Colonnes requises manquantes: [${missingColumns.join(', ')}]. Colonnes trouvées: [${header.join(', ')}]`);
             const indices = Object.fromEntries(requiredColumns.map(col => [col, header.indexOf(col)]));
-
             return lines.slice(1).map(line => {
                 const cols = line.split(';');
-                 if (cols.length > Math.max(...Object.values(indices))) {
-                    // Le filtrage sur 'Plantae' est retiré, on charge toutes les lignes
-                    return Object.fromEntries(requiredColumns.map(col => [col, cols[indices[col]]]));
-                }
+                if (cols.length > Math.max(...Object.values(indices))) return Object.fromEntries(requiredColumns.map(col => [col, cols[indices[col]]]));
                 return null;
             }).filter(Boolean);
         } catch (e) {
-            console.error("Erreur dans loadBDCstatut:", e);
             throw new Error(`Le fichier de statuts (BDCstatut.csv) n'a pas pu être chargé. (${e.message})`);
         }
     }
@@ -113,12 +96,10 @@ document.addEventListener('DOMContentLoaded', () => {
             if (type.includes('Sensibilité')) return 1;
             return 0;
         };
-
         allFloraStatus.forEach(row => {
             if (!row || !row.LB_ADM_TR) return;
             const adm = OLD_REGION_MAP[row.LB_ADM_TR.trim()] || row.LB_ADM_TR.trim();
             let isRelevant = false;
-
             if (adm === region || adm === departement) {
                 const type = row.LB_TYPE_STATUT.toLowerCase();
                 const code = row.CODE_STATUT;
@@ -127,7 +108,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const isSensibilite = type.includes('sensibilité');
                 if (isRedList || isProtected || isSensibilite) isRelevant = true;
             }
-
             if (isRelevant) {
                 const prio = priorityFor(row.LB_TYPE_STATUT);
                 if (!result.has(row.LB_NOM) || prio > result.get(row.LB_NOM).priority) {
@@ -138,23 +118,33 @@ document.addEventListener('DOMContentLoaded', () => {
         return Array.from(result.values());
     }
 
+    // MODIFIÉ : Ajout d'une temporisation et d'une gestion d'erreur plus fine
     async function searchOccurrences(speciesList, wktPolygon) {
         if (speciesList.length === 0) return [];
         const CHUNK_SIZE = 100;
         const speciesKeys = new Map();
+        
         try {
             for (let i = 0; i < speciesList.length; i += CHUNK_SIZE) {
                 const chunk = speciesList.slice(i, i + CHUNK_SIZE);
                 setStatus(`Résolution des noms... (${i}/${speciesList.length})`, true);
+                
                 const promises = chunk.map(sp => 
                     fetch(`https://api.gbif.org/v1/species/match?name=${encodeURIComponent(sp.name)}&strict=true&kingdom=Plantae`)
-                    .then(res => res.ok ? res.json() : null)
+                    .then(res => res.ok ? res.json() : Promise.resolve(null)) // Continue même si une requête échoue
                     .then(data => { if (data && data.usageKey && data.matchType !== 'NONE') speciesKeys.set(data.usageKey, sp); })
+                    .catch(() => { /* Ignore les erreurs réseau individuelles pour ne pas bloquer le lot */ })
                 );
+                
                 await Promise.all(promises);
+
+                // NOUVEAU : Pause de 300ms entre chaque lot pour ne pas surcharger l'API
+                await new Promise(resolve => setTimeout(resolve, 300));
             }
+
             const validKeys = Array.from(speciesKeys.keys());
             if (validKeys.length === 0) return [];
+
             setStatus(`Recherche des occurrences pour ${validKeys.length} espèces...`, true);
             let allOccurrences = [], offset = 0, endOfRecords = false;
             while(!endOfRecords) {
@@ -166,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 offset += data.results.length;
                 endOfRecords = data.endOfRecords || data.results.length === 0;
             }
+            
             const resultsBySpecies = new Map();
             allOccurrences.forEach(occ => {
                 if (occ.speciesKey && speciesKeys.has(occ.speciesKey)) {
@@ -175,6 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             return Array.from(resultsBySpecies.values()).sort((a,b) => a.name.localeCompare(b.name));
+
         } catch (e) {
             throw new Error(`Échec de la communication avec la base de données GBIF. (${e.message})`);
         }
