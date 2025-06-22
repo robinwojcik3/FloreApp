@@ -6,6 +6,26 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const SPECIES_COLORS = ['#E6194B', '#3CB44B', '#FFE119', '#4363D8', '#F58231', '#911EB4', '#46F0F0', '#F032E6', '#BCF60C', '#FABEBE', '#800000', '#AA6E28'];
 
+    // Correspondance des anciennes régions avec les nouvelles (post-2016)
+    const OLD_REGION_MAP = {
+        'Alsace': 'Grand Est',
+        'Aquitaine': 'Nouvelle-Aquitaine',
+        'Auvergne': 'Auvergne-Rhône-Alpes',
+        'Basse-Normandie': 'Normandie',
+        'Bourgogne': 'Bourgogne-Franche-Comté',
+        'Centre': 'Centre-Val de Loire',
+        'Champagne-Ardenne': 'Grand Est',
+        'Franche-Comté': 'Bourgogne-Franche-Comté',
+        'Haute-Normandie': 'Normandie',
+        'Limousin': 'Nouvelle-Aquitaine',
+        'Lorraine': 'Grand Est',
+        'Languedoc-Roussillon': 'Occitanie',
+        'Midi-Pyrénées': 'Occitanie',
+        'Nord-Pas-de-Calais': 'Hauts-de-France',
+        'Poitou-Charentes': 'Nouvelle-Aquitaine',
+        'Rhône-Alpes': 'Auvergne-Rhône-Alpes'
+    };
+
     /**
      * Affiche un message de statut ou une icône de chargement.
      */
@@ -147,6 +167,120 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
+     * Obtient la région administrative et le département à partir des coordonnées.
+     */
+    async function getRegionDepartement(lat, lon) {
+        const url = `https://geo.api.gouv.fr/communes?lat=${lat}&lon=${lon}&fields=nom,codeRegion,codeDepartement&format=json`;
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error('Géocodage inverse impossible');
+        const [info] = await resp.json();
+        const regionResp = await fetch(`https://geo.api.gouv.fr/regions/${info.codeRegion}`);
+        const regionData = await regionResp.json();
+        const deptResp = await fetch(`https://geo.api.gouv.fr/departements/${info.codeDepartement}`);
+        const deptData = await deptResp.json();
+        const regionName = OLD_REGION_MAP[regionData.nom] || regionData.nom;
+        return { region: regionName, departement: deptData.nom };
+    }
+
+    /**
+     * Charge le fichier BDCstatut.csv et renvoie les enregistrements parsés.
+     */
+    async function loadBDCstatut() {
+        const resp = await fetch('BDCstatut.csv');
+        const text = await resp.text();
+        return text.trim().split(/\r?\n/).slice(1).map(line => {
+            const cols = line.split(';');
+            return {
+                NIVEAU_ADMIN: cols[0],
+                LB_ADM_TR: cols[1],
+                LB_NOM: cols[2],
+                CODE_STATUT: cols[7],
+                LB_TYPE_STATUT: cols[6],
+                LABEL_STATUT: cols[8]
+            };
+        });
+    }
+
+    function priorityFor(type, code) {
+        if (['Protection nationale', 'Réglementation', 'Protection régionale', 'Protection départementale', 'Sensibilité régionale', 'Sensibilité départementale'].includes(type)) return 5;
+        if (code === 'CR') return 4;
+        if (code === 'EN') return 3;
+        if (code === 'VU') return 2;
+        if (code === 'NT') return 1;
+        return 0;
+    }
+
+    /**
+     * Filtre les espèces patrimoniales selon le contexte utilisateur.
+     */
+    function filterPatrimoniales(data, region, departement) {
+        const result = new Map();
+        data.forEach(row => {
+            const adm = OLD_REGION_MAP[row.LB_ADM_TR] || row.LB_ADM_TR;
+            const code = row.CODE_STATUT;
+            const type = row.LB_TYPE_STATUT;
+            let include = false;
+            let level = row.NIVEAU_ADMIN;
+
+            if (type === 'Liste rouge nationale' && ['NT','VU','EN','CR'].includes(code)) {
+                include = true; level = 'Etat';
+            } else if (type === 'Liste rouge régionale' && ['NT','VU','EN','CR'].includes(code) && adm === region) {
+                include = true; level = 'Région';
+            } else if (['Protection régionale','Sensibilité régionale'].includes(type) && adm === region) {
+                include = true; level = 'Région';
+            } else if (['Protection départementale','Sensibilité départementale'].includes(type) && adm === departement) {
+                include = true; level = 'Département';
+            } else if (['Protection nationale','Réglementation'].includes(type)) {
+                include = true; level = 'Etat';
+            }
+
+            if (include) {
+                const prio = priorityFor(type, code);
+                if (!result.has(row.LB_NOM) || result.get(row.LB_NOM).priority < prio) {
+                    result.set(row.LB_NOM, { LB_NOM: row.LB_NOM, CODE_STATUT: code, LABEL_STATUT: row.LABEL_STATUT, NIVEAU_ADMIN: level, LB_ADM_TR: adm, SOURCE: 'BDCstatut.csv', priority: prio });
+                }
+            }
+        });
+        return Array.from(result.values());
+    }
+
+    function logCounts(list) {
+        const counts = { Etat:0, Région:0, Département:0 };
+        list.forEach(it => { if(counts[it.NIVEAU_ADMIN] !== undefined) counts[it.NIVEAU_ADMIN]++; });
+        console.log('Espèces patrimoniales - Etat:', counts.Etat, 'Région:', counts.Région, 'Département:', counts.Département);
+    }
+
+    function displayPatrimoniales(list) {
+        resultsContainer.innerHTML = '';
+        const table = document.createElement('table');
+        table.innerHTML = `
+            <thead>
+                <tr>
+                    <th>LB_NOM</th>
+                    <th>CODE_STATUT</th>
+                    <th>LABEL_STATUT</th>
+                    <th>NIVEAU_ADMIN</th>
+                    <th>LB_ADM_TR</th>
+                    <th>SOURCE</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${list.map(l => `
+                    <tr>
+                        <td><i>${l.LB_NOM}</i></td>
+                        <td>${l.CODE_STATUT}</td>
+                        <td>${l.LABEL_STATUT}</td>
+                        <td>${l.NIVEAU_ADMIN}</td>
+                        <td>${l.LB_ADM_TR}</td>
+                        <td>${l.SOURCE}</td>
+                    </tr>
+                `).join('')}
+            </tbody>
+        `;
+        resultsContainer.appendChild(table);
+    }
+
+    /**
      * Initialise la carte Leaflet.
      */
     function initializeMap(coords) {
@@ -225,12 +359,14 @@ document.addEventListener('DOMContentLoaded', () => {
             setStatus("Initialisation de la carte...", true);
             initializeMap(coords);
 
-            const wktPolygon = createWktCircularPolygon(coords.latitude, coords.longitude, 10);
-            const occurrences = await searchThreatenedSpecies(wktPolygon, setStatus);
-            const processedSpecies = processOccurrences(occurrences);
-            
+            const { region, departement } = await getRegionDepartement(coords.latitude, coords.longitude);
+            setStatus('Chargement des statuts patrimoniaux...', true);
+            const dataset = await loadBDCstatut();
+            const patrimoniales = filterPatrimoniales(dataset, region, departement);
+            logCounts(patrimoniales);
+
             setStatus(null);
-            displayResults(processedSpecies);
+            displayPatrimoniales(patrimoniales);
 
         } catch (error) {
             console.error("Erreur dans le processus:", error);
