@@ -5,12 +5,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultsContainer = document.getElementById('results');
     const mapContainer = document.getElementById('map');
     let map = null;
-    let speciesLayers = new Map(); // NOUVEAU : Pour gérer les couches de la carte
+    let speciesLayers = new Map();
 
-    // Palette de couleurs pour la cartographie des espèces
     const SPECIES_COLORS = ['#E6194B', '#3CB44B', '#FFE119', '#4363D8', '#F58231', '#911EB4', '#46F0F0', '#F032E6', '#BCF60C', '#FABEBE', '#800000', '#AA6E28', '#000075', '#A9A9A9'];
 
-    // Table de correspondance pour les anciennes régions administratives françaises
     const OLD_REGION_MAP = {
         'Alsace': 'Grand Est', 'Aquitaine': 'Nouvelle-Aquitaine', 'Auvergne': 'Auvergne-Rhône-Alpes',
         'Basse-Normandie': 'Normandie', 'Bourgogne': 'Bourgogne-Franche-Comté', 'Centre': 'Centre-Val de Loire',
@@ -20,11 +18,6 @@ document.addEventListener('DOMContentLoaded', () => {
         'Rhône-Alpes': 'Auvergne-Rhône-Alpes'
     };
 
-    /**
-     * Affiche un message de statut ou une icône de chargement.
-     * @param {string|null} message - Le message à afficher.
-     * @param {boolean} isLoading - Si true, affiche une icône de chargement.
-     */
     function setStatus(message, isLoading = false) {
         statusDiv.innerHTML = '';
         if (isLoading) {
@@ -39,10 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    /**
-     * Récupère la localisation de l'utilisateur via l'API Geolocation du navigateur.
-     * @returns {Promise<Coordinates>}
-     */
     const getUserLocation = () => new Promise((resolve, reject) => {
         if (!navigator.geolocation) {
             return reject(new Error("La géolocalisation n'est pas supportée."));
@@ -54,13 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
         );
     });
 
-    /**
-     * Construit un polygone circulaire au format WKT pour les requêtes spatiales.
-     * @param {number} lat - Latitude du centre.
-     * @param {number} lon - Longitude du centre.
-     * @param {number} radiusKm - Rayon en kilomètres.
-     * @returns {string} - Polygone au format WKT.
-     */
     const createWktCircularPolygon = (lat, lon, radiusKm) => {
         const segments = 32;
         const latRad = lat * (Math.PI / 180);
@@ -77,12 +59,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return `POLYGON((${points.join(', ')}))`;
     };
 
-    /**
-     * Obtient la région et le département à partir des coordonnées via l'API Géo.
-     * @param {number} lat - Latitude.
-     * @param {number} lon - Longitude.
-     * @returns {Promise<{region: string, departement: string}>}
-     */
     async function getRegionDepartement(lat, lon) {
         const url = `https://geo.api.gouv.fr/communes?lat=${lat}&lon=${lon}&fields=nom,codeRegion,codeDepartement&format=json`;
         const resp = await fetch(url);
@@ -102,29 +78,43 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Charge et parse le fichier BDCstatut.csv.
+     * MODIFIÉ : Charge et parse le fichier BDCstatut.csv en filtrant pour la flore.
      * @returns {Promise<Array<Object>>}
      */
     async function loadBDCstatut() {
         const resp = await fetch('BDCstatut.csv');
         if (!resp.ok) throw new Error("Le fichier BDCstatut.csv n'a pas pu être chargé.");
         const text = await resp.text();
-        return text.trim().split(/\r?\n/).slice(1).map(line => {
+        
+        const lines = text.trim().split(/\r?\n/);
+        const header = lines[0].split(';');
+        const regneIndex = header.indexOf('REGNE');
+
+        if (regneIndex === -1) {
+             console.warn("La colonne 'REGNE' est absente du CSV. Le filtrage sur la flore ne peut être effectué.");
+             // Fallback : on retourne tout si la colonne n'existe pas
+             return lines.slice(1).map(line => {
+                const cols = line.split(';');
+                let rowData = {};
+                header.forEach((h, i) => rowData[h] = cols[i]);
+                return rowData;
+             });
+        }
+
+        // Filtre pour ne garder que le règne végétal et transforme en objets
+        return lines.slice(1).map(line => {
             const cols = line.split(';');
-            return {
-                NIVEAU_ADMIN: cols[0], LB_ADM_TR: cols[1], LB_NOM: cols[2],
-                CODE_STATUT: cols[7], LB_TYPE_STATUT: cols[6], LABEL_STATUT: cols[8]
-            };
-        });
+            if (cols[regneIndex] === 'Plantae') {
+                let rowData = {};
+                header.forEach((h, i) => rowData[h] = cols[i]);
+                return rowData;
+            }
+            return null;
+        }).filter(Boolean); // retire les lignes null (non-Plantae)
     }
 
-    /**
-     * Définit une priorité pour les statuts afin de ne conserver que le plus pertinent.
-     * @param {string} type - Type de statut (e.g., 'Protection nationale').
-     * @param {string} code - Code du statut (e.g., 'CR').
-     * @returns {number} - Niveau de priorité.
-     */
     function priorityFor(type, code) {
+        if (type.includes('Directive')) return 6; // Priorité la plus haute pour les directives
         if (['Protection nationale', 'Réglementation', 'Protection régionale', 'Protection départementale', 'Sensibilité régionale', 'Sensibilité départementale'].includes(type)) return 5;
         if (code === 'CR') return 4;
         if (code === 'EN') return 3;
@@ -134,15 +124,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     /**
-     * Filtre la liste complète des espèces patrimoniales pour ne garder que celles pertinentes
-     * pour la localisation de l'utilisateur (région/département).
-     * @param {Array<Object>} data - Données brutes de BDCstatut.csv.
+     * MODIFIÉ : Filtre les espèces patrimoniales en incluant la Directive Habitats.
+     * @param {Array<Object>} data - Données brutes de BDCstatut.csv (déjà filtrées sur Plantae).
      * @param {string} region - Région de l'utilisateur.
      * @param {string} departement - Département de l'utilisateur.
-     * @returns {Array<Object>} - Liste filtrée et priorisée des espèces patrimoniales.
+     * @returns {Array<Object>}
      */
     function filterPatrimoniales(data, region, departement) {
         const result = new Map();
+        const threatCodes = ['NT', 'VU', 'EN', 'CR'];
+
         data.forEach(row => {
             const adm = OLD_REGION_MAP[row.LB_ADM_TR] || row.LB_ADM_TR;
             const code = row.CODE_STATUT;
@@ -150,15 +141,22 @@ document.addEventListener('DOMContentLoaded', () => {
             let include = false;
             let level = row.NIVEAU_ADMIN;
 
-            if (type === 'Liste rouge nationale' && ['NT','VU','EN','CR'].includes(code)) {
-                include = true; level = 'Etat';
-            } else if (type === 'Liste rouge régionale' && ['NT','VU','EN','CR'].includes(code) && adm === region) {
-                include = true; level = 'Région';
-            } else if (['Protection régionale','Sensibilité régionale'].includes(type) && adm === region) {
-                include = true; level = 'Région';
-            } else if (['Protection départementale','Sensibilité départementale'].includes(type) && adm === departement) {
-                include = true; level = 'Département';
-            } else if (['Protection nationale','Réglementation'].includes(type)) {
+            // Conditions de sélection élargies
+            const isRedList = type.toLowerCase().includes('liste rouge') && threatCodes.includes(code);
+            const isProtection = type.toLowerCase().includes('protection') || type.toLowerCase().includes('sensibilité');
+            const isRegulation = type.toLowerCase().includes('réglementation');
+            const isDirective = type.toLowerCase().includes('directive');
+
+            if (isDirective) {
+                include = true; level = 'Europe';
+            } else if (isRedList) {
+                if (type.includes('nationale') || adm === region) include = true;
+                level = type.includes('nationale') ? 'Etat' : 'Région';
+            } else if (isProtection) {
+                if (type.includes('nationale')) { include = true; level = 'Etat'; }
+                else if (type.includes('régionale') && adm === region) { include = true; level = 'Région'; }
+                else if (type.includes('départementale') && adm === departement) { include = true; level = 'Département'; }
+            } else if (isRegulation) {
                 include = true; level = 'Etat';
             }
 
@@ -178,24 +176,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         return Array.from(result.values());
     }
-
-    /**
-     * NOUVEAU : Recherche les occurrences des espèces patrimoniales locales.
-     * @param {Array<Object>} patrimonialesList - Liste des espèces à rechercher.
-     * @param {string} wktPolygon - Polygone WKT pour la requête spatiale.
-     * @returns {Promise<Array<Object>>} - Liste des espèces trouvées avec leurs occurrences.
-     */
+    
     async function searchPatrimonialOccurrences(patrimonialesList, wktPolygon) {
         setStatus(`Résolution des noms pour ${patrimonialesList.length} espèces...`, true);
 
-        // Étape 1 : Obtenir les taxonKey pour chaque espèce
         const speciesKeys = new Map();
         const keyPromises = patrimonialesList.map(async (sp) => {
             try {
                 const matchUrl = `https://api.gbif.org/v1/species/match?name=${encodeURIComponent(sp.name)}`;
                 const resp = await fetch(matchUrl);
                 const data = await resp.json();
-                if (data.usageKey) {
+                if (data.usageKey && data.kingdom === 'Plantae') { // Double vérification
                     speciesKeys.set(data.usageKey, sp);
                     return data.usageKey;
                 }
@@ -207,10 +198,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const validKeys = (await Promise.all(keyPromises)).filter(Boolean);
         if (validKeys.length === 0) {
-            throw new Error("Aucun nom d'espèce n'a pu être résolu dans le référentiel GBIF.");
+            throw new Error("Aucun nom d'espèce floristique n'a pu être résolu dans le référentiel GBIF.");
         }
 
-        // Étape 2 : Rechercher les occurrences pour tous les taxonKeys en une seule requête
         let allOccurrences = [];
         let offset = 0;
         const limit = 300;
@@ -246,7 +236,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
-        // Étape 3 : Regrouper les résultats par espèce
         const resultsBySpecies = new Map();
         allOccurrences.forEach(occ => {
             if (occ.speciesKey && speciesKeys.has(occ.speciesKey)) {
@@ -269,10 +258,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return Array.from(resultsBySpecies.values()).sort((a,b) => a.name.localeCompare(b.name));
     }
 
-    /**
-     * Initialise la carte Leaflet.
-     * @param {Coordinates} coords - Coordonnées initiales pour centrer la carte.
-     */
     function initializeMap(coords) {
         map = L.map(mapContainer).setView([coords.latitude, coords.longitude], 11);
         L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
@@ -284,21 +269,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }).addTo(map);
     }
     
-    /**
-     * Affiche les résultats sur la carte et dans un tableau.
-     * @param {Array<Object>} foundSpecies - Liste des espèces trouvées.
-     */
     const displayResults = (foundSpecies) => {
         resultsContainer.innerHTML = '';
         speciesLayers.forEach(layer => map.removeLayer(layer));
         speciesLayers.clear();
 
         if (foundSpecies.length === 0) {
-            setStatus("Aucune occurrence d'espèce patrimoniale locale trouvée dans le rayon de 10 km.");
+            setStatus("Aucune occurrence d'espèce patrimoniale floristique trouvée dans le rayon de 10 km.");
             return;
         }
         
-        setStatus(`${foundSpecies.length} espèce(s) patrimoniale(s) locale(s) trouvée(s) à proximité.`);
+        setStatus(`${foundSpecies.length} espèce(s) patrimoniale(s) floristique(s) trouvée(s) à proximité.`);
 
         foundSpecies.forEach((species, index) => {
             const color = SPECIES_COLORS[index % SPECIES_COLORS.length];
@@ -316,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             layerGroup.addTo(map);
             speciesLayers.set(species.speciesKey, layerGroup);
-            species.color = color; // Ajouter la couleur pour la légende du tableau
+            species.color = color;
         });
         
         const table = document.createElement('table');
@@ -324,7 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <thead>
                 <tr>
                     <th>Nom scientifique</th>
-                    <th>Statut</th>
+                    <th>Statut (Label)</th>
                     <th>Échelle</th>
                     <th>Occurrences (10km)</th>
                     <th>Lien INPN</th>
@@ -334,8 +315,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${foundSpecies.map(s => `
                     <tr>
                         <td><span class="legend-color" style="background-color:${s.color};"></span><i>${s.name}</i></td>
-                        <td>${s.status} (${s.label})</td>
-                        <td>${s.level} (${s.adminArea})</td>
+                        <td>${s.label}</td>
+                        <td>${s.level}</td>
                         <td>${s.occurrences.length}</td>
                         <td><a href="https://inpn.mnhn.fr/espece/recherche?q=${encodeURIComponent(s.name)}" target="_blank" rel="noopener noreferrer">Fiche</a></td>
                     </tr>
@@ -344,43 +325,37 @@ document.addEventListener('DOMContentLoaded', () => {
         resultsContainer.appendChild(table);
     };
 
-    /**
-     * Fonction principale orchestrant le processus.
-     */
     async function main() {
         try {
-            // Phase 0 : Initialisation
             setStatus("Récupération de votre position...", true);
             const coords = await getUserLocation();
+            
             setStatus("Initialisation de la carte...", true);
             initializeMap(coords);
 
-            // Phase 1 : Identification des espèces patrimoniales locales
             setStatus("Identification de votre région...", true);
             const { region, departement } = await getRegionDepartement(coords.latitude, coords.longitude);
             
-            setStatus("Analyse des statuts patrimoniaux pour votre localisation...", true);
-            const dataset = await loadBDCstatut();
-            const patrimoniales = filterPatrimoniales(dataset, region, departement);
+            setStatus("Analyse des statuts patrimoniaux pour la flore...", true);
+            const floraDataset = await loadBDCstatut();
+            const patrimoniales = filterPatrimoniales(floraDataset, region, departement);
             
             if (patrimoniales.length === 0) {
-                setStatus(`Aucune espèce patrimoniale spécifique n'a été trouvée pour ${region} / ${departement}.`);
+                setStatus(`Aucune espèce floristique patrimoniale spécifique n'a été trouvée pour ${region} / ${departement}.`);
                 mapContainer.style.display = 'block';
                 return;
             }
 
-            // Phase 2 : Recherche des occurrences
             const wktPolygon = createWktCircularPolygon(coords.latitude, coords.longitude, 10);
             const foundSpecies = await searchPatrimonialOccurrences(patrimoniales, wktPolygon);
 
-            // Phase 3 : Affichage
-            setStatus(null); // Nettoie le statut avant d'afficher les résultats
+            setStatus(null);
             displayResults(foundSpecies);
 
         } catch (error) {
             console.error("Erreur dans le processus principal:", error);
             setStatus(`Erreur : ${error.message}`);
-            mapContainer.style.display = 'none';
+            if (mapContainer) mapContainer.style.display = 'none';
         }
     }
 
