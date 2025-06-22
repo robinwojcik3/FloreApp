@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let map = null;
     let speciesLayers = new Map();
 
+    // NOUVEAU : Définition du rayon de recherche en tant que constante
+    const SEARCH_RADIUS_KM = 5;
+
     const SPECIES_COLORS = ['#E6194B', '#3CB44B', '#FFE119', '#4363D8', '#F58231', '#911EB4', '#46F0F0', '#F032E6', '#BCF60C', '#FABEBE', '#800000', '#AA6E28', '#000075', '#A9A9A9'];
 
     const OLD_REGION_MAP = {
@@ -118,14 +121,12 @@ document.addEventListener('DOMContentLoaded', () => {
         return Array.from(result.values());
     }
 
-    // MODIFIÉ : Utilisation d'une requête POST pour la recherche d'occurrences
     async function searchOccurrences(speciesList, wktPolygon) {
         if (speciesList.length === 0) return [];
         const NAME_CHUNK_SIZE = 100;
+        const OCCURRENCE_CHUNK_SIZE = 300;
         const speciesKeys = new Map();
-        
         try {
-            // Étape 1: Résolution des noms par lots (inchangée et fonctionnelle)
             for (let i = 0; i < speciesList.length; i += NAME_CHUNK_SIZE) {
                 const chunk = speciesList.slice(i, i + NAME_CHUNK_SIZE);
                 setStatus(`Résolution des noms... (${i}/${speciesList.length})`, true);
@@ -138,44 +139,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 await Promise.all(promises);
                 await new Promise(resolve => setTimeout(resolve, 300));
             }
-
             const validKeys = Array.from(speciesKeys.keys());
             if (validKeys.length === 0) return [];
-
-            // Étape 2: Recherche des occurrences avec une requête POST
-            setStatus(`Recherche des occurrences pour ${validKeys.length} espèces...`, true);
             let allOccurrences = [];
-            let offset = 0;
-            let endOfRecords = false;
-
-            while(!endOfRecords) {
-                const payload = {
-                    taxonKeys: validKeys,
-                    geometry: wktPolygon,
-                    limit: 300,
-                    offset: offset
-                };
-
-                const resp = await fetch('https://api.gbif.org/v1/occurrence/search', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!resp.ok) {
-                    // Tente de lire le message d'erreur de l'API GBIF pour un meilleur diagnostic
-                    const errorBody = await resp.text();
-                    console.error("Erreur de l'API GBIF:", errorBody);
-                    throw new Error(`Erreur API GBIF (${resp.status})`);
+            for (let i = 0; i < validKeys.length; i += OCCURRENCE_CHUNK_SIZE) {
+                const keyChunk = validKeys.slice(i, i + OCCURRENCE_CHUNK_SIZE);
+                let offset = 0;
+                let endOfRecords = false;
+                setStatus(`Recherche des occurrences... (Lot ${i / OCCURRENCE_CHUNK_SIZE + 1}/${Math.ceil(validKeys.length / OCCURRENCE_CHUNK_SIZE)})`, true);
+                while(!endOfRecords) {
+                    const payload = {
+                        taxonKeys: keyChunk,
+                        geometry: wktPolygon,
+                        limit: 300,
+                        offset: offset
+                    };
+                    const resp = await fetch('https://api.gbif.org/v1/occurrence/search', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (!resp.ok) {
+                        const errorBody = await resp.text();
+                        console.error("Erreur de l'API GBIF:", errorBody);
+                        throw new Error(`Erreur API GBIF (${resp.status})`);
+                    }
+                    const data = await resp.json();
+                    if (data.results && data.results.length > 0) allOccurrences.push(...data.results);
+                    offset += data.results.length;
+                    endOfRecords = data.endOfRecords || data.results.length === 0;
                 }
-
-                const data = await resp.json();
-                if (data.results && data.results.length > 0) allOccurrences.push(...data.results);
-                offset += data.results.length;
-                endOfRecords = data.endOfRecords || data.results.length === 0;
             }
-            
-            // Étape 3: Regroupement des résultats
             const resultsBySpecies = new Map();
             allOccurrences.forEach(occ => {
                 if (occ.speciesKey && speciesKeys.has(occ.speciesKey)) {
@@ -185,7 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             return Array.from(resultsBySpecies.values()).sort((a,b) => a.name.localeCompare(b.name));
-
         } catch (e) {
             throw new Error(`Échec de la communication avec la base de données GBIF. (${e.message})`);
         }
@@ -197,7 +190,13 @@ document.addEventListener('DOMContentLoaded', () => {
         L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
             attribution: 'Map data: © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: © <a href="https://opentopomap.org">OpenTopoMap</a>'
         }).addTo(map);
-        L.circle([coords.latitude, coords.longitude], { radius: 10000, color: '#c62828', weight: 2, fillOpacity: 0.1 }).addTo(map);
+        // MODIFIÉ : Utilisation de la constante pour le rayon du cercle
+        L.circle([coords.latitude, coords.longitude], { 
+            radius: SEARCH_RADIUS_KM * 1000, 
+            color: '#c62828', 
+            weight: 2, 
+            fillOpacity: 0.1 
+        }).addTo(map);
     }
     
     function displayResults(foundSpecies) {
@@ -205,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
         speciesLayers.forEach(layer => map.removeLayer(layer));
         speciesLayers.clear();
         if (foundSpecies.length === 0) {
-            setStatus("Aucune occurrence des espèces patrimoniales locales n'a été trouvée dans ce rayon de 10 km.");
+            setStatus(`Aucune occurrence des espèces patrimoniales locales n'a été trouvée dans un rayon de ${SEARCH_RADIUS_KM} km.`);
             return;
         }
         setStatus(`${foundSpecies.length} espèce(s) patrimoniale(s) trouvée(s) à proximité.`);
@@ -225,7 +224,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const table = document.createElement('table');
         table.innerHTML = `
-            <thead><tr><th>Nom scientifique</th><th>Statut</th><th>Occurrences (10km)</th><th>Lien INPN</th></tr></thead>
+            <thead><tr><th>Nom scientifique</th><th>Statut</th><th>Occurrences (${SEARCH_RADIUS_KM}km)</th><th>Lien INPN</th></tr></thead>
             <tbody>
                 ${foundSpecies.map(s => `
                     <tr>
@@ -253,7 +252,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 setStatus(`Aucune espèce floristique patrimoniale spécifique n'a été identifiée pour ${region} / ${departement}.`);
                 return;
             }
-            const wktPolygon = createWktCircularPolygon(coords.latitude, coords.longitude, 10);
+            // MODIFIÉ : Utilisation de la constante pour le polygone de recherche
+            const wktPolygon = createWktCircularPolygon(coords.latitude, coords.longitude, SEARCH_RADIUS_KM);
             const foundSpecies = await searchOccurrences(patrimonialesList, wktPolygon);
             setStatus(null);
             displayResults(foundSpecies);
