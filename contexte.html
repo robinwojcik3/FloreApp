@@ -120,25 +120,23 @@
   </style>
 </head>
 <body>
-  <!-- Navigation par onglets -->
   <nav class="tabs-container">
     <div class="tabs">
       <button class="tab" onclick="window.location.href='index.html'">Identification</button>
       <button class="tab active">Contexte environnemental</button>
+      <button class="tab" onclick="window.location.href='biblio-patri.html'">Biblio Patri</button>
     </div>
   </nav>
 
   <div class="main-content">
     
     <div class="location-options">
-      <!-- Option 1: Géolocalisation -->
       <div class="location-card">
         <button class="action-button" id="use-geolocation">
           Utiliser ma localisation
         </button>
       </div>
       
-      <!-- Option 2: Sélection sur carte -->
       <div class="location-card">
         <button class="action-button" id="choose-on-map">
           Ouvrir la carte
@@ -168,7 +166,6 @@
       </button>
       </div>
 
-      <!-- Option 3: Recherche par adresse -->
       <div class="location-card">
         <input type="text" id="address-input" placeholder="Saisissez une adresse"
                style="padding:8px;border:1px solid var(--border);border-radius:4px;width:100%;margin-bottom:.5rem;">
@@ -176,12 +173,9 @@
       </div>
     </div>
     
-    <!-- Indicateur de chargement -->
     <div class="loading" id="loading"></div>
     
-    <!-- Section des résultats -->
     <div class="results-section" id="results-section">
-      <!-- Carte interactive avant les ressources -->
       <h2 style="margin-top:2rem;">Carte interactive</h2>
       <div id="layer-controls" style="margin-bottom:0.5rem;"></div>
       <button id="measure-distance" class="small-button" style="display:none;margin-bottom:0.5rem;">Mesurer une distance</button>
@@ -192,8 +186,7 @@
         Cliquez sur les liens ci-dessous pour explorer le contexte environnemental de la zone sélectionnée :
       </p>
       <div class="results-grid" id="results-grid">
-        <!-- Les cartes de résultats seront ajoutées ici dynamiquement -->
-      </div>
+        </div>
     </div>
   </div>
 </body>
