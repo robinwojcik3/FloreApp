@@ -1,36 +1,38 @@
 /* ================================================================
-   Service-Worker – PlantID PWA (v3 - Avec contexte environnemental)
+   Service-Worker – PlantID PWA (v4 - Avec Biblio Patri)
    ================================================================ */
 
 // MODIFICATION CRITIQUE : La version du cache est incrémentée pour forcer la mise à jour.
-const CACHE_NAME = "plantid-v21";
+const CACHE_NAME = "plantid-v22";
 
 const WASM_ASSETS = {
   "openjpeg.wasm": "./pdfjs/wasm/openjpeg.wasm.b64",
   "qcms_bg.wasm": "./pdfjs/wasm/qcms_bg.wasm.b64"
 };
 
-// MODIFIÉ : Ajout des assets pour Flore Méd et Régal Végétal
+// MODIFIÉ : Ajout des assets pour Biblio Patri
 const CORE_ASSETS = [
   "./",
   "./index.html",
   "./organ.html",
   "./viewer.html",
   "./contexte.html",
+  "./biblio-patri.html", // NOUVEAU
   "./app.js",
   "./contexte.js",
+  "./biblio-patri.js",   // NOUVEAU
   "./assets/viewer_app.js",
   "./manifest.json",
   "./assets/flora_gallica_toc.json",
   "./assets/regal_vegetal_toc.json",
-  "./assets/flore_med_toc.json", // Assure la présence du TOC Flore Méd
+  "./assets/flore_med_toc.json",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./assets/Bandeau.jpg",
   "./assets/FloreAlpes.png",
   "./assets/Flora Gallica.png",
-  "./assets/Régal Végétal.png",   // Assure la présence de l'icône Régal Végétal
-  "./assets/Flore Med.png",       // Assure la présence de l'icône Flore Méd
+  "./assets/Régal Végétal.png",
+  "./assets/Flore Med.png",
   "./assets/INPN.png",
   "./assets/Biodiv'AURA.png",
   "./assets/Info Flora.png",
@@ -89,10 +91,11 @@ self.addEventListener("fetch", event => {
     const { request } = event;
     const url = new URL(request.url);
 
-    // Ne pas mettre en cache les requêtes vers les API
+    // Ne pas mettre en cache les requêtes vers les API externes
     if (request.url.includes("my-api.plantnet.org") || 
         request.url.includes("generativelanguage.googleapis.com") ||
-        request.url.includes("texttospeech.googleapis.com")) {
+        request.url.includes("texttospeech.googleapis.com") ||
+        request.url.includes("api.gbif.org")) {
         event.respondWith(fetch(request));
         return;
     }
