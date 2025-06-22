@@ -8,7 +8,8 @@ const MAX_RESULTS = 5;
 const MAX_MULTI_IMAGES = 5;
 const GEMINI_API_KEY = "AIzaSyDDv4amCchpTXGqz6FGuY8mxPClkw-uwMs";
 const TTS_API_KEY = "AIzaSyCsmQ_n_JtrA1Ev2GkOZeldYsAmHpJvhZY";
-const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+// Updated to Gemini 2.5 Flash model (v1 API)
+const GEMINI_ENDPOINT = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 const TTS_ENDPOINT = `https://texttospeech.googleapis.com/v1/text:synthesize?key=${TTS_API_KEY}`;
 
 
@@ -372,7 +373,7 @@ function showInfoModal(title, content) {
 
 async function getSynthesisFromGemini(speciesName) {
     const prompt = `En tant qu'expert botaniste, rédige une fiche de synthèse narrative et fluide pour l'espèce "${speciesName}". Le style doit être oral, comme si tu t'adressais à des étudiants, pour une future conversion en audio. N'utilise ni tableau, ni formatage de code, ni listes à puces. Structure ta réponse en couvrant les points suivants de manière conversationnelle, sans utiliser de titres : commence par une introduction (nom commun, nom latin, famille), puis décris un ou deux critères d'identification clés pour la distinguer d'espèces proches. Mentionne ces espèces sources de confusion et comment les différencier. Ensuite, décris son écologie et habitat préférentiel. Termine par son statut de conservation en France (si pertinent) et sa répartition générale. Dans ta réponse, n'utilise aucun formatage Markdown : pas de gras, italique, titres ou listes. Évite également d'insérer des caractères spéciaux tels que '*' ou ':' et réponds uniquement avec du texte simple qui sera mis en forme par le contexte. Utilise ton savoir encyclopédique pour générer cette fiche.`;
-    const requestBody = { "contents": [{ "parts": [{ "text": prompt }] }], "generationConfig": { "temperature": 0.4, "maxOutputTokens": 800 } };
+    const requestBody = { "contents":[{"role":"user","parts": [{ "text": prompt }] }], "generationConfig": { "temperature": 0.4, "maxOutputTokens": 800 } };
     try {
         const responseData = await apiFetch(GEMINI_ENDPOINT, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(requestBody) });
         if (!responseData) return "Erreur lors de la génération du texte.";
@@ -417,7 +418,7 @@ async function getSimilarSpeciesFromGemini(speciesName, limit = 5) {
     const genus = speciesName.split(/\s+/)[0];
     const prompt = `Donne une liste de ${limit} espèces du genre ${genus} avec lesquelles ${speciesName} peut être confondu pour des raisons morphologiques en région Rhône-Alpes ou PACA. Réponds uniquement par une liste séparée par des virgules. Attention à ce que ta réponse ne comporte absoluement aucun élément de formatae Markdown`;
     const requestBody = {
-        contents: [{ parts: [{ text: prompt }] }],
+        contents:[{role:"user", parts: [{ text: prompt }] }],
         generationConfig: { temperature: 0.4, maxOutputTokens: 60 }
     };
     const data = await apiFetch(GEMINI_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(requestBody) });
@@ -477,7 +478,7 @@ Ensuite, présente un tableau comparatif en format Markdown. Ce tableau doit reg
 Après le tableau, ajoute un paragraphe de synthèse plus développé (cinq à six phrases environ) rédigé dans un style oral mais technique. Fais ressortir les éléments clés qui différencient les espèces. Pour ce paragraphe de synthèse, n'utilise aucun élément de mise en forme markdown ni liste, uniquement du texte simple sans '*' et '/' ni aucun formatage de markdown.`;
 
     const requestBody = { 
-        "contents": [{ "parts": [{ "text": promptTemplate }] }], 
+        "contents": [{"role":"user", "parts": [{ "text": promptTemplate }] }], 
         "generationConfig": { "temperature": 0.3, "maxOutputTokens": 1500 } 
     };
     try {
