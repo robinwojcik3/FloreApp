@@ -376,7 +376,7 @@ function playAudioFromBase64(base64Audio) {
 
 async function getSimilarSpeciesFromGemini(speciesName, limit = 5) {
     const genus = speciesName.split(/\s+/)[0];
-    const prompt = `Donne une liste de ${limit} espèces du genre ${genus} avec lesquelles ${speciesName} peut être confondu pour des raisons morphologiques en région Rhône-Alpes ou PACA. Réponds uniquement par une liste séparée par des virgules.`;
+    const prompt = `Donne une liste de ${limit} espèces du genre ${genus} avec lesquelles ${speciesName} peut être confondu pour des raisons morphologiques en région Rhône-Alpes ou PACA. Réponds uniquement par une liste séparée par des virgules. Attention à ce que ta réponse ne comporte absoluement aucun élément de formatae Markdown`;
     const requestBody = {
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: { temperature: 0.4, maxOutputTokens: 60 }
