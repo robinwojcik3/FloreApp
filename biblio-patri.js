@@ -57,28 +57,63 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     /**
-     * Interroge l'API GBIF en une seule fois pour toutes les espèces menacées.
+     * MODIFIÉ : Interroge l'API GBIF en bouclant sur les pages de résultats.
      */
-    const searchThreatenedSpecies = async (wktPolygon) => {
+    const searchThreatenedSpecies = async (wktPolygon, statusUpdater) => {
         const threatStati = ['CRITICALLY_ENDANGERED', 'ENDANGERED', 'VULNERABLE', 'NEAR_THREATENED'];
-        const params = new URLSearchParams({
+        const baseParams = new URLSearchParams({
             taxon_key: 6, // Kingdom Plantae
             geometry: wktPolygon,
-            limit: 1000, // Nombre maximal d'occurrences
         });
-        threatStati.forEach(status => params.append('threat', status));
+        threatStati.forEach(status => baseParams.append('threat', status));
 
-        const url = `https://api.gbif.org/v1/occurrence/search?${params.toString()}`;
-        
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error(`Erreur API GBIF (${response.status})`);
-            const data = await response.json();
-            return data.results || [];
-        } catch (error) {
-            console.error("Échec de la récupération des espèces menacées:", error);
-            throw error;
+        let allOccurrences = [];
+        let offset = 0;
+        const limit = 300; // Limite par requête, standard pour GBIF
+        let endOfRecords = false;
+        let totalRecords = 0;
+
+        while (!endOfRecords) {
+            const pageParams = new URLSearchParams(baseParams);
+            pageParams.set('offset', offset);
+            pageParams.set('limit', limit);
+            
+            const url = `https://api.gbif.org/v1/occurrence/search?${pageParams.toString()}`;
+            
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`Erreur API GBIF (${response.status})`);
+                
+                const data = await response.json();
+                
+                if (offset === 0) { // Première requête
+                    totalRecords = data.count;
+                }
+
+                if (data.results && data.results.length > 0) {
+                    allOccurrences.push(...data.results);
+                }
+
+                if (statusUpdater) {
+                    const message = totalRecords > 0 ? `Chargement des occurrences... (${allOccurrences.length} / ${totalRecords})` : "Recherche en cours...";
+                    statusUpdater(message, true);
+                }
+                
+                offset += data.results.length;
+                endOfRecords = data.endOfRecords || offset >= totalRecords;
+                
+                // Sécurité pour éviter une boucle infinie si l'API ne retourne pas endOfRecords=true
+                if (data.results.length === 0) {
+                    endOfRecords = true;
+                }
+
+            } catch (error) {
+                console.error("Échec de la récupération d'une page d'occurrences:", error);
+                throw error;
+            }
         }
+        
+        return allOccurrences;
     };
     
     /**
@@ -94,6 +129,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!speciesMap.has(occ.speciesKey)) {
                 speciesMap.set(occ.speciesKey, {
                     name: occ.scientificName,
+                    speciesKey: occ.speciesKey,
                     threatStatus: occ.threatStatus || 'N/A',
                     color: SPECIES_COLORS[colorIndex % SPECIES_COLORS.length],
                     occurrences: []
@@ -119,9 +155,8 @@ document.addEventListener('DOMContentLoaded', () => {
             attribution: 'Map data: © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: © <a href="https://opentopomap.org">OpenTopoMap</a>'
         }).addTo(map);
 
-        // Affiche le cercle de recherche
         L.circle([coords.latitude, coords.longitude], {
-            radius: 10000, // 10 km
+            radius: 10000,
             color: '#c62828',
             weight: 2,
             fillOpacity: 0.1
@@ -138,7 +173,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        // Affichage sur la carte
         speciesList.forEach(species => {
             const icon = L.divIcon({
                 html: `<div style="background-color: ${species.color}; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 3px rgba(0,0,0,0.5);"></div>`,
@@ -156,7 +190,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
         
-        // Affichage dans le tableau
         const table = document.createElement('table');
         table.innerHTML = `
             <thead>
@@ -171,9 +204,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${speciesList.map(s => `
                     <tr>
                         <td><span class="legend-color" style="background-color:${s.color};"></span><i>${s.name}</i></td>
-                        <td>${s.threatStatus.replace('_', ' ')}</td>
+                        <td>${s.threatStatus.replace(/_/g, ' ')}</td>
                         <td>${s.occurrences.length}</td>
-                        <td><a href="https://www.gbif.org/species/${s.occurrences[0].speciesKey}" target="_blank" rel="noopener noreferrer">Fiche</a></td>
+                        <td><a href="https://www.gbif.org/species/${s.speciesKey}" target="_blank" rel="noopener noreferrer">Fiche</a></td>
                     </tr>
                 `).join('')}
             </tbody>
@@ -192,12 +225,11 @@ document.addEventListener('DOMContentLoaded', () => {
             setStatus("Initialisation de la carte...", true);
             initializeMap(coords);
 
-            setStatus("Recherche des espèces menacées...", true);
             const wktPolygon = createWktCircularPolygon(coords.latitude, coords.longitude, 10);
-            const occurrences = await searchThreatenedSpecies(wktPolygon);
+            const occurrences = await searchThreatenedSpecies(wktPolygon, setStatus);
             const processedSpecies = processOccurrences(occurrences);
             
-            setStatus(null); // Cache le message de statut
+            setStatus(null);
             displayResults(processedSpecies);
 
         } catch (error) {
