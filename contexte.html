@@ -12,12 +12,12 @@
   <script defer src="contexte.js"></script>
   <script defer src="sw-register.js"></script>
   <style>
-    /* Primary color changed to blue for a compact look */
-    :root{ --primary:#0d6efd; --bg:#f6f9fb; --card:#ffffff; --border:#e0e0e0; --text:#202124; --max-width:600px; }
+    /* Couleurs plus "écologiques" pour une identité visuelle claire */
+    :root{ --primary:#2e7d32; --bg:#f6f9fb; --card:#ffffff; --border:#e0e0e0; --text:#202124; --max-width:600px; }
     html[data-theme="dark"]{ --bg:#181a1b; --card:#262b2f; --border:#333; --text:#ececec; }
     *{box-sizing:border-box;}
     body{
-      background:linear-gradient(to bottom,var(--bg),#e9f5e9);
+      background:linear-gradient(to bottom,var(--bg),#e4f5e4);
       color:var(--text);
       font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
       margin:0; padding:0;
@@ -42,7 +42,7 @@
       transition: background .3s,color .3s; position: relative;
       border-radius:8px 8px 0 0;
     }
-    .tab:hover { background: rgba(13, 110, 253, 0.1); }
+    .tab:hover { background: rgba(46, 125, 50, 0.1); }
     .tab.active { color: var(--primary); font-weight: 600; }
     .tab.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: var(--primary); }
     
@@ -57,7 +57,7 @@
     .location-card .icon { display:none; }
     
     .action-button { padding: 10px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer; transition: all 0.3s; width: 100%; }
-    .action-button:hover { background: #0b5ed7; transform: scale(1.02); }
+    .action-button:hover { background: #1b5e20; transform: scale(1.02); }
     .action-button:disabled { background: #ccc; cursor: not-allowed; transform: none; }
     
     /* Carte interactive */
@@ -72,7 +72,7 @@
     /* Coordonnées sélectionnées */
     .coordinates-display {
       display: none; margin-top: 1rem; padding: 1rem;
-      background: rgba(13, 110, 253, 0.1); border-radius: 6px;
+      background: rgba(46, 125, 50, 0.1); border-radius: 6px;
       border:1px solid var(--border); text-align: center;
     }
     .coordinates-display span { font-weight: 600; color: var(--primary); }
@@ -82,7 +82,7 @@
       border-radius:4px;font-size:.9rem;cursor:pointer;
       transition:background .3s,transform .3s;
     }
-    .small-button:hover{background:#0b5ed7;transform:scale(1.05);}
+    .small-button:hover{background:#1b5e20;transform:scale(1.05);}
     
     /* Résultats */
     .results-section { display: none; margin-top: 2rem; }
@@ -114,7 +114,7 @@
     
     @media (prefers-color-scheme:dark) {
       :root{--bg:#181a1b;--card:#262b2f;--border:#333;--text:#ececec}
-      .coordinates-display { background: rgba(13, 110, 253, 0.2); }
+      .coordinates-display { background: rgba(46, 125, 50, 0.2); }
       .map-instruction { background: rgba(255, 255, 255, 0.15); }
     }
   </style>
@@ -123,12 +123,13 @@
   <nav class="tabs-container">
     <div class="tabs">
       <button class="tab" onclick="window.location.href='index.html'">Identification</button>
-      <button class="tab active">Contexte environnemental</button>
+      <button class="tab active">🌿 Contexte environnemental</button>
       <button class="tab" onclick="window.location.href='biblio-patri.html'">Biblio Patri</button>
     </div>
   </nav>
 
   <div class="main-content">
+    <h1>🌿 Contexte environnemental</h1>
     
     <div class="location-options">
       <div class="location-card">
