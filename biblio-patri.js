@@ -62,26 +62,25 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // NOUVEAU : Fonction avec diagnostic d'erreur amélioré pour les colonnes
+    // MODIFIÉ : La fonction n'exige plus la colonne 'REGNE'
     async function loadBDCstatut() {
         try {
             const resp = await fetch('BDCstatut.csv');
             if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
             let text = await resp.text();
 
-            // Supprimer le BOM (Byte Order Mark) s'il est présent
             if (text.charCodeAt(0) === 0xFEFF) {
                 text = text.substring(1);
             }
 
             const lines = text.trim().split(/\r?\n/);
             if (lines.length < 1) throw new Error("Le fichier CSV est vide.");
-
+            
             const header = lines[0].split(';').map(h => h.trim());
             
-            const requiredColumns = ['REGNE', 'LB_ADM_TR', 'LB_NOM', 'CODE_STATUT', 'LB_TYPE_STATUT', 'LABEL_STATUT'];
+            // La colonne 'REGNE' a été retirée des exigences
+            const requiredColumns = ['LB_ADM_TR', 'LB_NOM', 'CODE_STATUT', 'LB_TYPE_STATUT', 'LABEL_STATUT'];
             
-            // Vérification des colonnes
             const missingColumns = requiredColumns.filter(col => !header.includes(col));
             if (missingColumns.length > 0) {
                 throw new Error(`Colonnes requises manquantes: [${missingColumns.join(', ')}]. Colonnes trouvées: [${header.join(', ')}]`);
@@ -91,10 +90,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             return lines.slice(1).map(line => {
                 const cols = line.split(';');
-                if (cols.length > Math.max(...Object.values(indices))) {
-                    if (cols[indices.REGNE] && cols[indices.REGNE].trim() === 'Plantae') {
-                        return Object.fromEntries(requiredColumns.map(col => [col, cols[indices[col]]]));
-                    }
+                 if (cols.length > Math.max(...Object.values(indices))) {
+                    // Le filtrage sur 'Plantae' est retiré, on charge toutes les lignes
+                    return Object.fromEntries(requiredColumns.map(col => [col, cols[indices[col]]]));
                 }
                 return null;
             }).filter(Boolean);
