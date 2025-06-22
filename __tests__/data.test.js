@@ -3,8 +3,8 @@ const vm = require('vm');
 
 function loadAppWithExports(extraCtx = {}) {
   const ctx = loadApp(extraCtx);
-  vm.runInContext('globalThis.__extract = { taxref, ecology, trigramIndex, criteres, physionomie };', ctx);
-  vm.runInContext('globalThis.__cdRef = cdRef; globalThis.__ecolOf = ecolOf;', ctx);
+  vm.runInContext('globalThis.__extract = { taxref, ecology, trigramIndex, criteres, physionomie, phenologie };', ctx);
+  vm.runInContext('globalThis.__cdRef = cdRef; globalThis.__ecolOf = ecolOf; globalThis.__phenoOf = phenoOf;', ctx);
   return ctx;
 }
 
@@ -26,6 +26,9 @@ describe('data loading', () => {
       if (url === 'Physionomie.csv') {
         return Promise.resolve({ ok: true, text: () => Promise.resolve('Abies alba;phy\n') });
       }
+      if (url === 'Phenologie.csv') {
+        return Promise.resolve({ ok: true, text: () => Promise.resolve('Abies alba;4-5\n') });
+      }
       return Promise.resolve({ ok: true, json: () => Promise.resolve({}) });
     });
     const ctx = loadAppWithExports({ fetch: fetchMock });
@@ -38,6 +41,8 @@ describe('data loading', () => {
     const key = ctx.norm('Abies alba');
     expect(ctx.__extract.criteres[key]).toBe('desc');
     expect(ctx.__extract.physionomie[key]).toBe('phy');
+    expect(ctx.__extract.phenologie[key]).toBe('4-5');
+    expect(ctx.__phenoOf('Abies alba')).toBe('4-5');
   });
 });
 

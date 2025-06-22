@@ -27,6 +27,7 @@ let floreMedToc = {}; // Variable pour la table des matières de Flore Méd
 let floreAlpesIndex = {}; 
 let criteres = {};
 let physionomie = {};
+let phenologie = {};
 let userLocation = { latitude: 45.188529, longitude: 5.724524 };
 
 let displayedItems = [];
@@ -52,6 +53,10 @@ function loadData() {
     fetch("Physionomie.csv").then(r => r.text()).then(t => parseCsv(t).forEach(row => {
       const [name, desc] = row;
       if (name) physionomie[norm(name)] = desc;
+    })),
+    fetch("Phenologie.csv").then(r => r.text()).then(t => parseCsv(t).forEach(row => {
+      const [name, pheno] = row;
+      if (name) phenologie[norm(name)] = pheno;
     }))
   ]).then(() => { taxrefNames.sort(); console.log("Données prêtes."); })
     .catch(err => {
@@ -84,6 +89,7 @@ const cdRef = n => taxref[norm(n)];
 const ecolOf = n => ecology[norm(n)] || "—";
 const criteresOf = n => criteres[norm(n)] || "—";
 const physioOf = n => physionomie[norm(n)] || "—";
+const phenoOf = n => phenologie[norm(n)] || "—";
 const slug = n => norm(n).replace(/ /g, "-");
 
 function parseCsv(text) {
@@ -681,6 +687,7 @@ function buildTable(items){
     const eco  = ecolOf(sci);
     const crit = criteresOf(sci);
     const phys = physioOf(sci);
+    const pheno = phenoOf(sci);
     const genus = sci.split(' ')[0].toLowerCase();
     
     const tocEntryFloraGallica = floraToc[genus];
@@ -739,6 +746,9 @@ function buildTable(items){
               <td class="col-physionomie">
                 <div class="text-popup-trigger" data-title="Physionomie" data-fulltext="${encodeURIComponent(phys)}">${phys}</div>
               </td>
+              <td class="col-phenologie">
+                <div class="text-popup-trigger" data-title="Phénologie" data-fulltext="${encodeURIComponent(pheno)}">${pheno}</div>
+              </td>
               <td class="col-link">${linkIcon(cd && aura(cd), "Biodiv'AURA.png", "Biodiv'AURA")}</td>
               <td class="col-link">${linkIcon(infoFlora(sci), "Info Flora.png", "Info Flora")}</td>
               <td class="col-link">${floraHelveticaLink}</td>
@@ -750,7 +760,7 @@ function buildTable(items){
             </tr>`;
   }).join("");
 
-  const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th><th>Régal Végétal</th><th>Flore Méd</th><th>Image</th></tr>`;
+  const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Phénologie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th><th>Régal Végétal</th><th>Flore Méd</th><th>Image</th></tr>`;
   
   wrap.innerHTML = `<div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-footer" style="padding-top: 1rem; text-align: center;"></div><div id="comparison-results-container" style="display:none;"></div>`;
   enableDragScroll(wrap);
