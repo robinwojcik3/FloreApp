@@ -62,36 +62,51 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // NOUVEAU : Fonction avec diagnostic d'erreur amélioré pour les colonnes
     async function loadBDCstatut() {
         try {
             const resp = await fetch('BDCstatut.csv');
             if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-            const text = await resp.text();
-            const lines = text.trim().split(/\r?\n/);
-            const header = lines[0].split(';');
-            const columns = ['REGNE', 'LB_ADM_TR', 'LB_NOM', 'CODE_STATUT', 'LB_TYPE_STATUT', 'LABEL_STATUT'];
-            const indices = Object.fromEntries(columns.map(col => [col, header.indexOf(col)]));
-            if (columns.some(col => indices[col] === -1)) {
-                throw new Error("Une ou plusieurs colonnes requises sont manquantes dans BDCstatut.csv");
+            let text = await resp.text();
+
+            // Supprimer le BOM (Byte Order Mark) s'il est présent
+            if (text.charCodeAt(0) === 0xFEFF) {
+                text = text.substring(1);
             }
+
+            const lines = text.trim().split(/\r?\n/);
+            if (lines.length < 1) throw new Error("Le fichier CSV est vide.");
+
+            const header = lines[0].split(';').map(h => h.trim());
+            
+            const requiredColumns = ['REGNE', 'LB_ADM_TR', 'LB_NOM', 'CODE_STATUT', 'LB_TYPE_STATUT', 'LABEL_STATUT'];
+            
+            // Vérification des colonnes
+            const missingColumns = requiredColumns.filter(col => !header.includes(col));
+            if (missingColumns.length > 0) {
+                throw new Error(`Colonnes requises manquantes: [${missingColumns.join(', ')}]. Colonnes trouvées: [${header.join(', ')}]`);
+            }
+
+            const indices = Object.fromEntries(requiredColumns.map(col => [col, header.indexOf(col)]));
+
             return lines.slice(1).map(line => {
                 const cols = line.split(';');
-                if (cols[indices.REGNE] === 'Plantae') {
-                    return Object.fromEntries(columns.map(col => [col, cols[indices[col]]]));
+                if (cols.length > Math.max(...Object.values(indices))) {
+                    if (cols[indices.REGNE] && cols[indices.REGNE].trim() === 'Plantae') {
+                        return Object.fromEntries(requiredColumns.map(col => [col, cols[indices[col]]]));
+                    }
                 }
                 return null;
             }).filter(Boolean);
         } catch (e) {
+            console.error("Erreur dans loadBDCstatut:", e);
             throw new Error(`Le fichier de statuts (BDCstatut.csv) n'a pas pu être chargé. (${e.message})`);
         }
     }
     
-    // NOUVEAU : Logique de filtrage beaucoup plus stricte et ciblée
     function getPatrimonialSpeciesList(allFloraStatus, region, departement) {
         const result = new Map();
         const threatCodes = ['NT', 'VU', 'EN', 'CR'];
-        
-        // Priorité pour ne garder que le statut le plus fort
         const priorityFor = (type) => {
             if (type.includes('Directive')) return 5;
             if (type.includes('Protection')) return 4;
@@ -102,69 +117,48 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         allFloraStatus.forEach(row => {
-            const adm = OLD_REGION_MAP[row.LB_ADM_TR] || row.LB_ADM_TR;
+            if (!row || !row.LB_ADM_TR) return;
+            const adm = OLD_REGION_MAP[row.LB_ADM_TR.trim()] || row.LB_ADM_TR.trim();
             let isRelevant = false;
 
-            // Ne considérer que les statuts de la région ou du département de l'utilisateur
             if (adm === region || adm === departement) {
                 const type = row.LB_TYPE_STATUT.toLowerCase();
                 const code = row.CODE_STATUT;
-
                 const isRedList = type.includes('liste rouge') && threatCodes.includes(code);
                 const isProtected = type.includes('protection') || type.includes('réglementation') || type.includes('directive');
                 const isSensibilite = type.includes('sensibilité');
-
-                if (isRedList || isProtected || isSensibilite) {
-                    isRelevant = true;
-                }
+                if (isRedList || isProtected || isSensibilite) isRelevant = true;
             }
 
             if (isRelevant) {
                 const prio = priorityFor(row.LB_TYPE_STATUT);
-                // Si l'espèce n'est pas encore dans la liste, ou si ce statut est plus fort que celui déjà enregistré
                 if (!result.has(row.LB_NOM) || prio > result.get(row.LB_NOM).priority) {
-                    result.set(row.LB_NOM, { 
-                        name: row.LB_NOM,
-                        label: row.LABEL_STATUT,
-                        priority: prio
-                    });
+                    result.set(row.LB_NOM, { name: row.LB_NOM, label: row.LABEL_STATUT, priority: prio });
                 }
             }
         });
-
-        // La Map garantit l'unicité des noms d'espèces. On retourne juste la liste des objets.
         return Array.from(result.values());
     }
 
     async function searchOccurrences(speciesList, wktPolygon) {
         if (speciesList.length === 0) return [];
-        const CHUNK_SIZE = 100; // Traiter les espèces par lots de 100
+        const CHUNK_SIZE = 100;
         const speciesKeys = new Map();
-        
         try {
-            // Étape 1: Résolution des noms par lots
             for (let i = 0; i < speciesList.length; i += CHUNK_SIZE) {
                 const chunk = speciesList.slice(i, i + CHUNK_SIZE);
                 setStatus(`Résolution des noms... (${i}/${speciesList.length})`, true);
                 const promises = chunk.map(sp => 
                     fetch(`https://api.gbif.org/v1/species/match?name=${encodeURIComponent(sp.name)}&strict=true&kingdom=Plantae`)
                     .then(res => res.ok ? res.json() : null)
-                    .then(data => {
-                        if (data && data.usageKey && data.matchType !== 'NONE') {
-                            speciesKeys.set(data.usageKey, sp);
-                        }
-                    })
+                    .then(data => { if (data && data.usageKey && data.matchType !== 'NONE') speciesKeys.set(data.usageKey, sp); })
                 );
                 await Promise.all(promises);
             }
-
             const validKeys = Array.from(speciesKeys.keys());
             if (validKeys.length === 0) return [];
-
-            // Étape 2: Recherche des occurrences (peut aussi être mise par lots si nécessaire)
             setStatus(`Recherche des occurrences pour ${validKeys.length} espèces...`, true);
-            let allOccurrences = [];
-            let offset = 0, endOfRecords = false;
+            let allOccurrences = [], offset = 0, endOfRecords = false;
             while(!endOfRecords) {
                 const params = new URLSearchParams({ taxon_key: validKeys.join(','), geometry: wktPolygon, limit: 300, offset });
                 const resp = await fetch(`https://api.gbif.org/v1/occurrence/search?${params.toString()}`);
@@ -174,23 +168,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 offset += data.results.length;
                 endOfRecords = data.endOfRecords || data.results.length === 0;
             }
-
-            // Étape 3: Regroupement des résultats
             const resultsBySpecies = new Map();
             allOccurrences.forEach(occ => {
                 if (occ.speciesKey && speciesKeys.has(occ.speciesKey)) {
                     const originalSpeciesData = speciesKeys.get(occ.speciesKey);
-                    if (!resultsBySpecies.has(occ.speciesKey)) {
-                        resultsBySpecies.set(occ.speciesKey, { ...originalSpeciesData, occurrences: [] });
-                    }
-                    resultsBySpecies.get(occ.speciesKey).occurrences.push({
-                        lat: occ.decimalLatitude, lon: occ.decimalLongitude,
-                        date: occ.eventDate ? new Date(occ.eventDate).toLocaleDateString() : 'N/A'
-                    });
+                    if (!resultsBySpecies.has(occ.speciesKey)) resultsBySpecies.set(occ.speciesKey, { ...originalSpeciesData, occurrences: [] });
+                    resultsBySpecies.get(occ.speciesKey).occurrences.push({ lat: occ.decimalLatitude, lon: occ.decimalLongitude, date: occ.eventDate ? new Date(occ.eventDate).toLocaleDateString() : 'N/A' });
                 }
             });
             return Array.from(resultsBySpecies.values()).sort((a,b) => a.name.localeCompare(b.name));
-
         } catch (e) {
             throw new Error(`Échec de la communication avec la base de données GBIF. (${e.message})`);
         }
@@ -202,9 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
         L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
             attribution: 'Map data: © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: © <a href="https://opentopomap.org">OpenTopoMap</a>'
         }).addTo(map);
-        L.circle([coords.latitude, coords.longitude], {
-            radius: 10000, color: '#c62828', weight: 2, fillOpacity: 0.1
-        }).addTo(map);
+        L.circle([coords.latitude, coords.longitude], { radius: 10000, color: '#c62828', weight: 2, fillOpacity: 0.1 }).addTo(map);
     }
     
     function displayResults(foundSpecies) {
@@ -224,9 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             const layerGroup = L.layerGroup();
             species.occurrences.forEach(occ => {
-                if (occ.lat && occ.lon) {
-                    L.marker([occ.lat, occ.lon], { icon }).addTo(layerGroup).bindPopup(`<b><i>${species.name}</i></b><br>Observé le: ${occ.date}`);
-                }
+                if (occ.lat && occ.lon) L.marker([occ.lat, occ.lon], { icon }).addTo(layerGroup).bindPopup(`<b><i>${species.name}</i></b><br>Observé le: ${occ.date}`);
             });
             layerGroup.addTo(map);
             speciesLayers.set(species.name, layerGroup);
@@ -258,15 +240,12 @@ document.addEventListener('DOMContentLoaded', () => {
             setStatus("Chargement et filtrage des statuts de la flore locale...", true);
             const allFloraStatus = await loadBDCstatut();
             const patrimonialesList = getPatrimonialSpeciesList(allFloraStatus, region, departement);
-
             if (patrimonialesList.length === 0) {
                 setStatus(`Aucune espèce floristique patrimoniale spécifique n'a été identifiée pour ${region} / ${departement}.`);
                 return;
             }
-
             const wktPolygon = createWktCircularPolygon(coords.latitude, coords.longitude, 10);
             const foundSpecies = await searchOccurrences(patrimonialesList, wktPolygon);
-            
             setStatus(null);
             displayResults(foundSpecies);
         } catch (error) {
