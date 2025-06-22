@@ -118,15 +118,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return Array.from(result.values());
     }
 
-    // MODIFIÉ : La recherche d'occurrences est maintenant aussi faite par lots.
+    // MODIFIÉ : Utilisation d'une requête POST pour la recherche d'occurrences
     async function searchOccurrences(speciesList, wktPolygon) {
         if (speciesList.length === 0) return [];
         const NAME_CHUNK_SIZE = 100;
-        const OCCURRENCE_CHUNK_SIZE = 300; // Paquets de 300 pour la recherche
         const speciesKeys = new Map();
         
         try {
-            // Étape 1: Résolution des noms par lots (inchangée)
+            // Étape 1: Résolution des noms par lots (inchangée et fonctionnelle)
             for (let i = 0; i < speciesList.length; i += NAME_CHUNK_SIZE) {
                 const chunk = speciesList.slice(i, i + NAME_CHUNK_SIZE);
                 setStatus(`Résolution des noms... (${i}/${speciesList.length})`, true);
@@ -143,27 +142,40 @@ document.addEventListener('DOMContentLoaded', () => {
             const validKeys = Array.from(speciesKeys.keys());
             if (validKeys.length === 0) return [];
 
-            // Étape 2: Recherche des occurrences par lots de taxonKey
+            // Étape 2: Recherche des occurrences avec une requête POST
+            setStatus(`Recherche des occurrences pour ${validKeys.length} espèces...`, true);
             let allOccurrences = [];
-            for (let i = 0; i < validKeys.length; i += OCCURRENCE_CHUNK_SIZE) {
-                const keyChunk = validKeys.slice(i, i + OCCURRENCE_CHUNK_SIZE);
-                let offset = 0;
-                let endOfRecords = false;
+            let offset = 0;
+            let endOfRecords = false;
 
-                setStatus(`Recherche des occurrences... (Lot ${i / OCCURRENCE_CHUNK_SIZE + 1}/${Math.ceil(validKeys.length / OCCURRENCE_CHUNK_SIZE)})`, true);
+            while(!endOfRecords) {
+                const payload = {
+                    taxonKeys: validKeys,
+                    geometry: wktPolygon,
+                    limit: 300,
+                    offset: offset
+                };
 
-                while(!endOfRecords) {
-                    const params = new URLSearchParams({ taxon_key: keyChunk.join(','), geometry: wktPolygon, limit: 300, offset });
-                    const resp = await fetch(`https://api.gbif.org/v1/occurrence/search?${params.toString()}`);
-                    if (!resp.ok) throw new Error(`Erreur API GBIF (${resp.status})`);
-                    const data = await resp.json();
-                    if (data.results.length > 0) allOccurrences.push(...data.results);
-                    offset += data.results.length;
-                    endOfRecords = data.endOfRecords || data.results.length === 0;
+                const resp = await fetch('https://api.gbif.org/v1/occurrence/search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!resp.ok) {
+                    // Tente de lire le message d'erreur de l'API GBIF pour un meilleur diagnostic
+                    const errorBody = await resp.text();
+                    console.error("Erreur de l'API GBIF:", errorBody);
+                    throw new Error(`Erreur API GBIF (${resp.status})`);
                 }
+
+                const data = await resp.json();
+                if (data.results && data.results.length > 0) allOccurrences.push(...data.results);
+                offset += data.results.length;
+                endOfRecords = data.endOfRecords || data.results.length === 0;
             }
             
-            // Étape 3: Regroupement des résultats (inchangée)
+            // Étape 3: Regroupement des résultats
             const resultsBySpecies = new Map();
             allOccurrences.forEach(occ => {
                 if (occ.speciesKey && speciesKeys.has(occ.speciesKey)) {
