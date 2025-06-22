@@ -38,4 +38,24 @@ describe('inpn-proxy handler', () => {
     const res = await handler({ queryStringParameters: {} });
     expect(res.statusCode).toBe(400);
   });
+
+  test('proxies WMS requests', async () => {
+    const binary = Buffer.from('abc');
+    const fetchMock = jest.fn().mockResolvedValue({
+      ok: true,
+      status: 200,
+      headers: { get: () => 'image/png' },
+      buffer: () => Promise.resolve(binary)
+    });
+    const handler = loadHandler(fetchMock);
+    const res = await handler({
+      rawQuery: 'service=WMS&LAYERS=foo',
+      queryStringParameters: { service: 'WMS' },
+      headers: {}
+    });
+    expect(fetchMock).toHaveBeenCalled();
+    expect(res.statusCode).toBe(200);
+    expect(res.isBase64Encoded).toBe(true);
+    expect(res.body).toBe(binary.toString('base64'));
+  });
 });

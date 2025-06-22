@@ -54,10 +54,33 @@ describe('comparison helpers', () => {
     expect(res.tableMarkdown.trim()).toBe('| A | B |\n| - | - |\n| 1 | 2 |');
   });
 
+  test('parseComparisonText extracts summary section', () => {
+    const ctx = loadApp();
+    const text = [
+      'Intro',
+      '| A | B |',
+      '| - | - |',
+      '| 1 | 2 |',
+      'Summary 1',
+      'Summary 2'
+    ].join('\n');
+    const res = ctx.parseComparisonText(text);
+    expect(res.intro).toBe('Intro');
+    expect(res.tableMarkdown.trim()).toBe('| A | B |\n| - | - |\n| 1 | 2 |');
+    expect(res.summary).toBe('Summary 1 Summary 2');
+  });
+
   test('markdownTableToHtml converts table to HTML', () => {
     const ctx = loadApp();
     const md = '| A | B |\n| - | - |\n| 1 | 2 |';
     const html = ctx.markdownTableToHtml(md);
     expect(html.replace(/\s+/g, '')).toBe('<table><thead><tr><th>A</th><th>B</th></tr></thead><tbody><tr><td>1</td><td>2</td></tr></tbody></table>');
+  });
+
+  test('markdownTableToHtml handles multiple rows', () => {
+    const ctx = loadApp();
+    const md = '| A | B |\n| - | - |\n| 1 | 2 |\n| 3 | 4 |';
+    const html = ctx.markdownTableToHtml(md);
+    expect(html.replace(/\s+/g, '')).toBe('<table><thead><tr><th>A</th><th>B</th></tr></thead><tbody><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></tbody></table>');
   });
 });

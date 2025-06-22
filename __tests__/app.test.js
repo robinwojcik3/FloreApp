@@ -18,6 +18,22 @@ describe('utility functions', () => {
     expect(name).toBe('My_Photo 2024-01-02 03h04.jpg');
   });
 
+  test('parseCsv handles quotes and BOM', () => {
+    const ctx = loadApp();
+    const csv = '\uFEFFname;value\n"complex;field";"multi\nline";"with ""quotes"""';
+    const rows = ctx.parseCsv(csv);
+    expect(rows).toEqual([
+      ['name', 'value'],
+      ['complex;field', 'multi\nline', 'with "quotes"']
+    ]);
+  });
+
+  test('capitalizeGenus preserves hybrid markers', () => {
+    const ctx = loadApp();
+    expect(ctx.capitalizeGenus('x abies alba')).toBe('x Abies alba');
+    expect(ctx.capitalizeGenus('× picea abies')).toBe('× Picea abies');
+  });
+
 });
 
 describe('api helpers', () => {
