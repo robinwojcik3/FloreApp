@@ -820,6 +820,25 @@ function buildTable(items){
       });
   }
 
+  let startX, startY, moved = false;
+  const MOVE_THRESHOLD = 6;
+  const startPoint = ev => {
+      const t = ev.touches ? ev.touches[0] : ev;
+      startX = t.clientX;
+      startY = t.clientY;
+      moved = false;
+  };
+  const checkMove = ev => {
+      const t = ev.touches ? ev.touches[0] : ev;
+      if (Math.abs(t.clientX - startX) > MOVE_THRESHOLD || Math.abs(t.clientY - startY) > MOVE_THRESHOLD) {
+          moved = true;
+      }
+  };
+  wrap.addEventListener('pointerdown', startPoint);
+  wrap.addEventListener('pointermove', checkMove);
+  wrap.addEventListener('touchstart', startPoint);
+  wrap.addEventListener('touchmove', checkMove);
+
   wrap.addEventListener('change', (e) => {
       if (e.target.classList.contains('species-checkbox')) {
           updateCompareVisibility();
@@ -878,8 +897,12 @@ function buildTable(items){
 
   };
 
-  wrap.addEventListener('click', handleWrapClick);
-  wrap.addEventListener('touchend', handleWrapClick);
+  const safeClick = e => {
+      if (moved) { moved = false; return; }
+      handleWrapClick(e);
+  };
+  wrap.addEventListener('click', safeClick);
+  wrap.addEventListener('touchend', safeClick);
 
   const overlay = document.getElementById('popup-overlay');
   if (overlay) {

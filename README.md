@@ -101,8 +101,9 @@ This launches the Jest test suite which validates the helper utilities and the
   quick reference.
 - Clicking a species name copies the Latin name to the clipboard.
 - Clicking a cell in the "Critères physiologiques", "Écologie" or "Physionomie"
-  columns now opens an overlay pop‑up with the full text. Clicking outside the
-  pop‑up closes it instantly.
+  columns opens an overlay pop‑up with the full text **only after a static
+  click**. A swipe used to scroll the table will no longer trigger the pop‑up.
+  Clicking outside the pop‑up closes it instantly.
 - Google Gemini can generate a comparison table with optional text‑to‑speech
   playback.
 - When a single species is searched, a button under the results can retrieve
