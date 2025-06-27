@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualiseur - Flora Gallica</title>
+    <link rel="stylesheet" href="style.css">
     <style>
         body, html {
             margin: 0;
             padding: 0;
-            background-color: #333333;
-            color: #ffffff;
-            font-family: sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
         }
         #pdf-viewer {
             display: flex;
@@ -34,20 +35,20 @@
             display: block;
         }
         .error-message {
-            padding: 20px; 
-            text-align: center; 
-            color: #333;
+            padding: 20px;
+            text-align: center;
+            color: var(--text);
         }
         .error-message h1, .error-message h2 {
             margin-bottom: 10px;
         }
         .error-message a {
-            display: inline-block; 
-            margin: 20px; 
-            padding: 10px 20px; 
-            background: #388e3c; 
-            color: white; 
-            text-decoration: none; 
+            display: inline-block;
+            margin: 20px;
+            padding: 10px 20px;
+            background: var(--primary);
+            color: #fff;
+            text-decoration: none;
             border-radius: 5px;
         }
     </style>

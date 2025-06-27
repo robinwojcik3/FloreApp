@@ -184,3 +184,24 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     border-color: rgba(255, 255, 255, 0.8) !important;
     color: var(--text);
 }
+
+/* Harmonisation du style des boutons */
+.action-button,
+.upload-btn,
+.image-btn,
+.small-button {
+    background: var(--primary);
+    color: #fff;
+    border: 1px solid var(--primary);
+    border-radius: 4px;
+    font-size: 1rem;
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.action-button:hover,
+.upload-btn:hover,
+.image-btn:hover,
+.small-button:hover {
+    background: #2e7d32;
+}
