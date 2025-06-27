@@ -1,16 +1,16 @@
 :root {
     --primary: #388e3c;
-    --bg: #f6f9fb;
-    --card: #ffffff;
-    --border: #e0e0e0;
-    --text: #202124;
+    --bg: #333333;
+    --card: #444444;
+    --border: #555555;
+    --text: #ffffff;
     --max-width: 900px;
 }
 html[data-theme="dark"] {
-    --bg: #181a1b;
-    --card: #262b2f;
-    --border: #333;
-    --text: #ececec;
+    --bg: #333333;
+    --card: #444444;
+    --border: #555555;
+    --text: #ffffff;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
@@ -139,10 +139,10 @@ th, td {
 }
 th {
     font-weight: 600;
-    background: #f5f5f5;
-    color: #202124;
+    background: #555555;
+    color: #ffffff;
 }
-html[data-theme="dark"] th { background: #333; color: #ececec; }
+html[data-theme="dark"] th { background: #555555; color: #ffffff; }
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover { background-color: rgba(198,40,40,0.05); cursor: pointer; }
 html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15); }
