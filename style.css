@@ -110,6 +110,11 @@ h1 {
     margin: 1.5rem 0;
 }
 
+#map.hide-labels .leaflet-tooltip,
+#observations-map.hide-labels .leaflet-tooltip {
+    display: none;
+}
+
 .results-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
 table {
     width: 100%;
