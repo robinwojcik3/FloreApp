@@ -67,6 +67,12 @@
         td a:hover { text-decoration: underline; }
 
         .legend-color { display: inline-block; width: 12px; height: 12px; border-radius: 50%; margin-right: 8px; vertical-align: middle; }
+
+        /* Fond légèrement transparent pour les info-bulles Leaflet */
+        .leaflet-popup-content-wrapper,
+        .leaflet-popup-tip {
+            background: rgba(255, 255, 255, 0.85);
+        }
     </style>
 </head>
 <body>

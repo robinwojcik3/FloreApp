@@ -111,7 +111,13 @@
       border-radius: 4px;
       font-size: 0.8rem;
     }
-    
+
+    /* Fond légèrement transparent pour les info-bulles Leaflet */
+    .leaflet-popup-content-wrapper,
+    .leaflet-popup-tip {
+      background: rgba(255, 255, 255, 0.85);
+    }
+
     @media (prefers-color-scheme:dark) {
       :root{--bg:#181a1b;--card:#262b2f;--border:#333;--text:#ececec}
       .coordinates-display { background: rgba(46, 125, 50, 0.2); }
