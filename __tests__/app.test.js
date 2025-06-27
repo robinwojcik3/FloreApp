@@ -96,4 +96,19 @@ describe('api helpers', () => {
     const list = await ctx.getSimilarSpeciesFromGemini('Abies alba');
     expect(list).toEqual(['Abies nordmanniana','Abies pinsapo']);
   });
+
+  test('apiFetch rewrites PlantNet IP error', async () => {
+    const fetchMock = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 403,
+      json: () => Promise.resolve({ error: 'remote IP not allowed' })
+    });
+    const ctx = loadApp({ fetch: fetchMock });
+    const data = await ctx.apiFetch('plantnet', {});
+    expect(ctx.showNotification).toHaveBeenCalledWith(
+      "Accès PlantNet refusé : vérifiez que l'IP autorisée correspond à votre hébergement.",
+      'error'
+    );
+    expect(data).toBeNull();
+  });
 });

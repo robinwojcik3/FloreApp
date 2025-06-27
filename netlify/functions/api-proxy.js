@@ -67,6 +67,13 @@ exports.handler = async (event) => {
 
         const response = await fetch(upstreamUrl, upstreamOptions);
         const responseData = await response.json();
+        if (!response.ok && responseData && /remote IP not allowed/i.test(responseData.message || responseData.error)) {
+            // PlantNet renvoie cette erreur lorsque la clé n'est pas autorisée pour l'adresse IP
+            return {
+                statusCode: 403,
+                body: JSON.stringify({ error: 'PlantNet: IP non autorisée pour cette clé' })
+            };
+        }
 
         if (!response.ok) {
             console.error(`Upstream API error for target "${target}":`, responseData);

@@ -296,7 +296,10 @@ async function apiFetch(target, payload) {
 
         const responseData = await res.json();
         if (!res.ok) {
-            const errorMessage = responseData.error || `Erreur API (${res.status})`;
+            let errorMessage = responseData.error || `Erreur API (${res.status})`;
+            if (/remote IP not allowed/i.test(errorMessage) || /IP non autorisée/i.test(errorMessage)) {
+                errorMessage = "Accès PlantNet refusé : vérifiez que l'IP autorisée correspond à votre hébergement.";
+            }
             throw new Error(errorMessage);
         }
         return responseData;

@@ -39,6 +39,9 @@ const TTS_API_KEY    = "your-text-to-speech-key";
 
 These keys are required for PlantNet image identification, Gemini summaries and Google TTS audio synthesis.
 
+**Troubleshooting PlantNet**: if the API responds with `remote IP not allowed`, your key is restricted to specific IP addresses.
+When testing locally you must run the Netlify proxy functions (`netlify dev`) from an authorized host or allow the IP of your deployment in the PlantNet dashboard.
+
 ## Running the application locally
 
 1. Serve the project from a local HTTP server (for example using `npx serve` or `python3 -m http.server`).
