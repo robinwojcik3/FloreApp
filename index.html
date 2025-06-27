@@ -96,7 +96,6 @@
       tbody tr:nth-child(odd){background-color:#444;}
       .col-nom-latin { width: 20%; }
       .col-nom-latin .score { display:block; font-size:0.9em; color:#555; }
-      .col-image { width: 80px; }
       .col-criteres { width: 22%; font-size: 0.9em; }
       .col-ecologie { width: 22%; }
       .col-physionomie { width: 22%; font-size: 0.9em; }
@@ -115,71 +114,6 @@
       iframe{width:100%;height:280px;border:none;border-radius:4px;}
       .map-fullwidth{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;}
 
-      .image-gallery{
-         display:flex;
-         overflow-x:auto;
-         -webkit-overflow-scrolling:touch;
-         gap:4px;
-      }
-      .image-gallery img{
-         height:60px;
-         flex-shrink:0;
-         border-radius:4px;
-      }
-
-      .image-btn{
-         padding:4px 8px;
-         font-size:0.9rem;
-         background:#388e3c;
-         color:#fff;
-         border:none;
-         border-radius:4px;
-         cursor:pointer;
-      }
-      .image-btn:hover{background:#2e7d32;}
-
-      .image-modal-overlay{
-         position:fixed;
-         top:0;left:0;width:100%;height:100%;
-         background:rgba(0,0,0,0.7);
-         display:none;
-         justify-content:center;
-         align-items:center;
-         z-index:1000;
-         padding:1rem;
-      }
-      .image-modal-content{
-         background:var(--card);
-         padding:1rem;
-         border-radius:8px;
-         max-width:90%;
-         max-height:90%;
-         overflow:hidden;
-         position:relative;
-      }
-      .image-modal-close{
-         position:absolute;
-         top:10px;
-         right:15px;
-         font-size:2rem;
-         font-weight:bold;
-         cursor:pointer;
-         border:none;
-         background:none;
-         color:var(--text);
-         line-height:1;
-      }
-      .image-modal-gallery{
-         display:flex;
-         overflow-x:auto;
-         -webkit-overflow-scrolling:touch;
-         gap:8px;
-      }
-      .image-modal-gallery img{
-         max-height:80vh;
-         flex-shrink:0;
-         border-radius:8px;
-      }
       
       .synthesis-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); display: none; justify-content: center; align-items: center; z-index: 1000; padding: 1rem; }
       .synthesis-modal-content { background: var(--card); color: var(--text); padding: 25px; border-radius: 8px; max-width: 90%; width: 600px; max-height: 85vh; overflow-y: auto; position: relative; line-height: 1.6; }
@@ -209,7 +143,6 @@
          .tabs-container { background: var(--card); }
          .tab:hover { background: rgba(56, 142, 60, 0.2); }
          table,details{border-color:#333} th{background:#555555;color:#ffffff} tbody tr:nth-child(odd){background-color:#444;} body.home .upload-btn.logo-btn span { color: var(--text); } .option-container { background-color: rgba(38, 43, 47, 0.8); } #multi-image-list-area .image-organ-item { background-color: var(--card); border-color: var(--border); } #multi-image-list-area select { background-color: #333; color: var(--text); } .col-nom-latin .score { color:#ccc; } .col-criteres { color: #ccc; } .col-physionomie { color:#ccc; } .col-phenologie { color:#ccc; } #multi-image-list-area .delete-file-btn { color: #ff6b6b; } #multi-image-list-area .delete-file-btn:hover { color: #ff8787; } .search-inline input[type="search"] { background-color: #fff; color: #000; border-color: #555; }
-         .col-image { width: 80px; }
       }
    </style>
 </head>
@@ -256,12 +189,6 @@
            <div id="synthesis-modal-footer">
                <button id="synthesis-play-btn" class="action-button">Écouter la synthèse</button>
            </div>
-       </div>
-   </div>
-   <div id="image-modal" class="image-modal-overlay">
-       <div class="image-modal-content">
-           <button id="image-modal-close" class="image-modal-close" title="Fermer">×</button>
-           <div id="image-modal-gallery" class="image-modal-gallery"></div>
        </div>
    </div>
 </body>
