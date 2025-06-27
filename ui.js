@@ -19,6 +19,9 @@
     document.head.appendChild(style);
 
     document.addEventListener('DOMContentLoaded', () => {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+
         const notificationContainer = document.createElement('div');
         notificationContainer.id = 'notification-container';
         document.body.appendChild(notificationContainer);
@@ -33,6 +36,19 @@
         spinnerOverlay.id = "spinner-overlay";
         spinnerOverlay.innerHTML = '<div class="spinner"></div>';
         document.body.appendChild(spinnerOverlay);
+
+        const themeToggle = document.createElement('button');
+        themeToggle.id = 'theme-toggle';
+        themeToggle.className = 'theme-toggle';
+        themeToggle.textContent = savedTheme === 'light' ? '🌞' : '🌙';
+        themeToggle.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', current);
+            localStorage.setItem('theme', current);
+            themeToggle.textContent = current === 'light' ? '🌞' : '🌙';
+        });
+        const nav = document.querySelector('.tabs-container');
+        if (nav) nav.appendChild(themeToggle);
 
     });
 
