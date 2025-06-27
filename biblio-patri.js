@@ -619,7 +619,7 @@ const initializeSelectionMap = (coords) => {
             observationsTabBtn.classList.add('active');
             stopLocationTracking();
             initializeObservationMap();
-            obsStatusDiv.textContent = "Double-cliquez sur la carte ou faites un long appui pour choisir un endroit, ou utilisez la géolocalisation.";
+            obsStatusDiv.textContent = "Double-cliquez ou faites un clic droit sur la carte, ou maintenez un appui long pour choisir un endroit. Une confirmation s'affichera.";
         }
     };
 
@@ -658,8 +658,16 @@ const initializeSelectionMap = (coords) => {
         L.control.layers(baseMaps, overlayMaps).addTo(obsMap);
 
         let pressTimer;
-        const handleSelect = (latlng) => loadObservationsAt({ latitude: latlng.lat, longitude: latlng.lng });
+        const handleSelect = (latlng) => {
+            if (confirm("Voulez-vous lancer la recherche sur ce point ?")) {
+                loadObservationsAt({ latitude: latlng.lat, longitude: latlng.lng });
+            }
+        };
         obsMap.on('dblclick', (e) => handleSelect(e.latlng));
+        obsMap.on('contextmenu', (e) => {
+            e.originalEvent.preventDefault();
+            handleSelect(e.latlng);
+        });
         obsMap.on('mousedown touchstart', (e) => {
             pressTimer = setTimeout(() => handleSelect(e.latlng), 600);
         });
