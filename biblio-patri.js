@@ -644,7 +644,12 @@ const initializeSelectionMap = (coords) => {
             }
         );
 
-        obsMap = L.map(obsMapContainer, { center: [46.5, 2], zoom: 6, layers: [planMap] });
+        // Vue initiale identique à la carte d'analyse patrimoniale
+        obsMap = L.map(obsMapContainer, {
+            center: [45.1885, 5.7245],
+            zoom: 12,
+            layers: [planMap]
+        });
 
         observationsLayerGroup = L.layerGroup().addTo(obsMap);
 
