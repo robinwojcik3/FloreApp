@@ -165,70 +165,6 @@ function enableDragScroll(el) {
   el.addEventListener('pointerleave', stop);
 }
 
-async function fetchAuraImages(cd) {
-  if (!cd) return [];
-  try {
-    const res = await fetch(`/.netlify/functions/aura-images?cd=${cd}`);
-    if (!res.ok) return [];
-    const data = await res.json();
-    return Array.isArray(data.images) ? data.images.filter(u => /\.jpe?g$|\.png$/i.test(u)) : [];
-  } catch (err) {
-    console.error('fetchAuraImages error', err);
-    return [];
-  }
-}
-
-function openImageModal(urls) {
-  const modal = document.getElementById('image-modal');
-  const gallery = document.getElementById('image-modal-gallery');
-  if (!modal || !gallery) return;
-  gallery.innerHTML = '';
-  urls.forEach(url => {
-    const img = document.createElement('img');
-    img.loading = 'lazy';
-    img.src = url;
-    gallery.appendChild(img);
-  });
-  enableDragScroll(gallery);
-  modal.style.display = 'flex';
-}
-
-function closeImageModal() {
-  const modal = document.getElementById('image-modal');
-  if (modal) modal.style.display = 'none';
-}
-
-function setupImageModal() {
-  const modal = document.getElementById('image-modal');
-  const closeBtn = document.getElementById('image-modal-close');
-  if (closeBtn) closeBtn.addEventListener('click', closeImageModal);
-  if (modal) {
-    modal.addEventListener('click', e => {
-      if (e.target === modal) closeImageModal();
-    });
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeImageModal();
-    });
-  }
-}
-
-function initializeImageButtons() {
-  const cells = document.querySelectorAll('td.col-image[data-cd]');
-  cells.forEach(cell => {
-    const cd = cell.dataset.cd;
-    if (!cd) return;
-    const btn = document.createElement('button');
-    btn.textContent = 'Voir';
-    btn.className = 'image-btn';
-    btn.addEventListener('click', async () => {
-      const urls = await fetchAuraImages(cd);
-      if (!urls.length) return;
-      openImageModal(urls);
-    });
-    cell.appendChild(btn);
-  });
-  setupImageModal();
-}
 
 function makeTimestampedName(prefix = "") {
   const d = new Date();
@@ -784,17 +720,15 @@ function buildTable(items){
           	 	 <td class="col-link">${floraHelveticaLink}</td>
           	 	 <td class="col-link"><a href="#" onclick="handleSynthesisClick(event, this, '${escapedSci}')"><img src="assets/Audio.png" alt="Audio" class="logo-icon"></a></td>
           	 	 <td class="col-link">${linkIcon(pfaf(sci), "PFAF.png", "PFAF")}</td>
-          	 	 <td class="col-link">${regalVegetalLink}</td>
-          	 	 <td class="col-link">${floreMedLink}</td>
-            	 <td class="col-image" data-cd="${cd || ''}"></td>
-            </tr>`;
-  }).join("");
+         <td class="col-link">${regalVegetalLink}</td>
+         <td class="col-link">${floreMedLink}</td>
+         </tr>`;
+  }).join("");
 
-  const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Phénologie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th><th>Régal Végétal</th><th>Flore Méd</th><th>Image</th></tr>`;
+  const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Phénologie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th><th>Régal Végétal</th><th>Flore Méd</th></tr>`;
   
   wrap.innerHTML = `<div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-footer" style="padding-top: 1rem; text-align: center;"></div><div id="comparison-results-container" style="display:none;"></div>`;
-  enableDragScroll(wrap);
-  initializeImageButtons();
+  enableDragScroll(wrap);
 
   const footer = document.getElementById('comparison-footer');
   if (footer) {
