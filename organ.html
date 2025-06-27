@@ -12,8 +12,8 @@
   <script defer src="app.js"></script>
   <script defer src="sw-register.js"></script>
   <style>
-    :root{--primary:#388e3c;--bg:#f6f9fb;--card:#ffffff;--border:#e0e0e0;--text:#202124}
-    html[data-theme="dark"]{--bg:#181a1b;--card:#262b2f;--border:#333;--text:#ececec}
+    :root{--primary:#388e3c;--bg:#333333;--card:#444444;--border:#555555;--text:#ffffff}
+    html[data-theme="dark"]{--bg:#333333;--card:#444444;--border:#555555;--text:#ffffff}
     *{box-sizing:border-box;}
     /* MODIFICATION : Le body prend toute la largeur, suppression de max-width et margin:auto */
     body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;margin:0;padding:1.2rem;}
@@ -35,7 +35,7 @@
     table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:0 2px 6px rgba(0,0,0,.05);margin-bottom:1.2rem;table-layout:auto;}
     
     th,td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle;word-wrap:break-word;}
-    th{background:#f5f5f5;color:#000;font-weight:600;text-align:left}
+    th{background:#555555;color:#ffffff;font-weight:600;text-align:left}
     tr:last-child td{border-bottom:none}
     tbody tr:nth-child(odd){background-color:#444;}
     td a{color:var(--primary);text-decoration:none}
@@ -181,7 +181,7 @@
     summary:hover{background:rgba(0,0,0,.04);}
     .iframe-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;padding:12px;}
     iframe{width:100%;height:280px;border:none;border-radius:4px;}
-    @media (prefers-color-scheme:dark){:root{--bg:#181a1b;--card:#262f;--border:#333;--text:#ececec}table,details{border-color:#333}th{background:#30363c;color:#ececec} tbody tr:nth-child(odd){background-color:#444;} .search-inline input[type="search"]{background-color:#fff;color:#000;border-color:#555;}}
+    @media (prefers-color-scheme:dark){:root{--bg:#333333;--card:#444444;--border:#555555;--text:#ffffff}table,details{border-color:#333}th{background:#555555;color:#ffffff} tbody tr:nth-child(odd){background-color:#444;} .search-inline input[type="search"]{background-color:#fff;color:#000;border-color:#555;}}
     .select-toggle-btn{background:none;border:none;cursor:pointer;color:var(--primary);font-size:0.9rem;padding:0;}
     .select-toggle-btn:hover{text-decoration:underline;}
   </style>
