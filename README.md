@@ -121,3 +121,6 @@ This launches the Jest test suite which validates the helper utilities and the
   pop‑up with a **Google Maps** link to the selected coordinates. The timer is
   cancelled if the user starts moving the map.
 
+
+- The patrimonial analysis page now provides a "Voir le détail des espèces patri" button to list every found species on the organ page.
+- Buttons on both patrimonial maps toggle label visibility; labels start slightly translucent for readability.
