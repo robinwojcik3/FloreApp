@@ -586,6 +586,9 @@ const initializeSelectionMap = (coords) => {
             map.off('mouseup', onUp);
             map.off('touchstart', onDown);
             map.off('touchend', onUp);
+            map.off('dragstart', onUp);
+            map.off('move', onUp);
+            map.off('zoomstart', onUp);
         };
         const selectPoint = (latlng) => {
             if (confirm("Voulez-vous lancer l'analyse sur ce lieu ?")) {
@@ -606,6 +609,9 @@ const initializeSelectionMap = (coords) => {
         map.on('mouseup', onUp);
         map.on('touchstart', onDown);
         map.on('touchend', onUp);
+        map.on('dragstart', onUp);
+        map.on('move', onUp);
+        map.on('zoomstart', onUp);
     };
 
     const startPolygonSelection = async () => {
@@ -706,10 +712,17 @@ const initializeSelectionMap = (coords) => {
             e.originalEvent.preventDefault();
             handleSelect(e.latlng);
         });
-        obsMap.on('mousedown touchstart', (e) => {
+        const onDown = (e) => {
             pressTimer = setTimeout(() => handleSelect(e.latlng), 600);
-        });
-        obsMap.on('mouseup touchend', () => clearTimeout(pressTimer));
+        };
+        const cancel = () => clearTimeout(pressTimer);
+        obsMap.on('mousedown', onDown);
+        obsMap.on('touchstart', onDown);
+        obsMap.on('mouseup', cancel);
+        obsMap.on('touchend', cancel);
+        obsMap.on('dragstart', cancel);
+        obsMap.on('move', cancel);
+        obsMap.on('zoomstart', cancel);
     };
 
     const displayObservations = (occurrences) => {
