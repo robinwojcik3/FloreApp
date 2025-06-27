@@ -76,11 +76,17 @@ h1 {
 
 .search-controls {
     display: flex;
-    flex-direction: column;
+    flex-wrap: wrap;
     gap: 0.75rem;
     margin-bottom: 1rem;
+    align-items: center;
 }
-.search-group { display: flex; gap: 0.5rem; }
+.search-group {
+    display: flex;
+    gap: 0.5rem;
+    flex: 1 1 calc(50% - 0.5rem);
+}
+.search-group.address-group { flex-basis: 100%; }
 
 #address-input {
     flex: 1;
@@ -164,7 +170,6 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
 }
 
 @media (min-width: 600px) {
-    .search-controls { flex-direction: row; flex-wrap: wrap; align-items: center; }
     .main-content { padding: 2rem; }
 }
 
@@ -175,6 +180,10 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
         margin-right: -1rem;
         width: calc(100% + 2rem);
         border-radius: 0;
+    }
+    .action-button {
+        padding: 0.5rem;
+        font-size: 0.9rem;
     }
 }
 /* Style pour la navigation principale (issue de l'app cible) */
