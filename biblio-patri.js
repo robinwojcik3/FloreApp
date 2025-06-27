@@ -662,6 +662,10 @@ const initializeSelectionMap = (coords) => {
             attribution: '© OpenStreetMap contributors'
         });
 
+        const topoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)'
+        });
+
         const satelliteMap = L.tileLayer(
             'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
             {
@@ -676,7 +680,7 @@ const initializeSelectionMap = (coords) => {
         obsMap = L.map(obsMapContainer, {
             center: [45.1885, 5.7245],
             zoom: 12,
-            layers: [planMap]
+            layers: [topoMap]
         });
 
         // Centrer la carte sur la position de l'utilisateur si disponible
@@ -694,6 +698,7 @@ const initializeSelectionMap = (coords) => {
         observationsLayerGroup = L.layerGroup().addTo(obsMap);
 
         const baseMaps = {
+            "OpenTopoMap": topoMap,
             "Plan": planMap,
             "Satellite": satelliteMap
         };
