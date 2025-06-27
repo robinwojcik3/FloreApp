@@ -580,7 +580,6 @@ const initializeSelectionMap = (coords) => {
             center = { latitude: coords.latitude, longitude: coords.longitude };
         } catch (e) {}
         initializeSelectionMap(center);
-        setStatus('Appuyez longuement ou faites un clic droit sur la carte pour choisir un lieu.', false);
         let pressTimer;
         const cleanup = () => {
             map.off('contextmenu', onContextMenu);
