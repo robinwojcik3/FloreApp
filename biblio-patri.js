@@ -578,14 +578,34 @@ const initializeSelectionMap = (coords) => {
             center = { latitude: coords.latitude, longitude: coords.longitude };
         } catch (e) {}
         initializeSelectionMap(center);
-        setStatus('Cliquez sur la carte pour choisir un lieu.', false);
-        const onClick = (e) => {
+        setStatus('Appuyez longuement ou faites un clic droit sur la carte pour choisir un lieu.', false);
+        let pressTimer;
+        const cleanup = () => {
+            map.off('contextmenu', onContextMenu);
+            map.off('mousedown', onDown);
+            map.off('mouseup', onUp);
+            map.off('touchstart', onDown);
+            map.off('touchend', onUp);
+        };
+        const selectPoint = (latlng) => {
             if (confirm("Voulez-vous lancer l'analyse sur ce lieu ?")) {
-                map.off('click', onClick);
-                runAnalysis({ latitude: e.latlng.lat, longitude: e.latlng.lng });
+                cleanup();
+                runAnalysis({ latitude: latlng.lat, longitude: latlng.lng });
             }
         };
-        map.on('click', onClick);
+        const onContextMenu = (e) => {
+            e.originalEvent.preventDefault();
+            selectPoint(e.latlng);
+        };
+        const onDown = (e) => {
+            pressTimer = setTimeout(() => selectPoint(e.latlng), 600);
+        };
+        const onUp = () => clearTimeout(pressTimer);
+        map.on('contextmenu', onContextMenu);
+        map.on('mousedown', onDown);
+        map.on('mouseup', onUp);
+        map.on('touchstart', onDown);
+        map.on('touchend', onUp);
     };
 
     const startPolygonSelection = async () => {
@@ -621,7 +641,7 @@ const initializeSelectionMap = (coords) => {
             observationsTabBtn.classList.add('active');
             stopLocationTracking();
             initializeObservationMap();
-            obsStatusDiv.textContent = "Double-cliquez ou faites un clic droit sur la carte, ou maintenez un appui long pour choisir un endroit. Une confirmation s'affichera.";
+            obsStatusDiv.textContent = "Faites un clic droit sur la carte ou maintenez un appui long pour choisir un endroit. Une confirmation s'affichera.";
         }
     };
 
@@ -670,7 +690,6 @@ const initializeSelectionMap = (coords) => {
                 loadObservationsAt({ latitude: latlng.lat, longitude: latlng.lng });
             }
         };
-        obsMap.on('dblclick', (e) => handleSelect(e.latlng));
         obsMap.on('contextmenu', (e) => {
             e.originalEvent.preventDefault();
             handleSelect(e.latlng);
