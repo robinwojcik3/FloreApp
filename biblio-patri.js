@@ -651,6 +651,18 @@ const initializeSelectionMap = (coords) => {
             layers: [planMap]
         });
 
+        // Centrer la carte sur la position de l'utilisateur si disponible
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    obsMap.setView([pos.coords.latitude, pos.coords.longitude], 12);
+                },
+                () => {
+                    // En cas d'erreur ou de refus, la vue par défaut (Grenoble) est conservée
+                }
+            );
+        }
+
         observationsLayerGroup = L.layerGroup().addTo(obsMap);
 
         const baseMaps = {
