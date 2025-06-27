@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
    <meta charset="utf-8">
    <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -9,6 +9,7 @@
    <script defer src="ui.js"></script>
    <script defer src="app.js"></script>
    <script defer src="sw-register.js"></script>
+   <script defer src="theme.js"></script>
    <link rel="stylesheet" href="style.css">
    <style>
       *{box-sizing:border-box;}
@@ -220,6 +221,7 @@
            <button class="tab" onclick="window.location.href='contexte.html'">Contexte éco</button>
            <button class="tab" onclick="window.location.href='biblio-patri.html'">Biblio Patri</button>
        </div>
+       <button class="theme-toggle" aria-label="Changer le thème"></button>
    </nav>
 
    <div id="main-content">

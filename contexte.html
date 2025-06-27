@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
    <meta charset="utf-8">
    <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -11,6 +11,7 @@
    <script defer src="ui.js"></script>
    <script defer src="contexte.js"></script>
    <script defer src="sw-register.js"></script>
+   <script defer src="theme.js"></script>
    <link rel="stylesheet" href="style.css">
    <style>
       /* Couleurs plus "écologiques" pour une identité visuelle claire */
@@ -124,6 +125,7 @@
          <button class="tab active">🌿 Contexte éco</button>
          <button class="tab" onclick="window.location.href='biblio-patri.html'">Biblio Patri</button>
       </div>
+      <button class="theme-toggle" aria-label="Changer le thème"></button>
    </nav>
 
    <div class="main-content">

@@ -12,6 +12,12 @@ html[data-theme="dark"] {
     --border: #555555;
     --text: #ffffff;
 }
+html[data-theme="light"] {
+    --bg: #ffffff;
+    --card: #f8f8f8;
+    --border: #cccccc;
+    --text: #000000;
+}
 
 *, *::before, *::after { box-sizing: border-box; }
 body {
@@ -94,6 +100,15 @@ h1 {
 }
 .action-button:hover { background: #2e7d32; }
 
+.theme-toggle {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 4px;
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+}
+
 .status-container {
     text-align: center;
     margin: 1rem 0;
@@ -143,9 +158,11 @@ th {
     color: #ffffff;
 }
 html[data-theme="dark"] th { background: #555555; color: #ffffff; }
+html[data-theme="light"] th { background: #eeeeee; color: #000000; }
 tbody tr:last-child td { border-bottom: none; }
 tbody tr:hover { background-color: rgba(198,40,40,0.05); cursor: pointer; }
 html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15); }
+html[data-theme="light"] tbody tr:hover { background-color: rgba(198,40,40,0.1); }
 
 .legend-color {
     display: inline-block;

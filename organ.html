@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="fr" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -11,6 +11,7 @@
   <script defer src="ui.js"></script>
   <script defer src="app.js"></script>
   <script defer src="sw-register.js"></script>
+  <script defer src="theme.js"></script>
   <link rel="stylesheet" href="style.css">
   <style>
     *{box-sizing:border-box;}
@@ -188,6 +189,7 @@
 <body class="home">
   <div style="display:flex;justify-content:space-between;align-items:center;">
     <h1 style="margin:0">Plante App</h1>
+    <button class="theme-toggle" aria-label="Changer le thème"></button>
   </div>
   <img id="preview" alt="Prévisualisation">
   <div id="organ-choice">
