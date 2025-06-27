@@ -667,10 +667,12 @@ const initializeSelectionMap = (coords) => {
         obsStatusDiv.innerHTML = `${floraOccs.length} observation(s) de flore trouvée(s).`;
     };
 
-    const downloadShapefile = () => {
+    const triggerShapefileDownload = () => {
         if (!currentShapefileData) return;
         try {
-            shpwrite.download(currentShapefileData, { folder: 'patrimonial_data', types: { point: 'occurrences' }, prj: LAMBERT93_WKT });
+            if (typeof downloadShapefile === 'function') {
+                downloadShapefile(currentShapefileData, LAMBERT93_WKT);
+            }
         } catch (e) {
             if (typeof showNotification === 'function') {
                 showNotification("Erreur lors de la génération du shapefile", 'error');
@@ -741,7 +743,7 @@ const initializeSelectionMap = (coords) => {
     observationsTabBtn.addEventListener('click', () => switchTab('observations'));
     obsGeolocBtn.addEventListener('click', geolocateAndLoadObservations);
     obsDrawPolygonBtn.addEventListener('click', startObsPolygonSelection);
-    downloadShapefileBtn.addEventListener('click', downloadShapefile);
+    downloadShapefileBtn.addEventListener('click', triggerShapefileDownload);
     toggleTrackingBtn.addEventListener('click', () => toggleLocationTracking(map, toggleTrackingBtn));
     if (toggleLabelsBtn) {
         toggleLabelsBtn.addEventListener('click', toggleAnalysisLabels);
