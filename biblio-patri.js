@@ -370,6 +370,13 @@ const initializeSelectionMap = (coords) => {
         selectAllBtn.textContent = 'Tout désélectionner';
         resultsContainer.appendChild(selectAllBtn);
 
+        const detailsBtn = document.createElement('button');
+        detailsBtn.id = 'show-details-btn';
+        detailsBtn.className = 'action-button';
+        detailsBtn.style.marginLeft = '0.5rem';
+        detailsBtn.textContent = 'Voir le détail des espèces patri';
+        resultsContainer.appendChild(detailsBtn);
+
         const table = document.createElement('table');
         table.innerHTML = `<thead><tr><th></th><th>Nom scientifique</th><th>Statut de patrimonialité</th></tr></thead>`;
         table.appendChild(tableBody);
@@ -410,6 +417,14 @@ const initializeSelectionMap = (coords) => {
             });
             updateSelectAllButton();
             renderPatrimonialLocations();
+        });
+
+        detailsBtn.addEventListener('click', () => {
+            const names = Array.from(tableBody.querySelectorAll('tr')).map(tr => tr.dataset.species);
+            if (names.length) {
+                sessionStorage.setItem('speciesQueryNames', JSON.stringify(names));
+                window.location.href = 'organ.html';
+            }
         });
 
         selectedSpecies = new Set(Object.keys(patrimonialMap));
