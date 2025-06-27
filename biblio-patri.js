@@ -120,6 +120,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     let trackingActive = false;
     const SEARCH_RADIUS_KM = 2;
     const OBS_RADIUS_KM = 1;
+    const ANALYSIS_MAX_RETRIES = 3;
+    const RETRY_DELAY_MS = 3000;
     const TRACHEOPHYTA_TAXON_KEY = 7707728; // GBIF taxonKey for vascular plants
     const SPECIES_COLORS = ['#E6194B', '#3CB44B', '#FFE119', '#4363D8', '#F58231', '#911EB4', '#46F0F0', '#F032E6', '#BCF60C', '#FABEBE', '#800000', '#AA6E28', '#000075', '#A9A9A9'];
     const nonPatrimonialLabels = new Set(["Liste des espèces végétales sauvages pouvant faire l'objet d'une réglementation préfectorale dans les départements d'outre-mer : Article 1"]);
@@ -513,15 +515,28 @@ const initializeSelectionMap = (coords) => {
                     }
                 }
             }
-            const analysisResp = await fetch('/.netlify/functions/analyze-patrimonial-status', {
-                method: 'POST',
-                body: JSON.stringify({ 
-                    relevantRules: Array.from(relevantRules.values()),
-                    uniqueSpeciesNames,
-                    coords: { latitude: params.latitude, longitude: params.longitude }
-                })
-            });
-            if (!analysisResp.ok) { const errBody = await analysisResp.text(); throw new Error(`Le service d'analyse a échoué: ${errBody}`); }
+            let analysisResp;
+            for (let attempt = 1; attempt <= ANALYSIS_MAX_RETRIES; attempt++) {
+                try {
+                    analysisResp = await fetch('/.netlify/functions/analyze-patrimonial-status', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            relevantRules: Array.from(relevantRules.values()),
+                            uniqueSpeciesNames,
+                            coords: { latitude: params.latitude, longitude: params.longitude }
+                        })
+                    });
+                    if (!analysisResp.ok) {
+                        const errBody = await analysisResp.text();
+                        throw new Error(`Le service d'analyse a échoué: ${errBody}`);
+                    }
+                    break;
+                } catch (err) {
+                    if (attempt === ANALYSIS_MAX_RETRIES) throw err;
+                    setStatus(`Erreur : ${err.message}. Nouvelle tentative (${ANALYSIS_MAX_RETRIES - attempt} restante(s))...`, true);
+                    await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
+                }
+            }
             const patrimonialMap = await analysisResp.json();
             displayResults(allOccurrences, patrimonialMap, wkt);
         } catch (error) {
