@@ -11,10 +11,9 @@
    <script defer src="ui.js"></script>
    <script defer src="contexte.js"></script>
    <script defer src="sw-register.js"></script>
+   <link rel="stylesheet" href="style.css">
    <style>
       /* Couleurs plus "écologiques" pour une identité visuelle claire */
-      :root{ --primary:#388e3c; --bg:#333333; --card:#444444; --border:#555555; --text:#ffffff; --max-width:600px; }
-      html[data-theme="dark"]{ --bg:#333333; --card:#444444; --border:#555555; --text:#ffffff; }
       *{box-sizing:border-box;}
       body{
          background:var(--bg);
@@ -113,7 +112,6 @@
       }
       
       @media (prefers-color-scheme:dark) {
-         :root{--bg:#333333;--card:#444444;--border:#555555;--text:#ffffff}
          .coordinates-display { background: rgba(46, 125, 50, 0.2); }
          .map-instruction { background: rgba(255, 255, 255, 0.15); }
       }
