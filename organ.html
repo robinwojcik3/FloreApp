@@ -11,9 +11,8 @@
   <script defer src="ui.js"></script>
   <script defer src="app.js"></script>
   <script defer src="sw-register.js"></script>
+  <link rel="stylesheet" href="style.css">
   <style>
-    :root{--primary:#388e3c;--bg:#333333;--card:#444444;--border:#555555;--text:#ffffff}
-    html[data-theme="dark"]{--bg:#333333;--card:#444444;--border:#555555;--text:#ffffff}
     *{box-sizing:border-box;}
     /* MODIFICATION : Le body prend toute la largeur, suppression de max-width et margin:auto */
     body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;margin:0;padding:1.2rem;}
@@ -181,7 +180,7 @@
     summary:hover{background:rgba(0,0,0,.04);}
     .iframe-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:12px;padding:12px;}
     iframe{width:100%;height:280px;border:none;border-radius:4px;}
-    @media (prefers-color-scheme:dark){:root{--bg:#333333;--card:#444444;--border:#555555;--text:#ffffff}table,details{border-color:#333}th{background:#555555;color:#ffffff} tbody tr:nth-child(odd){background-color:#444;} .search-inline input[type="search"]{background-color:#fff;color:#000;border-color:#555;}}
+    @media (prefers-color-scheme:dark){table,details{border-color:#333}th{background:#555555;color:#ffffff} tbody tr:nth-child(odd){background-color:#444;} .search-inline input[type="search"]{background-color:#fff;color:#000;border-color:#555;}}
     .select-toggle-btn{background:none;border:none;cursor:pointer;color:var(--primary);font-size:0.9rem;padding:0;}
     .select-toggle-btn:hover{text-decoration:underline;}
   </style>

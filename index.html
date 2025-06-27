@@ -9,9 +9,8 @@
    <script defer src="ui.js"></script>
    <script defer src="app.js"></script>
    <script defer src="sw-register.js"></script>
+   <link rel="stylesheet" href="style.css">
    <style>
-      :root{ --primary:#388e3c; --bg:#333333; --card:#444444; --border:#555555; --text:#ffffff; }
-      html[data-theme="dark"]{ --bg:#333333; --card:#444444; --border:#555555; --text:#ffffff; }
       *{box-sizing:border-box;}
       
       /* NOUVEAU : Styles pour la navigation par onglets */
@@ -207,7 +206,6 @@
       }
 
       @media (prefers-color-scheme:dark){
-         :root{--bg:#333333;--card:#444444;--border:#555555;--text:#ffffff}
          .tabs-container { background: var(--card); }
          .tab:hover { background: rgba(56, 142, 60, 0.2); }
          table,details{border-color:#333} th{background:#555555;color:#ffffff} tbody tr:nth-child(odd){background-color:#444;} body.home .upload-btn.logo-btn span { color: var(--text); } .option-container { background-color: rgba(38, 43, 47, 0.8); } #multi-image-list-area .image-organ-item { background-color: var(--card); border-color: var(--border); } #multi-image-list-area select { background-color: #333; color: var(--text); } .col-nom-latin .score { color:#ccc; } .col-criteres { color: #ccc; } .col-physionomie { color:#ccc; } .col-phenologie { color:#ccc; } #multi-image-list-area .delete-file-btn { color: #ff6b6b; } #multi-image-list-area .delete-file-btn:hover { color: #ff8787; } .search-inline input[type="search"] { background-color: #fff; color: #000; border-color: #555; }
