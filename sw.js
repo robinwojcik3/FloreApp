@@ -20,8 +20,6 @@ const CORE_ASSETS = [
    "./contexte.js",
    "./biblio-patri.js",
    "./style.css",
-   "./lib/proj4.js",
-   "./lib/shpwrite.js",
    "./assets/viewer_app.js",
    "./manifest.json",
    "./assets/flora_gallica_toc.json",
