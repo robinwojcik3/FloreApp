@@ -88,6 +88,13 @@ h1 {
 }
 .search-group.address-group { flex-basis: 100%; }
 
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.5rem;
+    width: 100%;
+}
+
 #address-input {
     flex: 1;
     padding: 0.6rem;
@@ -184,6 +191,9 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     .action-button {
         padding: 0.5rem;
         font-size: 0.9rem;
+    }
+    .button-grid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     }
 }
 /* Style pour la navigation principale (issue de l'app cible) */
