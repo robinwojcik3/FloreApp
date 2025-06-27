@@ -84,3 +84,38 @@ describe('comparison helpers', () => {
     expect(html.replace(/\s+/g, '')).toBe('<table><thead><tr><th>A</th><th>B</th></tr></thead><tbody><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></tbody></table>');
   });
 });
+
+describe('additional parsing cases', () => {
+  test('parseCsv handles CRLF and embedded separators', () => {
+    const ctx = loadApp();
+    const csv = 'a;b\r\n"c\nd";"e;f"\r\nfinal;row\r\n';
+    const rows = ctx.parseCsv(csv);
+    expect(rows).toEqual([
+      ['a','b'],
+      ['c\nd','e;f'],
+      ['final','row']
+    ]);
+  });
+
+  test('parseComparisonText collects multiline summary', () => {
+    const ctx = loadApp();
+    const text = [
+      'Intro section',
+      '| H |',
+      '| - |',
+      '| v |',
+      '',
+      'line1',
+      'line2'
+    ].join('\n');
+    const res = ctx.parseComparisonText(text);
+    expect(res.summary).toBe('line1 line2');
+  });
+
+  test('markdownTableToHtml handles three columns', () => {
+    const ctx = loadApp();
+    const md = '| A | B | C |\n| - | - | - |\n| 1 | 2 | 3 |\n| 4 | 5 | 6 |';
+    const html = ctx.markdownTableToHtml(md);
+    expect(html.replace(/\s+/g, '')).toBe('<table><thead><tr><th>A</th><th>B</th><th>C</th></tr></thead><tbody><tr><td>1</td><td>2</td><td>3</td></tr><tr><td>4</td><td>5</td><td>6</td></tr></tbody></table>');
+  });
+});

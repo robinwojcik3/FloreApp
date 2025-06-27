@@ -97,3 +97,29 @@ describe('api helpers', () => {
     expect(list).toEqual(['Abies nordmanniana','Abies pinsapo']);
   });
 });
+
+describe('apiFetch and PlantNet API', () => {
+  test('apiFetch notifies on error and returns null', async () => {
+    const fetchMock = jest.fn().mockResolvedValue({
+      ok: false,
+      status: 500,
+      json: () => Promise.resolve({ error: 'boom' })
+    });
+    const ctx = loadApp({ fetch: fetchMock });
+    const res = await ctx.apiFetch('tts', {});
+    expect(res).toBeNull();
+    expect(ctx.showNotification).toHaveBeenCalledWith('boom', 'error');
+  });
+
+  test('callPlantNetAPI retries and succeeds', async () => {
+    const results = { results: [{ score: 1, species: { scientificNameWithoutAuthor: 'Abies alba' } }] };
+    const fetchMock = jest.fn()
+      .mockResolvedValueOnce({ ok: false, status: 500, json: () => Promise.resolve({ error: 'fail' }) })
+      .mockResolvedValueOnce({ ok: true, json: () => Promise.resolve(results) });
+    const ctx = loadApp({ fetch: fetchMock });
+    const payload = [{ dataUrl: 'data:image/png;base64,AAA', organ: 'leaf', name: 'photo.jpg' }];
+    const res = await ctx.callPlantNetAPI(payload, 1);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(res).toEqual(results.results);
+  });
+});
