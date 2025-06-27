@@ -1,0 +1,174 @@
+:root {
+    --primary: #c62828;
+    --bg: #f6f9fb;
+    --card: #ffffff;
+    --border: #e0e0e0;
+    --text: #202124;
+    --max-width: 900px;
+}
+html[data-theme="dark"] {
+    --bg: #181a1b;
+    --card: #262b2f;
+    --border: #333;
+    --text: #ececec;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body {
+    margin: 0;
+    padding: 0;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.main-content {
+    width: 100%;
+    max-width: none;
+    margin: auto;
+    padding: 1rem;
+}
+
+h1 {
+    margin: 0 0 1rem;
+    font-size: 1.8rem;
+    text-align: center;
+    color: var(--primary);
+}
+
+.tabs {
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+.tab-button {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+.tab-button.active {
+    background: var(--primary);
+    color: #fff;
+}
+
+.tab-content {
+    display: none;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    padding: 1rem;
+}
+
+.search-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+}
+.search-group { display: flex; gap: 0.5rem; }
+
+#address-input {
+    flex: 1;
+    padding: 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.action-button {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+.action-button:hover { background: #a51e1e; }
+
+.status-container {
+    text-align: center;
+    margin: 1rem 0;
+    font-size: 1rem;
+    min-height: 24px;
+}
+
+#map, #observations-map {
+    height: 60vh;
+    width: 100%;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    box-shadow: 0 2px 6px rgba(0,0,0,.1);
+    margin: 1.5rem 0;
+}
+
+.results-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,.05);
+    margin: 1rem 0;
+}
+th, td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    text-align: left;
+    vertical-align: middle;
+}
+
+.user-location-icon {
+    font-size: 1.4rem;
+    color: #2e7d32;
+    text-shadow: 0 0 3px #fff;
+}
+th {
+    font-weight: 600;
+    background: #f5f5f5;
+    color: #202124;
+}
+html[data-theme="dark"] th { background: #333; color: #ececec; }
+tbody tr:last-child td { border-bottom: none; }
+tbody tr:hover { background-color: rgba(198,40,40,0.05); cursor: pointer; }
+html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15); }
+
+.legend-color {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    margin-right: 8px;
+    vertical-align: middle;
+}
+
+@media (min-width: 600px) {
+    .search-controls { flex-direction: row; flex-wrap: wrap; align-items: center; }
+    .main-content { padding: 2rem; }
+}
+
+@media (max-width: 599px) {
+    #map,
+    #observations-map {
+        margin-left: -1rem;
+        margin-right: -1rem;
+        width: calc(100% + 2rem);
+        border-radius: 0;
+    }
+}
+/* Style pour la navigation principale (issue de l'app cible) */
+.tabs-container { background: var(--card); box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; display:flex; align-items:center; justify-content:space-between; }
+.tabs { display: flex; border-bottom: 2px solid var(--border); flex-grow:1; }
+.tab { flex: 1; padding: 1rem; text-align: center; cursor: pointer; background: none; border: none; font-size: 1rem; color: var(--text); transition: all 0.3s; position: relative; }
+.tab:hover { background: rgba(56, 142, 60, 0.1); }
+.tab.active { color: var(--primary); font-weight: 600; }
+.tab.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: var(--primary); }
