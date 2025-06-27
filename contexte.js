@@ -61,14 +61,7 @@ const SERVICES = {
 
 // NOUVEAU : Configuration des couches via l'API Carto de l'IGN
 const APICARTO_LAYERS = {
-    'Natura 2000 (Habitats)': {
-        endpoint: 'https://apicarto.ign.fr/api/nature/natura-habitat',
-        style: { color: "#2E7D32", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
-    },
-    'Natura 2000 (Oiseaux)': {
-        endpoint: 'https://apicarto.ign.fr/api/nature/natura-oiseaux',
-        style: { color: "#0277BD", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
-    },
+    // Les couches à enjeux naturalistes forts sont chargées en priorité
     'ZNIEFF I': {
         endpoint: 'https://apicarto.ign.fr/api/nature/znieff1',
         style: { color: "#AFB42B", weight: 2, opacity: 0.9, fillOpacity: 0.2, dashArray: '5, 5' },
@@ -77,19 +70,31 @@ const APICARTO_LAYERS = {
         endpoint: 'https://apicarto.ign.fr/api/nature/znieff2',
         style: { color: "#E65100", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
     },
+    'Natura 2000 (Habitats)': {
+        endpoint: 'https://apicarto.ign.fr/api/nature/natura-habitat',
+        style: { color: "#2E7D32", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+    },
+
+    // Les autres couches sont chargées ensuite
+    'Réserves Naturelles Nationales': {
+        endpoint: 'https://apicarto.ign.fr/api/nature/rnn',
+        style: { color: "#7B1FA2", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+    },
     'Parcs Nationaux': {
         endpoint: 'https://apicarto.ign.fr/api/nature/pn',
         style: { color: "#AD1457", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
     },
+    'Parcs Naturels Régionaux': {
+        endpoint: 'https://apicarto.ign.fr/api/nature/pnr',
+        style: { color: "#558B2F", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+    },
+    'Natura 2000 (Oiseaux)': {
+        endpoint: 'https://apicarto.ign.fr/api/nature/natura-oiseaux',
+        style: { color: "#0277BD", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+    },
     'Réserves Naturelles': {
         endpoint: 'https://apicarto.ign.fr/api/nature/rn',
         style: { color: "#6A1B9A", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
-    },
-    // Couches supplémentaires pour le contexte environnemental
-    // (Réserves nationales et régionales, APPB et ENS)
-    'Réserves Naturelles Nationales': {
-        endpoint: 'https://apicarto.ign.fr/api/nature/rnn',
-        style: { color: "#7B1FA2", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
     },
     'Réserves Naturelles Régionales': {
         endpoint: 'https://apicarto.ign.fr/api/nature/rnr',
@@ -110,11 +115,6 @@ const APICARTO_LAYERS = {
     'Pelouses sèches': {
         endpoint: 'https://apicarto.ign.fr/api/nature/pelouses_seches',
         style: { color: "#8BC34A", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
-    },
-    // Nouvelles couches de biodiversité
-    'Parcs Naturels Régionaux': {
-        endpoint: 'https://apicarto.ign.fr/api/nature/pnr',
-        style: { color: "#558B2F", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
     },
     'Sites Ramsar': {
         endpoint: 'https://apicarto.ign.fr/api/nature/ramsar',
