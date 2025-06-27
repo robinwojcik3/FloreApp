@@ -83,4 +83,15 @@ describe('comparison helpers', () => {
     const html = ctx.markdownTableToHtml(md);
     expect(html.replace(/\s+/g, '')).toBe('<table><thead><tr><th>A</th><th>B</th></tr></thead><tbody><tr><td>1</td><td>2</td></tr><tr><td>3</td><td>4</td></tr></tbody></table>');
   });
+
+  test('parseComparisonText without table returns intro only', () => {
+    const ctx = loadApp();
+    const res = ctx.parseComparisonText('Just intro');
+    expect(res).toEqual({ intro: 'Just intro', tableMarkdown: '', summary: '' });
+  });
+
+  test('markdownTableToHtml returns empty string for invalid table', () => {
+    const ctx = loadApp();
+    expect(ctx.markdownTableToHtml('| A |')).toBe('');
+  });
 });
