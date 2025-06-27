@@ -172,3 +172,10 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
 .tab:hover { background: rgba(56, 142, 60, 0.1); }
 .tab.active { color: var(--primary); font-weight: 600; }
 .tab.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: var(--primary); }
+
+/* Améliore la lisibilité des étiquettes sur les cartes */
+.leaflet-tooltip {
+    background: rgba(255, 255, 255, 0.8) !important;
+    border-color: rgba(255, 255, 255, 0.8) !important;
+    color: var(--text);
+}
