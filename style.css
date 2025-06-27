@@ -1,16 +1,16 @@
 :root {
-    --primary: #388e3c;
-    --bg: #f6f9fb;
-    --card: #ffffff;
-    --border: #e0e0e0;
-    --text: #202124;
+    --primary: #2e7d32;
+    --bg: #333333;
+    --card: #3d3d3d;
+    --border: #555555;
+    --text: #f0f0f0;
     --max-width: 900px;
 }
 html[data-theme="dark"] {
-    --bg: #181a1b;
-    --card: #262b2f;
-    --border: #333;
-    --text: #ececec;
+    --bg: #333333;
+    --card: #3d3d3d;
+    --border: #555555;
+    --text: #f0f0f0;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
