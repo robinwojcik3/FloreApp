@@ -96,4 +96,22 @@ describe('api helpers', () => {
     const list = await ctx.getSimilarSpeciesFromGemini('Abies alba');
     expect(list).toEqual(['Abies nordmanniana','Abies pinsapo']);
   });
+
+  test('taxrefFuzzyMatch handles fetch failure', async () => {
+    const fetchMock = jest.fn().mockResolvedValue({ ok: false });
+    const ctx = loadApp({ fetch: fetchMock });
+    const res = await ctx.taxrefFuzzyMatch('Acer');
+    expect(res).toEqual([]);
+    expect(ctx.showNotification).toHaveBeenCalled();
+  });
+
+  test('getSimilarSpeciesFromGemini parses newline list', async () => {
+    const fetchMock = jest.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({candidates:[{content:{parts:[{text:'Abies grandis\nAbies cephalonica'}]}}]})
+    });
+    const ctx = loadApp({ fetch: fetchMock });
+    const list = await ctx.getSimilarSpeciesFromGemini('Abies alba');
+    expect(list).toEqual(['Abies grandis','Abies cephalonica']);
+  });
 });
