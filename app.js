@@ -821,14 +821,20 @@ function buildTable(items){
 
       compareBtn.addEventListener('click', handleComparisonClick);
       
-      locationBtn.addEventListener('click', () => {
-          const checkedBoxes = document.querySelectorAll('.species-checkbox:checked');
-          const speciesNames = Array.from(checkedBoxes).map(box => box.dataset.species).join(',');
-          if (speciesNames) {
-              const mapUrl = `carte_interactive/map_view.html?species=${encodeURIComponent(speciesNames)}`;
-              window.open(mapUrl, '_blank');
-          }
-      });
+      locationBtn.addEventListener('click', () => {
+          const checkedBoxes = document.querySelectorAll('.species-checkbox:checked');
+          const speciesNames = Array.from(checkedBoxes).map(box => {
+              const latinCell = box.closest('tr')?.querySelector('.col-nom-latin');
+              if (latinCell) {
+                  return (latinCell.dataset.latin || latinCell.textContent.split('\n')[0]).trim();
+              }
+              return box.dataset.species || '';
+          }).filter(Boolean).join(',');
+          if (speciesNames) {
+              const mapUrl = `carte_interactive/map_view.html?species=${encodeURIComponent(speciesNames)}`;
+              window.open(mapUrl, '_blank');
+          }
+      });
   }
 
   const updateCompareVisibility = () => {
