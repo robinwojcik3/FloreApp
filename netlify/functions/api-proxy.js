@@ -33,8 +33,17 @@ exports.handler = async (event) => {
                 upstreamOptions = {
                     method: 'POST',
                     body: form,
-                    headers: form.getHeaders()
+                    headers: {
+                        ...form.getHeaders(),
+                        'User-Agent': event.headers['user-agent'] || 'PlantouilleApp/1.0'
+                    }
                 };
+                const forwardedFor = event.headers['x-forwarded-for'] ||
+                                   event.headers['client-ip'] ||
+                                   event.headers['x-nf-client-connection-ip'];
+                if (forwardedFor) {
+                    upstreamOptions.headers['X-Forwarded-For'] = forwardedFor;
+                }
                 break;
 
             case 'gemini':
