@@ -61,14 +61,7 @@ const SERVICES = {
 
 // NOUVEAU : Configuration des couches via l'API Carto de l'IGN
 const APICARTO_LAYERS = {
-    'Natura 2000 (Habitats)': {
-        endpoint: 'https://apicarto.ign.fr/api/nature/natura-habitat',
-        style: { color: "#2E7D32", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
-    },
-    'Natura 2000 (Oiseaux)': {
-        endpoint: 'https://apicarto.ign.fr/api/nature/natura-oiseaux',
-        style: { color: "#0277BD", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
-    },
+    // Priorité aux zones à fort enjeu naturaliste
     'ZNIEFF I': {
         endpoint: 'https://apicarto.ign.fr/api/nature/znieff1',
         style: { color: "#AFB42B", weight: 2, opacity: 0.9, fillOpacity: 0.2, dashArray: '5, 5' },
@@ -76,6 +69,14 @@ const APICARTO_LAYERS = {
     'ZNIEFF II': {
         endpoint: 'https://apicarto.ign.fr/api/nature/znieff2',
         style: { color: "#E65100", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+    },
+    'Natura 2000 (Habitats)': {
+        endpoint: 'https://apicarto.ign.fr/api/nature/natura-habitat',
+        style: { color: "#2E7D32", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+    },
+    'Natura 2000 (Oiseaux)': {
+        endpoint: 'https://apicarto.ign.fr/api/nature/natura-oiseaux',
+        style: { color: "#0277BD", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
     },
     'Parcs Nationaux': {
         endpoint: 'https://apicarto.ign.fr/api/nature/pn',
