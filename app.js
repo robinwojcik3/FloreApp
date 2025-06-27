@@ -763,7 +763,7 @@ function buildTable(items){
                        data-eco="${encodeURIComponent(eco)}"
                        data-pheno="${encodeURIComponent(pheno)}">
               </td>
-              <td class="col-nom-latin" data-latin="${displaySci}">${displaySci}<br><span class="score">(${pct})</span></td>
+            	 <td class="col-nom-latin" data-latin="${displaySci}">${displaySci}<br><span class="score">(${pct})</span></td>
             	 <td class="col-link">${floreAlpesLink}</td>
             	 <td class="col-link">${floraGallicaLink}</td>
             	 <td class="col-link">${linkIcon(cd && inpnStatut(cd), "INPN.png", "INPN", "small-logo")}</td>
