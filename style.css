@@ -1,5 +1,5 @@
 :root {
-    --primary: #c62828;
+    --primary: #388e3c;
     --bg: #f6f9fb;
     --card: #ffffff;
     --border: #e0e0e0;
@@ -92,7 +92,7 @@ h1 {
     font-size: 1rem;
     cursor: pointer;
 }
-.action-button:hover { background: #a51e1e; }
+.action-button:hover { background: #2e7d32; }
 
 .status-container {
     text-align: center;
@@ -134,7 +134,7 @@ th, td {
 
 .user-location-icon {
     font-size: 1.4rem;
-    color: #2e7d32;
+    color: var(--primary);
     text-shadow: 0 0 3px #fff;
 }
 th {
