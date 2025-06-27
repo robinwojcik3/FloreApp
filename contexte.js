@@ -149,9 +149,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('reset-selection').addEventListener('click', resetSelection);
         document.getElementById('measure-distance').addEventListener('click', toggleMeasure);
         initializeMap();
-        const instruction = document.getElementById('map-instruction');
-        instruction.style.display = 'block';
-        setTimeout(() => { instruction.style.display = 'none'; }, 3000);
+        toggleMap();
 });
 
 // Fonction pour utiliser la géolocalisation
@@ -163,7 +161,7 @@ async function useGeolocation() {
 	if (!navigator.geolocation) {
 		showNotification('La géolocalisation n\'est pas supportée par votre navigateur', 'error');
 		button.disabled = false;
-		button.textContent = 'Utiliser ma localisation';
+                button.textContent = '📍 Utiliser ma localisation';
 		return;
 	}
 	
@@ -174,7 +172,7 @@ async function useGeolocation() {
 			button.textContent = 'Position récupérée ✓';
 			setTimeout(() => {
 				button.disabled = false;
-				button.textContent = 'Utiliser ma localisation';
+                                button.textContent = '📍 Utiliser ma localisation';
 			}, 2000);
 			showResults();
 		},
@@ -193,7 +191,7 @@ async function useGeolocation() {
 			}
 			showNotification(message, 'error');
 			button.disabled = false;
-			button.textContent = 'Utiliser ma localisation';
+                        button.textContent = '📍 Utiliser ma localisation';
 		},
 		{
 			enableHighAccuracy: true,
@@ -212,7 +210,7 @@ function toggleMap() {
 	if (mapContainer.style.display === 'none' || !mapContainer.style.display) {
 		mapContainer.style.display = 'block';
 		instruction.style.display = 'block';
-		button.textContent = 'Fermer la carte';
+                button.textContent = '🗺️ Fermer la carte';
 		if (!map) {
 			initializeMap();
 		} else {
@@ -223,8 +221,8 @@ function toggleMap() {
 		}, 3000);
 	} else {
 		mapContainer.style.display = 'none';
-		button.textContent = 'Ouvrir la carte';
-	}
+                button.textContent = '🗺️ Ouvrir la carte';
+        }
 }
 
 // Initialisation de la carte de sélection Leaflet
@@ -309,7 +307,7 @@ async function searchAddress() {
 		showNotification('Erreur pendant la recherche', 'error');
 	} finally {
 		button.disabled = false;
-		button.textContent = 'Rechercher';
+                button.textContent = '🔍 Rechercher';
 	}
 }
 
@@ -633,7 +631,7 @@ function resetSelection() {
     document.getElementById('results-section').style.display = 'none';
     document.getElementById('env-map').style.display = 'none';
     document.getElementById('map-container').style.display = 'none';
-    document.getElementById('choose-on-map').textContent = 'Ouvrir la carte';
+    document.getElementById('choose-on-map').textContent = '🗺️ Ouvrir la carte';
     document.getElementById('measure-distance').style.display = 'none';
     if (measuring && envMap) toggleMeasure();
 }
@@ -641,7 +639,7 @@ function resetSelection() {
 // Gestionnaire pour le retour à la page d'accueil
 window.addEventListener('pageshow', (event) => {
 	if (event.persisted) {
-		document.getElementById('use-geolocation').disabled = false;
-		document.getElementById('use-geolocation').textContent = 'Utiliser ma localisation';
+                document.getElementById('use-geolocation').disabled = false;
+                document.getElementById('use-geolocation').textContent = '📍 Utiliser ma localisation';
 	}
 });

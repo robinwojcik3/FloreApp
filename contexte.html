@@ -62,7 +62,7 @@
       
       /* Carte interactive */
       #map-container {
-         display: none; margin-top: 1rem; border-radius: 8px;
+         display: block; margin-top: 1rem; border-radius: 8px;
          overflow: hidden; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
          border:1px solid var(--border);
       }
@@ -133,14 +133,14 @@
       
       <div class="location-options">
          <div class="location-card">
-            <button class="action-button" id="use-geolocation">
-               Utiliser ma localisation
+           <button class="action-button" id="use-geolocation">
+               📍 Utiliser ma localisation
             </button>
          </div>
          
          <div class="location-card">
-            <button class="action-button" id="choose-on-map">
-               Ouvrir la carte
+           <button class="action-button" id="choose-on-map">
+               🗺️ Ouvrir la carte
             </button>
 
             <div id="map-container">
@@ -170,7 +170,7 @@
          <div class="location-card">
             <input type="text" id="address-input" placeholder="Saisissez une adresse"
                    style="padding:8px;border:1px solid var(--border);border-radius:4px;width:100%;margin-bottom:.5rem;">
-            <button class="action-button" id="search-address">Rechercher</button>
+           <button class="action-button" id="search-address">🔍 Rechercher</button>
          </div>
       </div>
       
