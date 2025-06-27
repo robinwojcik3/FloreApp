@@ -21,7 +21,7 @@ const CORE_ASSETS = [
    "./biblio-patri.js",
    "./style.css",
   "https://unpkg.com/proj4@2.9.0/dist/proj4.js",
-  "https://unpkg.com/shp-write@0.3.2/shpwrite.js",
+  "./local-shpwrite.js",
    "./assets/viewer_app.js",
    "./manifest.json",
    "./assets/flora_gallica_toc.json",
