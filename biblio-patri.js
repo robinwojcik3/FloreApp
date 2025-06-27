@@ -29,11 +29,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const obsGeolocBtn = document.getElementById('obs-geoloc-btn');
     const obsDrawPolygonBtn = document.getElementById('obs-draw-polygon-btn');
     const obsToggleTrackingBtn = document.getElementById('obs-toggle-tracking-btn');
+    const toggleLabelsBtn = document.getElementById('toggle-labels-btn');
+    const obsToggleLabelsBtn = document.getElementById('obs-toggle-labels-btn');
     const downloadShapefileBtn = document.getElementById('download-shapefile-btn');
     const downloadContainer = document.getElementById('download-container');
 
     let trackingMap = null;
     let trackingButton = null;
+    let analysisLabelsVisible = true;
+    let obsLabelsVisible = true;
 
     const stopLocationTracking = () => {
         if (trackingWatchId !== null) {
@@ -78,6 +82,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const toggleLocationTracking = (mapInstance, buttonEl) => {
         if (trackingActive) stopLocationTracking(); else startLocationTracking(mapInstance, buttonEl);
+    };
+
+    const toggleAnalysisLabels = () => {
+        analysisLabelsVisible = !analysisLabelsVisible;
+        mapContainer.classList.toggle('hide-labels', !analysisLabelsVisible);
+        if (toggleLabelsBtn) {
+            toggleLabelsBtn.textContent = analysisLabelsVisible ? 'Masquer les étiquettes' : 'Afficher les étiquettes';
+        }
+    };
+
+    const toggleObsLabels = () => {
+        obsLabelsVisible = !obsLabelsVisible;
+        obsMapContainer.classList.toggle('hide-labels', !obsLabelsVisible);
+        if (obsToggleLabelsBtn) {
+            obsToggleLabelsBtn.textContent = obsLabelsVisible ? 'Masquer les étiquettes' : 'Afficher les étiquettes';
+        }
     };
 
     let currentShapefileData = null;
@@ -706,10 +726,16 @@ const initializeSelectionMap = (coords) => {
     obsDrawPolygonBtn.addEventListener('click', startObsPolygonSelection);
     downloadShapefileBtn.addEventListener('click', downloadShapefile);
     toggleTrackingBtn.addEventListener('click', () => toggleLocationTracking(map, toggleTrackingBtn));
+    if (toggleLabelsBtn) {
+        toggleLabelsBtn.addEventListener('click', toggleAnalysisLabels);
+    }
     if (obsToggleTrackingBtn) {
         obsToggleTrackingBtn.addEventListener('click', () => {
             initializeObservationMap();
             toggleLocationTracking(obsMap, obsToggleTrackingBtn);
         });
+    }
+    if (obsToggleLabelsBtn) {
+        obsToggleLabelsBtn.addEventListener('click', toggleObsLabels);
     }
 });
