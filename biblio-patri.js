@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (typeof proj4 !== 'undefined') {
         proj4.defs('EPSG:2154', '+proj=lcc +lat_1=49 +lat_2=44 +lat_0=46.5 +lon_0=3 +x_0=700000 +y_0=6600000 +ellps=GRS80 +units=m +no_defs');
     }
+
+    const LAMBERT93_WKT = 'PROJCS["RGF93 / Lambert-93",GEOGCS["GCS_RGF93",DATUM["D_RGF93",SPHEROID["GRS_1980",6378137,298.257222101]],PRIMEM["Greenwich",0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",49],PARAMETER["standard_parallel_2",44],PARAMETER["latitude_of_origin",46.5],PARAMETER["central_meridian",3],PARAMETER["false_easting",700000],PARAMETER["false_northing",6600000],UNIT["Meter",1]]';
     
     
     // --- 2. Déclaration des variables et constantes globales ---
@@ -668,7 +670,7 @@ const initializeSelectionMap = (coords) => {
     const downloadShapefile = () => {
         if (!currentShapefileData) return;
         try {
-            shpwrite.download(currentShapefileData, { folder: 'patrimonial_data', types: { point: 'occurrences' } });
+            shpwrite.download(currentShapefileData, { folder: 'patrimonial_data', types: { point: 'occurrences' }, prj: LAMBERT93_WKT });
         } catch (e) {
             if (typeof showNotification === 'function') {
                 showNotification("Erreur lors de la génération du shapefile", 'error');
