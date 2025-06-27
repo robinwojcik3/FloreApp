@@ -112,7 +112,7 @@ This launches the Jest test suite which validates the helper utilities and the
   avec lesquelles elle peut être confondue en région Rhône-Alpes ou PACA. This
   button now sits directly under the results table with enhanced styling for
   better visibility.
-- The "Contexte environnemental" tab displays several geographic overlays
+ - The "Contexte eco" tab displays several geographic overlays
   retrieved from the IGN API Carto. It now includes layers for **Réserves
   Naturelles Nationales et Régionales**, **Arrêtés Préfectoraux de Protection de
   Biotope**, **Espaces Naturels Sensibles**, **Zones humides** and **Pelouses
