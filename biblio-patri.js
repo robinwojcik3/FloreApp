@@ -444,7 +444,9 @@ const initializeSelectionMap = (coords) => {
         });
 
         detailsBtn.addEventListener('click', () => {
-            const names = Array.from(tableBody.querySelectorAll('tr')).map(tr => tr.dataset.species);
+            // Use the global list of species to avoid issues with DOM queries
+            // when the table is refreshed or modified.
+            const names = Array.from(allPatrimonialSpecies);
             if (names.length) {
                 sessionStorage.setItem('speciesQueryNames', JSON.stringify(names));
                 window.location.href = 'organ.html';
