@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualiseur - Flora Gallica</title>
+    <link rel="stylesheet" href="style.css">
     <style>
         body, html {
             margin: 0;
             padding: 0;
-            background-color: #f0f0f0;
+            background-color: var(--bg);
+            color: var(--text);
             font-family: sans-serif;
         }
         #pdf-viewer {
@@ -33,9 +35,9 @@
             display: block;
         }
         .error-message {
-            padding: 20px; 
-            text-align: center; 
-            color: #333;
+            padding: 20px;
+            text-align: center;
+            color: var(--text);
         }
         .error-message h1, .error-message h2 {
             margin-bottom: 10px;
