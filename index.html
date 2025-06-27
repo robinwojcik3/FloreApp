@@ -6,11 +6,32 @@
    <title>Plante App</title>
    <link rel="manifest" href="manifest.json">
    <link rel="icon" href="icons/icon-192.png">
-   <link rel="stylesheet" href="style.css">
    <script defer src="ui.js"></script>
    <script defer src="app.js"></script>
    <script defer src="sw-register.js"></script>
    <style>
+      :root{ --primary:#388e3c; --bg:#f6f9fb; --card:#ffffff; --border:#e0e0e0; --text:#202124; }
+      html[data-theme="dark"]{ --bg:#181a1b; --card:#262b2f; --border:#333; --text:#ececec; }
+      *{box-sizing:border-box;}
+      
+      /* NOUVEAU : Styles pour la navigation par onglets */
+      .tabs-container { background: var(--card); box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; display:flex; align-items:center; justify-content:space-between; }
+      .tabs { display: flex; border-bottom: 2px solid var(--border); flex-grow:1; }
+      .tab { flex: 1; padding: 1rem; text-align: center; cursor: pointer; background: none; border: none; font-size: 1rem; color: var(--text); transition: all 0.3s; position: relative; }
+      .tab:hover { background: rgba(56, 142, 60, 0.1); }
+      .tab.active { color: var(--primary); font-weight: 600; }
+      .tab.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: var(--primary); }
+
+
+      .select-toggle-btn {
+         background:none;
+         border:none;
+         cursor:pointer;
+         color:var(--primary);
+         font-size:0.9rem;
+         padding:0;
+      }
+      .select-toggle-btn:hover{ text-decoration: underline; }
       
       /* Ajustement du body pour les onglets */
       body.home::before{ content:""; position:fixed; inset:0; background:url("assets/Bandeau.jpg") center/cover no-repeat fixed; z-index:-1; opacity:.30; }
