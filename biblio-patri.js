@@ -10,6 +10,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const LAMBERT93_WKT = 'PROJCS["RGF93 / Lambert-93",GEOGCS["GCS_RGF93",DATUM["D_RGF93",SPHEROID["GRS_1980",6378137,298.257222101]],PRIMEM["Greenwich",0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",49],PARAMETER["standard_parallel_2",44],PARAMETER["latitude_of_origin",46.5],PARAMETER["central_meridian",3],PARAMETER["false_easting",700000],PARAMETER["false_northing",6600000],UNIT["Meter",1]]';
+
+    const LONG_PRESS_MS = 2000; // duration required to trigger actions on the maps
     
     
     // --- 2. Déclaration des variables et constantes globales ---
@@ -601,7 +603,7 @@ const initializeSelectionMap = (coords) => {
             selectPoint(e.latlng);
         };
         const onDown = (e) => {
-            pressTimer = setTimeout(() => selectPoint(e.latlng), 600);
+            pressTimer = setTimeout(() => selectPoint(e.latlng), LONG_PRESS_MS);
         };
         const onUp = () => clearTimeout(pressTimer);
         map.on('contextmenu', onContextMenu);
@@ -713,7 +715,7 @@ const initializeSelectionMap = (coords) => {
             handleSelect(e.latlng);
         });
         const onDown = (e) => {
-            pressTimer = setTimeout(() => handleSelect(e.latlng), 600);
+            pressTimer = setTimeout(() => handleSelect(e.latlng), LONG_PRESS_MS);
         };
         const cancel = () => clearTimeout(pressTimer);
         obsMap.on('mousedown', onDown);
