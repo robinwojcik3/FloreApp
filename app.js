@@ -791,7 +791,7 @@ function buildTable(items){
          </tr>`;
   }).join("");
 
-  const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Phénologie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th><th>Régal Végétal</th><th>Flore Méd</th></tr>`;
+  const headerHtml = `<tr><th class="col-checkbox"><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Phénologie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th><th>Régal Végétal</th><th>Flore Méd</th></tr>`;
 
   wrap.innerHTML = `<button id="status-analysis-btn" class="action-button" style="margin-bottom:1rem;">Analyse statuts</button><div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-footer" style="padding-top: 1rem; text-align: center;"></div><div id="comparison-results-container" style="display:none;"></div>`;
   enableDragScroll(wrap);
