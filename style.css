@@ -207,7 +207,7 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
         width: 100%;
     }
     .button-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 /* Style pour la navigation principale (issue de l'app cible) */
