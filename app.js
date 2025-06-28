@@ -200,12 +200,15 @@ const isAndroid = () => typeof navigator !== 'undefined' && /Android/.test(navig
 const floraHelveticaPackage = 'de.haupt.florahelvetica.pro.fr';
 
 const floraHelveticaUrl = n => {
-  const code = cdRef(n);
-  const base = code ? `species/${code}` : `species?name=${encodeURIComponent(n)}`;
-  if (isAndroid()) {
-    return `intent://${base}#Intent;scheme=florahelvetica;package=${floraHelveticaPackage};end`;
-  }
-  return `florahelvetica://${base}`;
+  const code = cdRef(n);
+  const base = code ? `species/${code}` : `species?name=${encodeURIComponent(n)}`;
+  if (isAndroid()) {
+    return `intent://${base}#Intent;scheme=florahelvetica;package=${floraHelveticaPackage};end`;
+  }
+  if (isIOS()) {
+    return `florahelvetica://${base}`;
+  }
+  return infoFlora(n);
 };
 
 function enableDragScroll(el) {
