@@ -192,8 +192,22 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
         padding: 0.5rem;
         font-size: 0.9rem;
     }
+    .search-controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .search-group {
+        flex-basis: 100%;
+    }
+    .search-group.address-group {
+        flex-direction: column;
+    }
+    .search-group.address-group input,
+    .search-group.address-group button {
+        width: 100%;
+    }
     .button-grid {
-        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 /* Style pour la navigation principale (issue de l'app cible) */
