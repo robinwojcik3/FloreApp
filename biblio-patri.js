@@ -379,8 +379,10 @@ const initializeSelectionMap = (coords) => {
             return;
         }
         setStatus(`${Object.keys(patrimonialMap).length} espèce(s) patrimoniale(s) trouvée(s). Lancement de l'étape 4/4 : cartographie détaillée...`);
+
+        const allSpeciesList = Object.keys(patrimonialMap).sort();
         const tableBody = document.createElement('tbody');
-        Object.keys(patrimonialMap).sort().forEach((speciesName, index) => {
+        allSpeciesList.forEach((speciesName, index) => {
             const color = SPECIES_COLORS[index % SPECIES_COLORS.length];
             const row = tableBody.insertRow();
             row.dataset.species = speciesName;
@@ -446,9 +448,9 @@ const initializeSelectionMap = (coords) => {
         });
 
         detailsBtn.addEventListener('click', () => {
-            // Use the global list of species to avoid issues with DOM queries
-            // when the table is refreshed or modified.
-            const names = Array.from(allPatrimonialSpecies);
+            // Use the pre‑computed list from the analysis; fall back to the
+            // global array if it has been populated later on.
+            const names = allSpeciesList.length ? allSpeciesList : Array.from(allPatrimonialSpecies);
             if (names.length) {
                 sessionStorage.setItem('speciesQueryNames', JSON.stringify(names));
                 window.location.href = 'organ.html';
