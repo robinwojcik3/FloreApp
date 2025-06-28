@@ -84,6 +84,8 @@
       body:not(.home) h1 { font-size:1.6rem; color:var(--primary); margin-bottom: 1rem;}
       body:not(.home) .tabs-container { position: static; }
       table{ width:100%; table-layout: fixed; border-collapse:collapse; background:var(--card); border:1px solid var(--border); border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,.05); margin-bottom:1.2rem; }
+      /* Ajustement pour la colonne Statut : la table peut s'élargir si besoin */
+      #results table{ width:auto; min-width:100%; table-layout:auto; }
       #results{overflow-x:auto;-webkit-overflow-scrolling:touch;}
       #results::after{content:"";display:block;height:1rem;}
       @media (max-width:600px){
@@ -101,6 +103,9 @@
       .col-physionomie { width: 22%; font-size: 0.9em; }
       .col-phenologie { width: 22%; font-size: 0.9em; }
       .col-link { width: 6%; text-align: center; }
+      /* Colonne des statuts : affichage sur une seule ligne */
+      .col-statut { white-space: nowrap; }
+      .col-statut .status-item { margin-right: 0.6em; }
       .logo-icon { width: 24px; height: auto; }
       .small-logo { height: 24px; width: auto; }
       td a{color:var(--primary);text-decoration:none}

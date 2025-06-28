@@ -1378,7 +1378,7 @@ async function runStatusAnalysis() {
     const td = document.createElement('td');
     td.className = 'col-statut';
     if (Array.isArray(statuses) && statuses.length) {
-      td.innerHTML = '<ul>' + statuses.map(s => `<li>${s}</li>`).join('') + '</ul>';
+      td.innerHTML = statuses.map(s => `<span class="status-item">${s}</span>`).join(' \u2022 ');
     } else {
       td.textContent = '—';
     }
