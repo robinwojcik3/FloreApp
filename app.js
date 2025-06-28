@@ -44,7 +44,10 @@ const OLD_REGIONS_TO_DEPARTMENTS = {
     'Nord-Pas-de-Calais': ['59', '62'],
     'Picardie': ['02', '60', '80'],
     'Poitou-Charentes': ['16', '17', '79', '86'],
-    'Rhône-Alpes': ['01', '07', '26', '38', '42', '69', '73', '74']
+    'Rhône-Alpes': ['01', '07', '26', '38', '42', '69', '73', '74'],
+    'Provence-Alpes-Côte-d\'Azur': ['04', '05', '06', '13', '83', '84'],
+    'Pays-de-la-Loire': ['44', '49', '53', '72', '85'],
+    'Centre': ['18', '28', '36', '37', '41', '45']
 };
 const ADMIN_NAME_TO_CODE_MAP = {
     "France": "FR", "Ain": "01", "Aisne": "02", "Allier": "03",
@@ -76,6 +79,7 @@ const ADMIN_NAME_TO_CODE_MAP = {
     "Corse": "94", "Grand Est": "44", "Hauts-de-France": "32", "Île-de-France": "11",
     "Normandie": "28", "Nouvelle-Aquitaine": "75", "Occitanie": "76",
     "Pays de la Loire": "52", "Provence-Alpes-Côte d'Azur": "93",
+    "Pays-de-la-Loire": "52", "Provence-Alpes-Côte-d'Azur": "93", "Centre": "24",
     "Guadeloupe": "01", "Martinique": "02", "Guyane": "03", "La Réunion": "04",
     "Mayotte": "06"
 };
