@@ -27,8 +27,11 @@
          border:none;
          cursor:pointer;
          color:var(--primary);
-         font-size:0.9rem;
+         font-size:0.75rem;
          padding:0;
+         white-space:normal;
+         word-break:break-word;
+         width:100%;
       }
       .select-toggle-btn:hover{ text-decoration: underline; }
       
@@ -103,11 +106,14 @@
       .col-physionomie { width: 22%; font-size: 0.9em; }
       .col-phenologie { width: 22%; font-size: 0.9em; }
       .col-link { width: 6%; text-align: center; }
+      .col-checkbox { width: 40px; text-align: center; }
       /* Colonne des statuts : affichage sur une seule ligne */
       .col-statut { white-space: nowrap; }
       .col-statut .status-item { margin-right: 0.6em; }
       .logo-icon { width: 24px; height: auto; }
       .small-logo { height: 24px; width: auto; }
+      th:first-child { width: 40px; }
+      .species-checkbox { width: 18px; height: 18px; }
       td a{color:var(--primary);text-decoration:none}
       td a:hover{text-decoration:underline}
       details{margin-bottom:1rem;background:var(--card);border:1px solid var(--border);border-radius:6px;box-shadow:0 2px 6px rgba(0,0,0,.05);}
