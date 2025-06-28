@@ -79,6 +79,8 @@ const ADMIN_NAME_TO_CODE_MAP = {
     "Guadeloupe": "01", "Martinique": "02", "Guyane": "03", "La Réunion": "04",
     "Mayotte": "06"
 };
+const ANALYSIS_MAX_RETRIES = 3;
+const RETRY_DELAY_MS = 3000;
 let bdcRulesByTaxon = new Map();
 let bdcDataPromise = null;
 
@@ -1292,6 +1294,71 @@ async function runStatusAnalysis() {
 
   const table = document.querySelector('#results table');
   if (!table) { if(btn){btn.disabled=false;btn.textContent='Analyse statuts';} return; }
+
+  const speciesRows = Array.from(table.querySelectorAll('tbody tr'));
+  const uniqueSpeciesNames = [];
+  const relevantRules = new Map();
+
+  speciesRows.forEach(tr => {
+    const latinCell = tr.querySelector('.col-nom-latin');
+    const name = latinCell ? (latinCell.dataset.latin || latinCell.textContent.split('\n')[0]).trim() : '';
+    if (!name) return;
+    uniqueSpeciesNames.push(name);
+    const rulesForThisTaxon = bdcRulesByTaxon.get(name) || [];
+    rulesForThisTaxon.forEach(r => {
+      let ruleApplies = false;
+      const type = r.type.toLowerCase();
+      const isHab = type.includes('directive habitat') && HABITATS_DIRECTIVE_CODES.has(r.code);
+      if (isHab) {
+        ruleApplies = true;
+      } else if (ADMIN_NAME_TO_CODE_MAP[r.adm] === 'FR' || type.includes('nationale')) {
+        ruleApplies = true;
+      } else if (OLD_REGIONS_TO_DEPARTMENTS[r.adm]?.includes(departement.code)) {
+        ruleApplies = true;
+      } else {
+        const admCode = ADMIN_NAME_TO_CODE_MAP[r.adm];
+        if (admCode === departement.code || admCode === region.code) { ruleApplies = true; }
+      }
+      if (ruleApplies) {
+        if (nonPatrimonialLabels.has(r.label) || type.includes('déterminante znieff')) return;
+        const isRedList = type.includes('liste rouge');
+        if (isRedList && nonPatrimonialRedlistCodes.has(r.code)) return;
+        const ruleKey = `${r.nom}|${r.type}|${r.adm}`;
+        if (!relevantRules.has(ruleKey)) {
+          const desc = isRedList ? `${r.type} (${r.code}) (${r.adm})` : r.label;
+          relevantRules.set(ruleKey, { species: r.nom, status: desc });
+        }
+      }
+    });
+  });
+
+  let analysisResp;
+  for (let attempt = 1; attempt <= ANALYSIS_MAX_RETRIES; attempt++) {
+    try {
+      analysisResp = await fetch('/.netlify/functions/analyze-patrimonial-status', {
+        method: 'POST',
+        body: JSON.stringify({
+          relevantRules: Array.from(relevantRules.values()),
+          uniqueSpeciesNames,
+          coords: { latitude: userLocation.latitude, longitude: userLocation.longitude }
+        })
+      });
+      if (!analysisResp.ok) {
+        const errBody = await analysisResp.text();
+        throw new Error(`Le service d'analyse a échoué: ${errBody}`);
+      }
+      break;
+    } catch(err) {
+      if (attempt === ANALYSIS_MAX_RETRIES) {
+        if(btn){btn.disabled=false;btn.textContent='Analyse statuts';}
+        return showNotification(`Erreur : ${err.message}`, 'error');
+      }
+      await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
+    }
+  }
+
+  const patrimonialMap = await analysisResp.json();
+
   const headerRow = table.querySelector('thead tr');
   if (headerRow && !headerRow.querySelector('.statut-header')) {
     const th = document.createElement('th');
@@ -1299,42 +1366,21 @@ async function runStatusAnalysis() {
     th.className = 'statut-header';
     headerRow.appendChild(th);
   }
-  table.querySelectorAll('tbody tr').forEach(tr => {
+
+  speciesRows.forEach(tr => {
     const latinCell = tr.querySelector('.col-nom-latin');
     const name = latinCell ? (latinCell.dataset.latin || latinCell.textContent.split('\n')[0]).trim() : '';
-    const rules = bdcRulesByTaxon.get(name) || [];
-    const statuses = [];
-    rules.forEach(r => {
-      let ruleApplies = false;
-      const type = r.type.toLowerCase();
-      const isHabitatsDirective = type.includes('directive habitat') && HABITATS_DIRECTIVE_CODES.has(r.code);
-      if (isHabitatsDirective) {
-        ruleApplies = true;
-      } else if (ADMIN_NAME_TO_CODE_MAP[r.adm] === 'FR' || type.includes('nationale')) {
-        ruleApplies = true;
-      } else if (OLD_REGIONS_TO_DEPARTMENTS[r.adm]?.includes(departement.code)) {
-        ruleApplies = true;
-      } else {
-        const adminCode = ADMIN_NAME_TO_CODE_MAP[r.adm];
-        if (adminCode === departement.code || adminCode === region.code) { ruleApplies = true; }
-      }
-      if (ruleApplies) {
-        if (nonPatrimonialLabels.has(r.label) || type.includes('déterminante znieff')) return;
-        const isRedList = type.includes('liste rouge');
-        if (isRedList && nonPatrimonialRedlistCodes.has(r.code)) return;
-        const st = isRedList ? `${r.type} (${r.code}) (${r.adm})` : r.label;
-        if (!statuses.includes(st)) statuses.push(st);
-      }
-    });
+    const statuses = patrimonialMap[name];
     const td = document.createElement('td');
     td.className = 'col-statut';
-    if (statuses.length) {
+    if (Array.isArray(statuses) && statuses.length) {
       td.innerHTML = '<ul>' + statuses.map(s => `<li>${s}</li>`).join('') + '</ul>';
     } else {
       td.textContent = '—';
     }
     tr.appendChild(td);
   });
+
   if (btn) { btn.disabled = false; btn.textContent = 'Analyse statuts'; }
 }
 
