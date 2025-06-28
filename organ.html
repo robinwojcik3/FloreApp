@@ -41,6 +41,7 @@
     td a:hover{text-decoration:underline}
     /* MODIFIÉ : Largeur des colonnes de texte ajustée pour la nouvelle colonne */
     .col-criteres, .col-ecologie, .col-physionomie { width: 16%; }
+    .col-statut { width: 12%; }
     
     .text-popup-trigger {
         display: -webkit-box;
@@ -201,6 +202,9 @@
     <input type="search" id="name-search-input" placeholder="Nom d'espèce ou de genre" list="species-suggestions">
     <datalist id="species-suggestions"></datalist>
     <button type="button" id="name-search-button" class="action-button">Rechercher</button>
+  </div>
+  <div id="status-btn-area" style="text-align:center;margin-bottom:1rem;">
+    <button type="button" id="status-analysis-btn" class="action-button">Analyse statuts</button>
   </div>
   <div id="results"></div>
   <div id="similar-btn-area"></div>

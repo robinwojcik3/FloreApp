@@ -23,6 +23,7 @@ let phenologie = {};
 let userLocation = { latitude: 45.188529, longitude: 5.724524 };
 
 let displayedItems = [];
+let statusData = {};
 
 let dataPromise = null;
 function loadData() {
@@ -84,6 +85,54 @@ const physioOf = n => physionomie[norm(n)] || "—";
 const phenoOf  = n => phenologie[norm(n)] || "—";
 const slug = n => norm(n).replace(/ /g, "-");
 
+// === Statut analysis constants ===
+const nonPatrimonialLabels = new Set([
+  "Liste des espèces végétales sauvages pouvant faire l'objet d'une réglementation préfectorale dans les départements d'outre-mer : Article 1"
+]);
+const nonPatrimonialRedlistCodes = new Set(['LC', 'DD', 'NA', 'NE']);
+const HABITATS_DIRECTIVE_CODES = new Set(['CDH1', 'CDH2', 'CDH4', 'CDH5']);
+const OLD_REGIONS_TO_DEPARTMENTS = {
+  'Alsace': ['67', '68'], 'Aquitaine': ['24', '33', '40', '47', '64'],
+  'Auvergne': ['03', '15', '43', '63'], 'Basse-Normandie': ['14', '50', '61'],
+  'Bourgogne': ['21', '58', '71', '89'], 'Champagne-Ardenne': ['08', '10', '51', '52'],
+  'Franche-Comté': ['25', '39', '70', '90'], 'Haute-Normandie': ['27', '76'],
+  'Languedoc-Roussillon': ['11', '30', '34', '48', '66'], 'Limousin': ['19', '23', '87'],
+  'Lorraine': ['54', '55', '57', '88'], 'Midi-Pyrénées': ['09', '12', '31', '32', '46', '65', '81', '82'],
+  'Nord-Pas-de-Calais': ['59', '62'], 'Picardie': ['02', '60', '80'],
+  'Poitou-Charentes': ['16', '17', '79', '86'], 'Rhône-Alpes': ['01', '07', '26', '38', '42', '69', '73', '74']
+};
+const ADMIN_NAME_TO_CODE_MAP = {
+  "France": "FR",
+  "Ain": "01", "Aisne": "02", "Allier": "03", "Alpes-de-Haute-Provence": "04",
+  "Hautes-Alpes": "05", "Alpes-Maritimes": "06", "Ardèche": "07", "Ardennes": "08",
+  "Ariège": "09", "Aube": "10", "Aude": "11", "Aveyron": "12", "Bouches-du-Rhône": "13",
+  "Calvados": "14", "Cantal": "15", "Charente": "16", "Charente-Maritime": "17",
+  "Cher": "18", "Corrèze": "19", "Corse-du-Sud": "2A", "Haute-Corse": "2B",
+  "Côte-d'Or": "21", "Côtes-d'Armor": "22", "Creuse": "23", "Dordogne": "24",
+  "Doubs": "25", "Drôme": "26", "Eure": "27", "Eure-et-Loir": "28", "Finistère": "29",
+  "Gard": "30", "Haute-Garonne": "31", "Gers": "32", "Gironde": "33", "Hérault": "34",
+  "Ille-et-Vilaine": "35", "Indre": "36", "Indre-et-Loire": "37", "Isère": "38",
+  "Jura": "39", "Landes": "40", "Loir-et-Cher": "41", "Loire": "42", "Haute-Loire": "43",
+  "Loire-Atlantique": "44", "Loiret": "45", "Lot": "46", "Lot-et-Garonne": "47",
+  "Lozère": "48", "Maine-et-Loire": "49", "Manche": "50", "Marne": "51",
+  "Haute-Marne": "52", "Mayenne": "53", "Meurthe-et-Moselle": "54", "Meuse": "55",
+  "Morbihan": "56", "Moselle": "57", "Nièvre": "58", "Nord": "59", "Oise": "60",
+  "Orne": "61", "Pas-de-Calais": "62", "Puy-de-Dôme": "63", "Pyrénées-Atlantiques": "64",
+  "Hautes-Pyrénées": "65", "Pyrénées-Orientales": "66", "Bas-Rhin": "67", "Haut-Rhin": "68",
+  "Rhône": "69", "Haute-Saône": "70", "Saône-et-Loire": "71", "Sarthe": "72", "Savoie": "73",
+  "Haute-Savoie": "74", "Paris": "75", "Seine-Maritime": "76", "Seine-et-Marne": "77",
+  "Yvelines": "78", "Deux-Sèvres": "79", "Somme": "80", "Tarn": "81", "Tarn-et-Garonne": "82",
+  "Var": "83", "Vaucluse": "84", "Vendée": "85", "Vienne": "86", "Haute-Vienne": "87",
+  "Vosges": "88", "Yonne": "89", "Territoire de Belfort": "90", "Essonne": "91",
+  "Hauts-de-Seine": "92", "Seine-Saint-Denis": "93", "Val-de-Marne": "94",
+  "Val-d'Oise": "95", "Auvergne-Rhône-Alpes": "84", "Bourgogne-Franche-Comté": "27",
+  "Bretagne": "53", "Centre-Val de Loire": "24", "Corse": "94", "Grand Est": "44",
+  "Hauts-de-France": "32", "Île-de-France": "11", "Normandie": "28", "Nouvelle-Aquitaine": "75",
+  "Occitanie": "76", "Pays de la Loire": "52", "Provence-Alpes-Côte d'Azur": "93",
+  "Guadeloupe": "01", "Martinique": "02", "Guyane": "03", "La Réunion": "04", "Mayotte": "06"
+};
+let statutRulesIndex = null;
+
 function parseCsv(text) {
   if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
   const rows = [];
@@ -116,7 +165,93 @@ function parseCsv(text) {
     row.push(field);
     rows.push(row);
   }
-  return rows;
+  return rows;
+}
+
+function indexRulesFromCSV(csvText) {
+  const lines = csvText.trim().split(/\r?\n/);
+  const header = lines.shift().split(';').map(h => h.trim().replace(/"/g, ''));
+  const idx = {
+    adm: header.indexOf('LB_ADM_TR'),
+    nom: header.indexOf('LB_NOM'),
+    code: header.indexOf('CODE_STATUT'),
+    type: header.indexOf('LB_TYPE_STATUT'),
+    label: header.indexOf('LABEL_STATUT')
+  };
+  const index = new Map();
+  lines.forEach(line => {
+    const cols = line.split(';');
+    const rowData = {
+      adm: cols[idx.adm]?.trim().replace(/"/g, '') || '',
+      nom: cols[idx.nom]?.trim().replace(/"/g, '') || '',
+      code: cols[idx.code]?.trim().replace(/"/g, '') || '',
+      type: cols[idx.type]?.trim().replace(/"/g, '') || '',
+      label: cols[idx.label]?.trim().replace(/"/g, '') || ''
+    };
+    if (rowData.nom && rowData.type) {
+      if (!index.has(rowData.nom)) index.set(rowData.nom, []);
+      index.get(rowData.nom).push(rowData);
+    }
+  });
+  return index;
+}
+
+async function loadStatusRules() {
+  if (statutRulesIndex) return statutRulesIndex;
+  const resp = await fetch('BDCstatut.csv');
+  if (!resp.ok) throw new Error('BDCstatut.csv introuvable');
+  const text = await resp.text();
+  statutRulesIndex = indexRulesFromCSV(text);
+  return statutRulesIndex;
+}
+
+async function analyzeStatusForSpecies(speciesNames) {
+  await loadStatusRules();
+  let coords = { ...userLocation };
+  try {
+    const pos = await new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej, { timeout: 5000 }));
+    coords = { latitude: pos.coords.latitude, longitude: pos.coords.longitude };
+    userLocation = coords;
+  } catch(e) {}
+  const locInfo = await (await fetch(`https://geo.api.gouv.fr/communes?lat=${coords.latitude}&lon=${coords.longitude}&fields=departement,region`)).json();
+  const { departement, region } = locInfo[0];
+  const relevantRules = new Map();
+  for (const speciesName of speciesNames) {
+    const rulesForThisTaxon = statutRulesIndex.get(speciesName);
+    if (!rulesForThisTaxon) continue;
+    for (const row of rulesForThisTaxon) {
+      let ruleApplies = false;
+      const type = row.type.toLowerCase();
+      const isHab = type.includes('directive habitat') && HABITATS_DIRECTIVE_CODES.has(row.code);
+      if (isHab) ruleApplies = true;
+      else if (ADMIN_NAME_TO_CODE_MAP[row.adm] === 'FR' || type.includes('nationale')) ruleApplies = true;
+      else if (OLD_REGIONS_TO_DEPARTMENTS[row.adm]?.includes(departement.code)) ruleApplies = true;
+      else {
+        const adm = ADMIN_NAME_TO_CODE_MAP[row.adm];
+        if (adm === departement.code || adm === region.code) ruleApplies = true;
+      }
+      if (ruleApplies) {
+        if (nonPatrimonialLabels.has(row.label) || type.includes('déterminante znieff')) continue;
+        const isRed = type.includes('liste rouge');
+        if (isRed && nonPatrimonialRedlistCodes.has(row.code)) continue;
+        const key = `${row.nom}|${row.type}|${row.adm}`;
+        if (!relevantRules.has(key)) {
+          const desc = isRed ? `${row.type} (${row.code}) (${row.adm})` : row.label;
+          relevantRules.set(key, { species: row.nom, status: desc });
+        }
+      }
+    }
+  }
+  const resp = await fetch('/.netlify/functions/analyze-patrimonial-status', {
+    method: 'POST',
+    body: JSON.stringify({
+      relevantRules: Array.from(relevantRules.values()),
+      uniqueSpeciesNames: speciesNames,
+      coords
+    })
+  });
+  if (!resp.ok) throw new Error('Analyse des statuts échouée');
+  return resp.json();
 }
 
 function capitalizeGenus(name) {
@@ -602,7 +737,7 @@ async function identifySingleImage(fileBlob, organ) {
             });
         }
         displayedItems = results;
-        buildTable(displayedItems);
+        buildTable(displayedItems, statusData);
         buildCards(displayedItems);
         const latin = results[0] && results[0].species ?
             results[0].species.scientificNameWithoutAuthor :
@@ -633,7 +768,7 @@ async function identifyMultipleImages(files, organs) {
     }
 }
 
-function buildTable(items){
+function buildTable(items, statusMap = {}){
   const wrap = document.getElementById("results");
   if (!wrap) return;
 
@@ -644,7 +779,7 @@ function buildTable(items){
     return `<a href="${url}" target="_blank" rel="noopener"><img src="assets/${encoded}" alt="${alt}" class="${cls}"></a>`;
   };
 
-  const rows = items.map(item => {
+  const rows = items.map(item => {
     const pct = item.score !== undefined ? `${Math.round(item.score * 100)}%` : "N/A";
     const sci  = item.species.scientificNameWithoutAuthor;
     const displaySci = capitalizeGenus(sci);
@@ -673,7 +808,7 @@ function buildTable(items){
 
     // LOGIQUE POUR FLORE MED
     const tocEntryFloreMed = floreMedToc[genus];
-    let floreMedLink = "—";
+    let floreMedLink = "—";
     if (tocEntryFloreMed && tocEntryFloreMed.pdfFile && tocEntryFloreMed.page) {
         const pdfPath = `assets/flore_med_pdf/${tocEntryFloreMed.pdfFile}`;
         const viewerUrl = `viewer.html?file=${encodeURIComponent(pdfPath)}&page=${tocEntryFloreMed.page}`;
@@ -687,7 +822,8 @@ function buildTable(items){
         const urlPart = floreAlpesIndex[foundKey].split('?')[0];
         floreAlpesLink = linkIcon(`https://www.florealpes.com/${urlPart}`, "FloreAlpes.png", "FloreAlpes");
     }
-    const escapedSci = displaySci.replace(/'/g, "\\'");
+    const escapedSci = displaySci.replace(/'/g, "\\'");
+    const stat = statusMap[sci] ? statusMap[sci].join('<br>') : '—';
     const checkedAttr = item.autoCheck ? ' checked' : '';
     const floraHelveticaLink = `<a href="${floraHelveticaUrl(sci)}">FH</a>`;
     
@@ -722,10 +858,11 @@ function buildTable(items){
           	 	 <td class="col-link">${linkIcon(pfaf(sci), "PFAF.png", "PFAF")}</td>
          <td class="col-link">${regalVegetalLink}</td>
          <td class="col-link">${floreMedLink}</td>
+         <td class="col-statut">${stat}</td>
          </tr>`;
   }).join("");
 
-  const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Phénologie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th><th>Régal Végétal</th><th>Flore Méd</th></tr>`;
+  const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Phénologie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th><th>Régal Végétal</th><th>Flore Méd</th><th>Statut</th></tr>`;
   
   wrap.innerHTML = `<div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-footer" style="padding-top: 1rem; text-align: center;"></div><div id="comparison-results-container" style="display:none;"></div>`;
   enableDragScroll(wrap);
@@ -934,7 +1071,7 @@ function showSimilarSpeciesButton(speciesName) {
           displayedItems.push({ score: 0, species: { scientificNameWithoutAuthor: n }, autoCheck: false });
         }
       });
-      buildTable(displayedItems);
+      buildTable(displayedItems, statusData);
       buildCards(displayedItems);
     } else {
       showNotification('Aucune espèce similaire trouvée.', 'error');
@@ -961,6 +1098,7 @@ function handleSingleFileSelect(file) {
 const nameSearchInput = document.getElementById("name-search-input");
 const nameSearchButton = document.getElementById("name-search-button");
 const speciesSuggestions = document.getElementById("species-suggestions");
+const statusAnalysisBtn = document.getElementById("status-analysis-btn");
 
 const organBoxOnPage = document.getElementById("organ-choice");
 
@@ -1021,7 +1159,7 @@ async function performNameSearch() {
           displayedItems.push({ score: 1.0, species: { scientificNameWithoutAuthor: n }, autoCheck: found.length === 1 });
         }
       });
-      buildTable(displayedItems);
+    buildTable(displayedItems, statusData);
       buildCards(displayedItems);
       if (found.length === 1) {
         showSimilarSpeciesButton(found[0]);
@@ -1038,6 +1176,19 @@ async function performNameSearch() {
 }
 if (nameSearchButton) nameSearchButton.addEventListener("click", performNameSearch);
 if (nameSearchInput) nameSearchInput.addEventListener("keypress", e => { if (e.key === "Enter") performNameSearch(); });
+if (statusAnalysisBtn) statusAnalysisBtn.addEventListener('click', async () => {
+  statusAnalysisBtn.disabled = true;
+  statusAnalysisBtn.textContent = 'Analyse...';
+  try {
+    const species = displayedItems.map(it => it.species.scientificNameWithoutAuthor);
+    statusData = await analyzeStatusForSpecies(species);
+    buildTable(displayedItems, statusData);
+  } catch(e) {
+    showNotification(e.message, 'error');
+  }
+  statusAnalysisBtn.disabled = false;
+  statusAnalysisBtn.textContent = 'Analyse statuts';
+});
 
 if (document.getElementById("file-capture")) {
   const fileCaptureInput = document.getElementById("file-capture");
@@ -1115,7 +1266,7 @@ if (organBoxOnPage) {
       : results;
 
     displayedItems = items;
-    buildTable(displayedItems);
+    buildTable(displayedItems, statusData);
     buildCards(displayedItems);
 
     if (isNameSearch && results.length === 1) {
