@@ -170,7 +170,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (!response.ok) throw new Error("Le référentiel BDCstatut.csv est introuvable.");
             const csvText = await response.text();
             rulesByTaxonIndex = indexRulesFromCSV(csvText);
-            setStatus("Prêt. Choisissez une méthode de recherche.");
+            setStatus("");
             console.log(`Référentiel chargé, ${rulesByTaxonIndex.size} taxons indexés.`);
         } catch (error) {
             setStatus(`Erreur critique au chargement : ${error.message}`);
@@ -648,7 +648,7 @@ const initializeSelectionMap = (coords) => {
             observationsTabBtn.classList.add('active');
             stopLocationTracking();
             initializeObservationMap();
-            obsStatusDiv.textContent = "Faites un clic droit sur la carte ou maintenez un appui long pour choisir un endroit. Une confirmation s'affichera.";
+            obsStatusDiv.textContent = "";
         }
     };
 
