@@ -1298,6 +1298,7 @@ async function runStatusAnalysis() {
 
   const table = document.querySelector('#results table');
   if (!table) { if(btn){btn.disabled=false;btn.textContent='Analyse statuts';} return; }
+  table.style.tableLayout = 'auto';
 
   const speciesRows = Array.from(table.querySelectorAll('tbody tr'));
   const uniqueSpeciesNames = [];
