@@ -189,8 +189,8 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
         border-radius: 0;
     }
     .action-button {
-        padding: 0.5rem;
-        font-size: 0.9rem;
+        padding: 0.8rem;
+        font-size: 1rem;
     }
     .search-controls {
         flex-direction: column;
@@ -207,7 +207,7 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
         width: 100%;
     }
     .button-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: 1fr;
     }
 }
 /* Style pour la navigation principale (issue de l'app cible) */
