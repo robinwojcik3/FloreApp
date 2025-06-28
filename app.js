@@ -22,6 +22,14 @@ let physionomie = {};
 let phenologie = {};
 let userLocation = { latitude: 45.188529, longitude: 5.724524 };
 
+// --- Données pour l'analyse locale de statut ---
+const nonPatrimonialLabels = new Set([
+    "Liste des espèces végétales sauvages pouvant faire l'objet d'une réglementation préfectorale dans les départements d'outre-mer : Article 1"
+]);
+const nonPatrimonialRedlistCodes = new Set(['LC', 'DD', 'NA', 'NE']);
+let bdcRulesByTaxon = new Map();
+let bdcDataPromise = null;
+
 let displayedItems = [];
 
 let dataPromise = null;
@@ -726,9 +734,11 @@ function buildTable(items){
   }).join("");
 
   const headerHtml = `<tr><th><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Phénologie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Flora Helvetica</th><th>Fiche synthèse</th><th>PFAF</th><th>Régal Végétal</th><th>Flore Méd</th></tr>`;
-  
-  wrap.innerHTML = `<div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-footer" style="padding-top: 1rem; text-align: center;"></div><div id="comparison-results-container" style="display:none;"></div>`;
+
+  wrap.innerHTML = `<button id="status-analysis-btn" class="action-button" style="margin-bottom:1rem;">Analyse statuts</button><div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-footer" style="padding-top: 1rem; text-align: center;"></div><div id="comparison-results-container" style="display:none;"></div>`;
   enableDragScroll(wrap);
+  const statusBtn = document.getElementById('status-analysis-btn');
+  if (statusBtn) statusBtn.addEventListener('click', runStatusAnalysis);
 
   const footer = document.getElementById('comparison-footer');
   if (footer) {
@@ -1160,9 +1170,93 @@ if (organBoxOnPage) {
     } else {
       showNotification("Erreur lors de la préparation de l'image.", 'error');
     }
-  } else {
-    location.href = "index.html";
-  }
+  } else {
+    location.href = "index.html";
+  }
+}
+
+async function loadBDCData() {
+  if (bdcDataPromise) return bdcDataPromise;
+  bdcDataPromise = fetch('BDCstatut.csv')
+    .then(r => r.text())
+    .then(t => {
+      const lines = t.trim().split(/\r?\n/);
+      const header = lines.shift().split(';');
+      const idx = {
+        level: header.indexOf('NIVEAU_ADMIN'),
+        adm: header.indexOf('LB_ADM_TR'),
+        nom: header.indexOf('LB_NOM'),
+        code: header.indexOf('CODE_STATUT'),
+        type: header.indexOf('LB_TYPE_STATUT'),
+        label: header.indexOf('LABEL_STATUT')
+      };
+      const map = new Map();
+      lines.forEach(line => {
+        const c = line.split(';');
+        const row = {
+          level: c[idx.level] || '',
+          adm: c[idx.adm] || '',
+          nom: c[idx.nom] || '',
+          code: c[idx.code] || '',
+          type: c[idx.type] || '',
+          label: c[idx.label] || ''
+        };
+        if (!row.nom) return;
+        if (!map.has(row.nom)) map.set(row.nom, []);
+        map.get(row.nom).push(row);
+      });
+      bdcRulesByTaxon = map;
+    });
+  return bdcDataPromise;
+}
+
+async function runStatusAnalysis() {
+  const btn = document.getElementById('status-analysis-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Analyse...'; }
+  await loadBDCData();
+  let depName = '', regName = '';
+  try {
+    const resp = await fetch(`https://geo.api.gouv.fr/communes?lat=${userLocation.latitude}&lon=${userLocation.longitude}&fields=departement,region`);
+    const loc = (await resp.json())[0];
+    depName = loc.departement.nom.toLowerCase();
+    regName = loc.region.nom.toLowerCase();
+  } catch(e) { console.error(e); }
+
+  const table = document.querySelector('#results table');
+  if (!table) { if(btn){btn.disabled=false;btn.textContent='Analyse statuts';} return; }
+  const headerRow = table.querySelector('thead tr');
+  if (headerRow && !headerRow.querySelector('.statut-header')) {
+    const th = document.createElement('th');
+    th.textContent = 'Statut';
+    th.className = 'statut-header';
+    headerRow.appendChild(th);
+  }
+  table.querySelectorAll('tbody tr').forEach(tr => {
+    const latinCell = tr.querySelector('.col-nom-latin');
+    const name = latinCell ? (latinCell.dataset.latin || latinCell.textContent.split('\n')[0]).trim() : '';
+    const rules = bdcRulesByTaxon.get(name) || [];
+    const statuses = [];
+    rules.forEach(r => {
+      const type = r.type.toLowerCase();
+      if (nonPatrimonialLabels.has(r.label) || type.includes('déterminante znieff')) return;
+      if (type.includes('liste rouge') && nonPatrimonialRedlistCodes.has(r.code)) return;
+      const admin = (r.adm || '').toLowerCase();
+      const applies = r.level.toLowerCase().includes('état') || admin === 'france' || admin === depName || admin === regName;
+      if (applies) {
+        const st = type.includes('liste rouge') ? `${r.type} (${r.code})` : r.label;
+        if (!statuses.includes(st)) statuses.push(st);
+      }
+    });
+    const td = document.createElement('td');
+    td.className = 'col-statut';
+    if (statuses.length) {
+      td.innerHTML = '<ul>' + statuses.map(s => `<li>${s}</li>`).join('') + '</ul>';
+    } else {
+      td.textContent = '—';
+    }
+    tr.appendChild(td);
+  });
+  if (btn) { btn.disabled = false; btn.textContent = 'Analyse statuts'; }
 }
 
 
