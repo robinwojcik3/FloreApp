@@ -1299,11 +1299,16 @@ async function runStatusAnalysis() {
     th.className = 'statut-header';
     headerRow.appendChild(th);
   }
-  table.querySelectorAll('tbody tr').forEach(tr => {
+
+  const rows = Array.from(table.querySelectorAll('tbody tr'));
+  const speciesNames = [];
+  const relevantRules = new Map();
+  rows.forEach(tr => {
     const latinCell = tr.querySelector('.col-nom-latin');
     const name = latinCell ? (latinCell.dataset.latin || latinCell.textContent.split('\n')[0]).trim() : '';
+    if (!name) return;
+    speciesNames.push(name);
     const rules = bdcRulesByTaxon.get(name) || [];
-    const statuses = [];
     rules.forEach(r => {
       let ruleApplies = false;
       const type = r.type.toLowerCase();
@@ -1322,10 +1327,39 @@ async function runStatusAnalysis() {
         if (nonPatrimonialLabels.has(r.label) || type.includes('déterminante znieff')) return;
         const isRedList = type.includes('liste rouge');
         if (isRedList && nonPatrimonialRedlistCodes.has(r.code)) return;
-        const st = isRedList ? `${r.type} (${r.code}) (${r.adm})` : r.label;
-        if (!statuses.includes(st)) statuses.push(st);
+        const ruleKey = `${r.nom}|${r.type}|${r.adm}`;
+        if (!relevantRules.has(ruleKey)) {
+          const descriptiveStatus = isRedList ? `${r.type} (${r.code}) (${r.adm})` : r.label;
+          relevantRules.set(ruleKey, { species: r.nom, status: descriptiveStatus });
+        }
       }
     });
+  });
+
+  let patrimonialMap = {};
+  try {
+    const resp = await fetch('/.netlify/functions/analyze-patrimonial-status', {
+      method: 'POST',
+      body: JSON.stringify({
+        relevantRules: Array.from(relevantRules.values()),
+        uniqueSpeciesNames: speciesNames,
+        coords: { latitude: userLocation.latitude, longitude: userLocation.longitude }
+      })
+    });
+    if (!resp.ok) {
+      const errBody = await resp.text();
+      throw new Error(`Le service d'analyse a échoué: ${errBody}`);
+    }
+    patrimonialMap = await resp.json();
+  } catch(e) {
+    console.error(e);
+    showNotification(`Erreur service analyse : ${e.message}`, 'error');
+  }
+
+  rows.forEach(tr => {
+    const latinCell = tr.querySelector('.col-nom-latin');
+    const name = latinCell ? (latinCell.dataset.latin || latinCell.textContent.split('\n')[0]).trim() : '';
+    const statuses = Array.isArray(patrimonialMap[name]) ? patrimonialMap[name] : [];
     const td = document.createElement('td');
     td.className = 'col-statut';
     if (statuses.length) {
