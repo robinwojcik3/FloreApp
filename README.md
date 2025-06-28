@@ -125,5 +125,5 @@ This launches the Jest test suite which validates the helper utilities and the
   or right click, making accidental selections on mobile devices less likely.
 
 
-- The patrimonial analysis page now provides a "Voir le détail des espèces patri" button to list every found species on the organ page.
+- The patrimonial analysis page now provides a "Voir le détail des espèces patri" button to list every found species on the organ page. The underlying logic was reinforced so the button works reliably even if the map is still loading.
 - Buttons on both patrimonial maps toggle label visibility; labels start slightly translucent for readability.
