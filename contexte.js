@@ -129,10 +129,25 @@ const APICARTO_LAYERS = {
 
 // Utilitaires de conversion
 function latLonToWebMercator(lat, lon) {
-	const R = 6378137.0;
-	const x = R * (lon * Math.PI / 180);
-	const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
-	return { x, y };
+        const R = 6378137.0;
+        const x = R * (lon * Math.PI / 180);
+        const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
+        return { x, y };
+}
+
+// Récupère l'altitude via l'API OpenTopodata
+async function fetchAltitude(lat, lon) {
+    try {
+        const resp = await fetch(`https://api.opentopodata.org/v1/srtm90m?locations=${lat},${lon}`);
+        if (!resp.ok) throw new Error('Erreur altitude');
+        const data = await resp.json();
+        if (data && data.results && data.results.length) {
+            return data.results[0].elevation;
+        }
+    } catch (err) {
+        console.error('Altitude fetch failed', err);
+    }
+    return null;
 }
 
 // Initialisation au chargement de la page
@@ -320,15 +335,22 @@ async function searchAddress() {
 }
 
 // Fonction principale pour afficher les résultats
-function showResults() {
-	if (!selectedLat || !selectedLon) {
-		showNotification('Aucune localisation sélectionnée', 'error');
-		return;
-	}
-	
-	const loading = document.getElementById('loading');
-	loading.style.display = 'block';
-	loading.textContent = 'Préparation des liens...';
+async function showResults() {
+        if (!selectedLat || !selectedLon) {
+                showNotification('Aucune localisation sélectionnée', 'error');
+                return;
+        }
+
+        const altitudeDiv = document.getElementById('altitude-display');
+        const altitudeSpan = document.getElementById('selected-altitude');
+        altitudeSpan.textContent = '...';
+        altitudeDiv.style.display = 'block';
+        const alt = await fetchAltitude(selectedLat, selectedLon);
+        altitudeSpan.textContent = alt !== null ? `${alt.toFixed(0)} m` : 'Indisponible';
+
+        const loading = document.getElementById('loading');
+        loading.style.display = 'block';
+        loading.textContent = 'Préparation des liens...';
 	
 	setTimeout(() => {
 		loading.style.display = 'none';
@@ -635,6 +657,8 @@ function resetSelection() {
     envMarker = null;
     document.getElementById('coordinates-display').style.display = 'none';
     document.getElementById('selected-coords').textContent = '--';
+    document.getElementById('altitude-display').style.display = 'none';
+    document.getElementById('selected-altitude').textContent = '--';
     document.getElementById('validate-location').style.display = 'none';
     document.getElementById('results-section').style.display = 'none';
     document.getElementById('env-map').style.display = 'none';

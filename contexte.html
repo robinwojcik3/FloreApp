@@ -78,6 +78,7 @@
          border:1px solid var(--border); text-align: center;
       }
       .coordinates-display span { font-weight: 600; color: var(--primary); }
+      .altitude-display{margin-top:.5rem;}
       .coords-actions{margin-top:.5rem;display:flex;justify-content:center;gap:.5rem;flex-wrap:wrap;}
       .small-button{
          padding:4px 8px;background:var(--primary);color:#fff;border:none;
@@ -169,6 +170,9 @@
             <div>
                Coordonnées sélectionnées :
                <span id="selected-coords">--</span>
+            </div>
+            <div id="altitude-display" class="altitude-display" style="display:none;">
+               Altitude : <span id="selected-altitude">--</span>
             </div>
             <div class="coords-actions">
                <button class="small-button" id="copy-coords">Copier</button>
