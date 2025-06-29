@@ -176,6 +176,16 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     vertical-align: middle;
 }
 
+.logo-icon {
+    width: 24px;
+    height: auto;
+}
+
+.small-logo {
+    height: 24px;
+    width: auto;
+}
+
 @media (min-width: 600px) {
     .main-content { padding: 2rem; }
 }
