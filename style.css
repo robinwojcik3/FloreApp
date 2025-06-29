@@ -90,7 +90,7 @@ h1 {
 
 .button-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
     gap: 0.5rem;
     width: 100%;
 }
@@ -189,8 +189,8 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
         border-radius: 0;
     }
     .action-button {
-        padding: 0.8rem;
-        font-size: 1rem;
+        padding: 0.6rem;
+        font-size: 0.9rem;
     }
     .search-controls {
         flex-direction: column;
@@ -211,7 +211,7 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
         flex: 0 0 auto;
     }
     .button-grid {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 /* Style pour la navigation principale (issue de l'app cible) */
