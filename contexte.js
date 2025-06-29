@@ -204,8 +204,9 @@ async function useGeolocation() {
 	
 	navigator.geolocation.getCurrentPosition(
 		(position) => {
-			selectedLat = position.coords.latitude;
-			selectedLon = position.coords.longitude;
+               selectedLat = position.coords.latitude;
+               selectedLon = position.coords.longitude;
+                updateAltitudeDisplay(selectedLat, selectedLon);
 			button.textContent = 'Position récupérée ✓';
 			setTimeout(() => {
 				button.disabled = false;
@@ -291,8 +292,9 @@ function initializeMap() {
 		if (marker) map.removeLayer(marker);
 		marker = L.marker([lat, lon]).addTo(map);
 		selectedLat = lat;
-		selectedLon = lon;
-		document.getElementById('coordinates-display').style.display = 'block';
+                selectedLon = lon;
+                updateAltitudeDisplay(selectedLat, selectedLon);
+                document.getElementById('coordinates-display').style.display = 'block';
 		document.getElementById('selected-coords').textContent = `${lat.toFixed(6)}°, ${lon.toFixed(6)}°`;
 		document.getElementById('validate-location').style.display = 'block';
 	}
@@ -335,8 +337,9 @@ async function searchAddress() {
 			return;
 		}
 		selectedLat = parseFloat(data[0].lat);
-		selectedLon = parseFloat(data[0].lon);
-		document.getElementById('coordinates-display').style.display = 'block';
+                selectedLon = parseFloat(data[0].lon);
+                updateAltitudeDisplay(selectedLat, selectedLon);
+                document.getElementById('coordinates-display').style.display = 'block';
 		document.getElementById('selected-coords').textContent = `${selectedLat.toFixed(6)}°, ${selectedLon.toFixed(6)}°`;
 		document.getElementById('validate-location').style.display = 'block';
 		showResults();
