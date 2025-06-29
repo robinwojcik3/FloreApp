@@ -812,13 +812,26 @@ function buildTable(items){
       
       locationBtn.addEventListener('click', () => {
           const checkedBoxes = document.querySelectorAll('.species-checkbox:checked');
-          const speciesNames = Array.from(checkedBoxes).map(box => {
+          let speciesNames = Array.from(checkedBoxes).map(box => {
               const latinCell = box.closest('tr')?.querySelector('.col-nom-latin');
               if (latinCell) {
                   return (latinCell.dataset.latin || latinCell.textContent.split('\n')[0]).trim();
               }
               return box.dataset.species || '';
           }).filter(Boolean).join(',');
+
+          if (!speciesNames) {
+              const allBoxes = document.querySelectorAll('.species-checkbox');
+              if (allBoxes.length === 1) {
+                  const latinCell = allBoxes[0].closest('tr')?.querySelector('.col-nom-latin');
+                  if (latinCell) {
+                      speciesNames = (latinCell.dataset.latin || latinCell.textContent.split('\n')[0]).trim();
+                  } else {
+                      speciesNames = allBoxes[0].dataset.species || '';
+                  }
+              }
+          }
+
           if (speciesNames) {
               const mapUrl = `carte_interactive/map_view.html?species=${encodeURIComponent(speciesNames)}`;
               window.open(mapUrl, '_blank');
@@ -834,9 +847,11 @@ function buildTable(items){
       if(compareBtn) {
         compareBtn.style.display = (checkedCount >= 2) ? 'inline-block' : 'none';
       }
-      if(locationBtn) {
-        locationBtn.style.display = (checkedCount >= 2) ? 'inline-block' : 'none';
-      }
+      if(locationBtn) {
+        const total = wrap.querySelectorAll('.species-checkbox').length;
+        const showBtn = checkedCount >= 1 || total === 1;
+        locationBtn.style.display = showBtn ? 'inline-block' : 'none';
+      }
       if(toggleBtn) {
         const total = wrap.querySelectorAll('.species-checkbox').length;
         const allChecked = checkedCount === total && total > 0;
