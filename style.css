@@ -218,6 +218,16 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
 .tab.active { color: var(--primary); font-weight: 600; }
 .tab.active::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 2px; background: var(--primary); }
 
+/* Bouton de changement de thème */
+#theme-toggle {
+    background: none;
+    border: none;
+    color: var(--text);
+    cursor: pointer;
+    padding: 0.5rem;
+    font-size: 1.2rem;
+}
+
 
 /* Améliore la lisibilité des étiquettes sur les cartes */
 .leaflet-tooltip {

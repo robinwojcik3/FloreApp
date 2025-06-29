@@ -19,7 +19,30 @@
     document.head.appendChild(style);
 
     document.addEventListener('DOMContentLoaded', () => {
-        document.documentElement.setAttribute('data-theme', 'dark');
+        const storedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = storedTheme || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+
+        const themeToggle = document.createElement('button');
+        themeToggle.id = 'theme-toggle';
+        themeToggle.textContent = theme === 'dark' ? '🌙' : '☀️';
+        themeToggle.addEventListener('click', () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            themeToggle.textContent = next === 'dark' ? '🌙' : '☀️';
+        });
+        const nav = document.querySelector('.tabs-container');
+        if (nav) {
+            nav.appendChild(themeToggle);
+        } else {
+            themeToggle.style.position = 'fixed';
+            themeToggle.style.top = '1rem';
+            themeToggle.style.right = '1rem';
+            document.body.appendChild(themeToggle);
+        }
 
         const notificationContainer = document.createElement('div');
         notificationContainer.id = 'notification-container';

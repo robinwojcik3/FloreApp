@@ -69,4 +69,5 @@ Poussez le dépôt sur GitHub puis créez un site sur Netlify. Le fichier `netli
 - carte contextuelle avec couches IGN (réserves, zones humides, etc.)
 - recherche par trigramme et suggestions via TaxRef Match
 - comparaison d'espèces et synthèse vocale optionnelle
+- choix du thème clair ou sombre
 
