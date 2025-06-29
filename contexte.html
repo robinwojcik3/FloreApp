@@ -97,6 +97,13 @@
       .result-card h3 { color: var(--primary); margin: 0 0 0.5rem; font-size: 1.1rem; }
       .result-card a { display: inline-block; margin-top: 0.5rem; color: var(--primary); text-decoration: none; }
       .result-card a:hover { text-decoration: underline; }
+
+      /* Sous-onglets des résultats */
+      .subtabs { display:flex; gap:.5rem; margin-bottom:1rem; }
+      .subtab { flex:1; padding:0.5rem; background:none; border:1px solid var(--border); border-radius:4px; cursor:pointer; }
+      .subtab.active { background: var(--primary); color:#fff; }
+      .subtab-content { display:none; }
+      .subtab-content.active { display:block; }
       
       /* Chargement */
       .loading { display: none; text-align: center; margin: 2rem 0; }
@@ -177,19 +184,28 @@
       </div>
       
       <div class="loading" id="loading"></div>
-      
-      <div class="results-section" id="results-section">
-         <h2 style="margin-top:2rem;">Carte interactive</h2>
-         <div id="layer-controls" style="margin-bottom:0.5rem;"></div>
-         <button id="measure-distance" class="small-button" style="display:none;margin-bottom:0.5rem;">Mesurer une distance</button>
-         <div id="env-map" class="map-fullwidth" style="height:80vh;display:none;"></div>
 
-         <h2>Ressources environnementales</h2>
-         <p style="margin-bottom: 1rem; color: #666;">
-            Cliquez sur les liens ci-dessous pour explorer le contexte environnemental de la zone sélectionnée :
-         </p>
-         <div class="results-grid" id="results-grid">
-            </div>
+      <div class="results-section" id="results-section">
+         <div class="subtabs">
+            <button class="subtab active" data-target="zoning-tab">Zonage</button>
+            <button class="subtab" data-target="resources-tab">Ressources</button>
+         </div>
+
+         <div id="zoning-tab" class="subtab-content active">
+            <h2 style="margin-top:2rem;">Carte interactive</h2>
+            <div id="layer-controls" style="margin-bottom:0.5rem;"></div>
+            <button id="measure-distance" class="small-button" style="display:none;margin-bottom:0.5rem;">Mesurer une distance</button>
+            <div id="env-map" class="map-fullwidth" style="height:80vh;display:none;"></div>
+         </div>
+
+         <div id="resources-tab" class="subtab-content">
+            <h2>Ressources environnementales</h2>
+            <p style="margin-bottom: 1rem; color: #666;">
+               Cliquez sur les liens ci-dessous pour explorer le contexte environnemental de la zone sélectionnée :
+            </p>
+            <div class="results-grid" id="results-grid">
+               </div>
+         </div>
       </div>
    </div>
 </body>
