@@ -148,6 +148,13 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('open-gmaps').addEventListener('click', openInGmaps);
         document.getElementById('reset-selection').addEventListener('click', resetSelection);
         document.getElementById('measure-distance').addEventListener('click', toggleMeasure);
+        const zonageTabBtn = document.getElementById('zonage-tab-btn');
+        const resourcesTabBtn = document.getElementById('resources-tab-btn');
+        if (zonageTabBtn && resourcesTabBtn) {
+                zonageTabBtn.addEventListener('click', () => switchSubTab('zonage'));
+                resourcesTabBtn.addEventListener('click', () => switchSubTab('resources'));
+                switchSubTab('zonage');
+        }
         initializeMap();
         toggleMap();
 });
@@ -634,6 +641,26 @@ function resetSelection() {
     document.getElementById('choose-on-map').textContent = '🗺️ Ouvrir la carte';
     document.getElementById('measure-distance').style.display = 'none';
     if (measuring && envMap) toggleMeasure();
+}
+
+// Affiche l'onglet demandé dans la section des résultats
+function switchSubTab(tab) {
+    const zonageTab = document.getElementById('zonage-tab');
+    const resourcesTab = document.getElementById('resources-tab');
+    const zonageBtn = document.getElementById('zonage-tab-btn');
+    const resourcesBtn = document.getElementById('resources-tab-btn');
+    if (!zonageTab || !resourcesTab || !zonageBtn || !resourcesBtn) return;
+    if (tab === 'zonage') {
+        zonageTab.style.display = 'block';
+        resourcesTab.style.display = 'none';
+        zonageBtn.classList.add('active');
+        resourcesBtn.classList.remove('active');
+    } else {
+        zonageTab.style.display = 'none';
+        resourcesTab.style.display = 'block';
+        zonageBtn.classList.remove('active');
+        resourcesBtn.classList.add('active');
+    }
 }
 
 // Gestionnaire pour le retour à la page d'accueil
