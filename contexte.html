@@ -54,6 +54,9 @@
       .location-card { background: var(--card); border-radius: 8px; padding: 0.5rem 0.8rem; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
       .location-card h2 { display:none; }
       .location-card .icon { display:none; }
+      .search-inline{display:flex;gap:.5rem;align-items:center;}
+      .search-inline input[type="text"]{flex:1;padding:8px;border:1px solid var(--border);border-radius:4px;font-size:1rem;margin:0;}
+      .search-inline .action-button{width:auto;margin-top:0;white-space:nowrap;}
       
       .action-button { padding: 10px 16px; background: var(--primary); color: white; border: none; border-radius: 6px; font-size: 1rem; cursor: pointer; transition: all 0.3s; width: 100%; }
       .action-button:hover { background: #2e7d32; transform: scale(1.02); }
@@ -131,9 +134,10 @@
       
       <div class="location-options">
          <div class="location-card">
-            <input type="text" id="address-input" placeholder="Saisissez une adresse"
-                   style="padding:8px;border:1px solid var(--border);border-radius:4px;width:100%;margin-bottom:.5rem;">
-            <button class="action-button" id="search-address">🔍 Rechercher</button>
+            <div class="search-inline">
+               <input type="text" id="address-input" placeholder="Saisissez une adresse">
+               <button class="action-button" id="search-address">🔍 Rechercher</button>
+            </div>
          </div>
 
          <div class="location-card">
