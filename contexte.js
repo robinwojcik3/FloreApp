@@ -11,6 +11,7 @@ let envMarker = null; // Marqueur du point analysé
 let marker = null;
 let selectedLat = null;
 let selectedLon = null;
+let selectedAlt = null;
 
 // Cache des couches déjà chargées pour accélérer les changements
 let layerCache = {};
@@ -129,10 +130,25 @@ const APICARTO_LAYERS = {
 
 // Utilitaires de conversion
 function latLonToWebMercator(lat, lon) {
-	const R = 6378137.0;
-	const x = R * (lon * Math.PI / 180);
-	const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
-	return { x, y };
+        const R = 6378137.0;
+        const x = R * (lon * Math.PI / 180);
+        const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
+        return { x, y };
+}
+
+// Récupère l'altitude via le service OpenTopoData
+async function fetchAltitude(lat, lon) {
+    try {
+        const resp = await fetch(`https://api.opentopodata.org/v1/srtm90m?locations=${lat},${lon}`);
+        if (!resp.ok) throw new Error('fail');
+        const data = await resp.json();
+        if (data && data.results && data.results.length) {
+            return data.results[0].elevation;
+        }
+    } catch (err) {
+        console.error('Altitude error', err);
+    }
+    return null;
 }
 
 // Initialisation au chargement de la page
@@ -320,15 +336,26 @@ async function searchAddress() {
 }
 
 // Fonction principale pour afficher les résultats
-function showResults() {
-	if (!selectedLat || !selectedLon) {
-		showNotification('Aucune localisation sélectionnée', 'error');
-		return;
-	}
-	
-	const loading = document.getElementById('loading');
-	loading.style.display = 'block';
-	loading.textContent = 'Préparation des liens...';
+async function showResults() {
+        if (!selectedLat || !selectedLon) {
+                showNotification('Aucune localisation sélectionnée', 'error');
+                return;
+        }
+
+        const loading = document.getElementById('loading');
+        loading.style.display = 'block';
+        loading.textContent = 'Préparation des liens...';
+
+        const alt = await fetchAltitude(selectedLat, selectedLon);
+        selectedAlt = alt;
+        const altLine = document.getElementById('altitude-line');
+        const altVal = document.getElementById('altitude-value');
+        if (alt !== null && alt !== undefined) {
+                altVal.textContent = `${Math.round(alt)} m`;
+        } else {
+                altVal.textContent = 'indisponible';
+        }
+        altLine.style.display = 'block';
 	
 	setTimeout(() => {
 		loading.style.display = 'none';
@@ -628,6 +655,7 @@ function addMeasurePoint(e) {
 function resetSelection() {
     selectedLat = null;
     selectedLon = null;
+    selectedAlt = null;
     layerCache = {};
     lastCacheCoords = null;
     if (marker) { map.removeLayer(marker); marker = null; }
@@ -641,6 +669,8 @@ function resetSelection() {
     document.getElementById('map-container').style.display = 'none';
     document.getElementById('choose-on-map').textContent = '🗺️ Ouvrir la carte';
     document.getElementById('measure-distance').style.display = 'none';
+    document.getElementById('altitude-line').style.display = 'none';
+    document.getElementById('altitude-value').textContent = '--';
     if (measuring && envMap) toggleMeasure();
 }
 
