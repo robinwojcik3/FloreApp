@@ -22,6 +22,8 @@ let measurePoints = [];
 let measureLine = null;
 let measureTooltip = null;
 
+const ALTITUDE_API = 'https://api.open-meteo.com/v1/elevation';
+
 const GOOGLE_MAPS_LONG_PRESS_MS = 2000;
 
 // Configuration des services externes (liens)
@@ -129,10 +131,37 @@ const APICARTO_LAYERS = {
 
 // Utilitaires de conversion
 function latLonToWebMercator(lat, lon) {
-	const R = 6378137.0;
-	const x = R * (lon * Math.PI / 180);
-	const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
-	return { x, y };
+        const R = 6378137.0;
+        const x = R * (lon * Math.PI / 180);
+        const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
+        return { x, y };
+}
+
+async function fetchAltitude(lat, lon) {
+    try {
+        const resp = await fetch(`${ALTITUDE_API}?latitude=${lat}&longitude=${lon}`);
+        if (!resp.ok) throw new Error('bad response');
+        const data = await resp.json();
+        if (data && typeof data.elevation === 'number') return data.elevation;
+    } catch(e) {
+        console.error('Altitude fetch failed', e);
+    }
+    return null;
+}
+
+function updateAltitudeDisplay(lat, lon) {
+    const el = document.getElementById('altitude-info');
+    if (!el) return;
+    el.textContent = 'Altitude : ...';
+    fetchAltitude(lat, lon).then(alt => {
+        if (alt === null) {
+            el.textContent = 'Altitude indisponible';
+        } else {
+            el.textContent = `Altitude : ${Math.round(alt)} m`;
+        }
+    }).catch(() => {
+        el.textContent = 'Altitude indisponible';
+    });
 }
 
 // Initialisation au chargement de la page
@@ -321,10 +350,12 @@ async function searchAddress() {
 
 // Fonction principale pour afficher les résultats
 function showResults() {
-	if (!selectedLat || !selectedLon) {
-		showNotification('Aucune localisation sélectionnée', 'error');
-		return;
-	}
+        if (!selectedLat || !selectedLon) {
+                showNotification('Aucune localisation sélectionnée', 'error');
+                return;
+        }
+
+        updateAltitudeDisplay(selectedLat, selectedLon);
 	
 	const loading = document.getElementById('loading');
 	loading.style.display = 'block';
@@ -641,6 +672,8 @@ function resetSelection() {
     document.getElementById('map-container').style.display = 'none';
     document.getElementById('choose-on-map').textContent = '🗺️ Ouvrir la carte';
     document.getElementById('measure-distance').style.display = 'none';
+    const alt = document.getElementById('altitude-info');
+    if (alt) alt.textContent = '';
     if (measuring && envMap) toggleMeasure();
 }
 
