@@ -11,6 +11,7 @@ let envMarker = null; // Marqueur du point analysé
 let marker = null;
 let selectedLat = null;
 let selectedLon = null;
+let selectedAlt = null;
 
 // Cache des couches déjà chargées pour accélérer les changements
 let layerCache = {};
@@ -23,6 +24,20 @@ let measureLine = null;
 let measureTooltip = null;
 
 const GOOGLE_MAPS_LONG_PRESS_MS = 2000;
+
+// Récupère l'altitude depuis l'API OpenTopodata
+async function fetchAltitude(lat, lon) {
+    try {
+        const resp = await fetch(`https://api.opentopodata.org/v1/srtm90m?locations=${lat},${lon}`);
+        if (!resp.ok) throw new Error('Altitude service error');
+        const data = await resp.json();
+        const result = data.results && data.results[0];
+        return result && typeof result.elevation === 'number' ? result.elevation : null;
+    } catch (err) {
+        console.error('fetchAltitude error', err);
+        return null;
+    }
+}
 
 // Configuration des services externes (liens)
 const SERVICES = {
@@ -326,9 +341,18 @@ function showResults() {
 		return;
 	}
 	
-	const loading = document.getElementById('loading');
-	loading.style.display = 'block';
-	loading.textContent = 'Préparation des liens...';
+        const loading = document.getElementById('loading');
+        loading.style.display = 'block';
+        loading.textContent = 'Préparation des liens...';
+
+        const altitudeEl = document.getElementById('altitude-display');
+        altitudeEl.style.display = 'block';
+        altitudeEl.textContent = 'Altitude : ...';
+        fetchAltitude(selectedLat, selectedLon).then((alt) => {
+                selectedAlt = alt;
+                altitudeEl.textContent =
+                        alt !== null ? `Altitude : ${Math.round(alt)} m` : 'Altitude indisponible';
+        });
 	
 	setTimeout(() => {
 		loading.style.display = 'none';
@@ -628,6 +652,7 @@ function addMeasurePoint(e) {
 function resetSelection() {
     selectedLat = null;
     selectedLon = null;
+    selectedAlt = null;
     layerCache = {};
     lastCacheCoords = null;
     if (marker) { map.removeLayer(marker); marker = null; }
@@ -636,6 +661,7 @@ function resetSelection() {
     document.getElementById('coordinates-display').style.display = 'none';
     document.getElementById('selected-coords').textContent = '--';
     document.getElementById('validate-location').style.display = 'none';
+    document.getElementById('altitude-display').style.display = 'none';
     document.getElementById('results-section').style.display = 'none';
     document.getElementById('env-map').style.display = 'none';
     document.getElementById('map-container').style.display = 'none';
