@@ -123,6 +123,18 @@ const APICARTO_LAYERS = {
     'ZICO (Zones importantes pour la conservation des oiseaux)': {
         endpoint: 'https://apicarto.ign.fr/api/nature/zico',
         style: { color: "#FF9800", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+    },
+    'Réserves Biologiques': {
+        endpoint: 'https://apicarto.ign.fr/api/nature/reserves_biologiques',
+        style: { color: "#4E342E", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+    },
+    'Corridors Écologiques': {
+        endpoint: 'https://apicarto.ign.fr/api/nature/corridors_ecologiques',
+        style: { color: "#C2185B", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+    },
+    'Sites Classés': {
+        endpoint: 'https://apicarto.ign.fr/api/nature/sites_classes',
+        style: { color: "#283593", weight: 2, opacity: 0.9, fillOpacity: 0.2 },
     }
 };
 
