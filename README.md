@@ -67,6 +67,7 @@ Poussez le dépôt sur GitHub puis créez un site sur Netlify. Le fichier `netli
 - copie du nom scientifique en un clic
 - affichage détaillé des critères écologiques et physiologiques
 - carte contextuelle avec couches IGN (réserves, zones humides, etc.)
+- affichage de l'altitude du point choisi via l'API Open‑Meteo
 - recherche par trigramme et suggestions via TaxRef Match
 - comparaison d'espèces et synthèse vocale optionnelle
 

@@ -129,10 +129,25 @@ const APICARTO_LAYERS = {
 
 // Utilitaires de conversion
 function latLonToWebMercator(lat, lon) {
-	const R = 6378137.0;
-	const x = R * (lon * Math.PI / 180);
-	const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
-	return { x, y };
+        const R = 6378137.0;
+        const x = R * (lon * Math.PI / 180);
+        const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
+        return { x, y };
+}
+
+// Récupère l'altitude pour des coordonnées via l'API Open-Meteo
+async function fetchAltitude(lat, lon) {
+    try {
+        const resp = await fetch(
+            `https://api.open-meteo.com/v1/elevation?latitude=${lat}&longitude=${lon}`
+        );
+        if (!resp.ok) throw new Error('Altitude service unavailable');
+        const data = await resp.json();
+        if (data && typeof data.elevation === 'number') return Math.round(data.elevation);
+    } catch (err) {
+        console.error('Altitude fetch error', err);
+    }
+    return null;
 }
 
 // Initialisation au chargement de la page
@@ -320,15 +335,21 @@ async function searchAddress() {
 }
 
 // Fonction principale pour afficher les résultats
-function showResults() {
+async function showResults() {
 	if (!selectedLat || !selectedLon) {
 		showNotification('Aucune localisation sélectionnée', 'error');
 		return;
 	}
 	
-	const loading = document.getElementById('loading');
-	loading.style.display = 'block';
-	loading.textContent = 'Préparation des liens...';
+        const loading = document.getElementById('loading');
+        loading.style.display = 'block';
+        loading.textContent = 'Préparation des liens...';
+
+        const altitudeDiv = document.getElementById('altitude-line');
+        altitudeDiv.style.display = 'block';
+        altitudeDiv.textContent = 'Altitude : ...';
+        const altitude = await fetchAltitude(selectedLat, selectedLon);
+        altitudeDiv.textContent = altitude !== null ? `Altitude : ${altitude} m` : 'Altitude indisponible';
 	
 	setTimeout(() => {
 		loading.style.display = 'none';
