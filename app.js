@@ -466,18 +466,18 @@ window.handleSynthesisClick = async function(event, element, speciesName) {
 async function getComparisonFromGemini(speciesData) {
     const speciesDataString = speciesData.map(s => `Espèce: ${s.species}\nDonnées morphologiques (Physionomie): ${s.physio || 'Non renseignée'}\nDonnées écologiques: ${s.eco || 'Non renseignée'}`).join('\n\n');
     
-    const promptTemplate = `En te basant sur les données fournies ci-dessous, rédige une analyse comparative dont l'objectif est de mettre en évidence les points de distinction clairs entre les espèces.
+    const promptTemplate = `En tant qu'expert botaniste, rédige une analyse comparative détaillée à partir des données ci-dessous. Mentionne systématiquement le nom latin de chaque espèce et insiste sur les critères morphologiques fiables et évidents permettant de les distinguer, ainsi que sur leur écologie.
 Données :
 ---
 ${speciesDataString}
 ---
-Ta réponse doit être structurée en deux parties distinctes, sans aucun texte introductif ou superflu.
+Structure ta réponse en trois parties sans texte introductif superflu.
 
-Commence par une phrase unique (1 à 2 lignes maximum) qui met en évidence le critère morphologique le plus facilement observable et le plus discriminant pour distinguer les espèces analysées.
+Commence par une phrase unique (1 à 2 lignes) soulignant le trait distinctif le plus facilement observable.
 
-Ensuite, présente un tableau comparatif en format Markdown. Ce tableau doit regrouper pour chaque espèce les principaux critères morphologiques (forme, taille, couleur des organes, etc.) et écologiques (habitat, type de sol, altitude), en t’appuyant sur les informations des colonnes « Physionomie » et « Écologie ». Organise les lignes du tableau en commençant par les critères les plus simples et discriminants à observer. Le contenu du tableau doit rester clair, sans utiliser de gras, italique ou autres styles typographiques.
+Ensuite, fournis un tableau en Markdown listant pour chaque espèce son nom français et son nom latin, les critères morphologiques discriminants (forme, taille, couleur, etc.) et les éléments écologiques majeurs (habitat, type de sol, altitude). Présente en priorité les critères les plus aisés à vérifier et n'utilise ni gras ni italique.
 
-Après le tableau, ajoute un paragraphe de synthèse plus développé (cinq à six phrases environ) rédigé dans un style oral mais technique. Fais ressortir les éléments clés qui différencient les espèces. Pour ce paragraphe de synthèse, n'utilise aucun élément de mise en forme markdown ni liste, uniquement du texte simple sans '*' et '/' ni aucun formatage de markdown.`;
+Termine par un paragraphe de synthèse d'environ cinq à six phrases, rédigé dans un style oral mais rigoureux, rappelant les points clés pour ne pas confondre les espèces. Ce paragraphe ne doit contenir aucun formatage Markdown ni liste, ni caractères tels que '*' ou '/'.`;
 
     const requestBody = { 
         "contents": [{ "parts": [{ "text": promptTemplate }] }], 
