@@ -754,10 +754,9 @@ function buildTable(items){
                        data-pheno="${encodeURIComponent(pheno)}">
               </td>
             	 <td class="col-nom-latin" data-latin="${displaySci}">${displaySci}<br><span class="score">(${pct})</span></td>
-            	 <td class="col-link">${floreAlpesLink}</td>
-            	 <td class="col-link">${floraGallicaLink}</td>
-            	 <td class="col-link">${linkIcon(cd && inpnStatut(cd), "INPN.png", "INPN", "small-logo")}</td>
-            	 <td class="col-criteres">
+            <td class="col-link">${floreAlpesLink}</td>
+            <td class="col-link">${floraGallicaLink}</td>
+            <td class="col-criteres">
             	 	 <div class="text-popup-trigger" data-title="Critères physiologiques" data-fulltext="${encodeURIComponent(crit)}">${crit}</div>
             	 </td>
             	 <td class="col-ecologie">
@@ -774,11 +773,12 @@ function buildTable(items){
                 <td class="col-link"><a href="#" onclick="handleSynthesisClick(event, this, '${escapedSci}')"><img src="assets/Audio.png" alt="Audio" class="logo-icon"></a></td>
           	 	 <td class="col-link">${linkIcon(pfaf(sci), "PFAF.png", "PFAF")}</td>
          <td class="col-link">${regalVegetalLink}</td>
-         <td class="col-link">${floreMedLink}</td>
+            <td class="col-link">${floreMedLink}</td>
+            <td class="col-link">${linkIcon(cd && inpnStatut(cd), "INPN.png", "INPN", "small-logo")}</td>
          </tr>`;
   }).join("");
 
-  const headerHtml = `<tr><th class="col-checkbox"><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>INPN statut</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Phénologie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Fiche synthèse</th><th>PFAF</th><th>Régal Végétal</th><th>Flore Méd</th></tr>`;
+  const headerHtml = `<tr><th class="col-checkbox"><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Phénologie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Fiche synthèse</th><th>PFAF</th><th>Régal Végétal</th><th>Flore Méd</th><th>INPN statut</th></tr>`;
 
   wrap.innerHTML = `<button id="status-analysis-btn" class="action-button" style="margin-bottom:1rem;">Analyse statuts</button><div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-footer" style="padding-top: 1rem; text-align: center;"></div><div id="comparison-results-container" style="display:none;"></div>`;
   enableDragScroll(wrap);
