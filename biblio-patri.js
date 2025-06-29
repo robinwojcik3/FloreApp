@@ -120,6 +120,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     let trackingWatchId = null;
     let trackingMarker = null;
     let trackingActive = false;
+    let ecology = {};
+
+    function norm(txt) {
+        if (typeof txt !== 'string') return '';
+        return txt.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().trim().replace(/\s+/g, '');
+    }
+
+    const ecolOf = n => ecology[norm(n)] || '—';
     const SEARCH_RADIUS_KM = 2;
     const OBS_RADIUS_KM = 1;
     const ANALYSIS_MAX_RETRIES = 3;
@@ -165,11 +173,19 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const initializeApp = async () => {
         try {
-            setStatus("Chargement du référentiel BDCstatut...", true);
-            const response = await fetch('/BDCstatut.csv');
-            if (!response.ok) throw new Error("Le référentiel BDCstatut.csv est introuvable.");
-            const csvText = await response.text();
+            setStatus("Chargement des données...", true);
+            const [bdcResp, ecoResp] = await Promise.all([
+                fetch('/BDCstatut.csv'),
+                fetch('ecology.json')
+            ]);
+            if (!bdcResp.ok) throw new Error("Le référentiel BDCstatut.csv est introuvable.");
+            if (!ecoResp.ok) throw new Error("Le fichier ecology.json est introuvable.");
+            const csvText = await bdcResp.text();
             rulesByTaxonIndex = indexRulesFromCSV(csvText);
+            const ecoJson = await ecoResp.json();
+            Object.entries(ecoJson).forEach(([k,v]) => {
+                ecology[norm(k.split(';')[0])] = v;
+            });
             setStatus("");
             console.log(`Référentiel chargé, ${rulesByTaxonIndex.size} taxons indexés.`);
         } catch (error) {
@@ -341,7 +357,8 @@ const initializeSelectionMap = (coords) => {
             const icon = L.divIcon({ html: iconHtml, className: 'custom-cluster', iconSize: [28, 28], iconAnchor: [14, 14] });
             let popupContent = `<div class="custom-popup"><b>${count} espèce(s) patrimoniale(s) :</b><ul>`;
             filtered.forEach(s => {
-                popupContent += `<li><span class="legend-color" style="background-color:${s.color};"></span><i>${s.name}</i></li>`;
+                const eco = ecolOf(s.name);
+                popupContent += `<li><span class="legend-color" style="background-color:${s.color};"></span><i>${s.name}</i><br><small>${eco}</small></li>`;
             });
             popupContent += '</ul></div>';
             const tooltipHtml = `<i>${filtered.map(s => s.name).join('<br>')}</i>`;
