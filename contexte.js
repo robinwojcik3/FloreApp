@@ -22,7 +22,17 @@ let measurePoints = [];
 let measureLine = null;
 let measureTooltip = null;
 
-const ALTITUDE_API = 'https://api.open-meteo.com/v1/elevation';
+const ALTITUDES_URL = 'assets/altitudes_fr.json';
+let altitudeDataPromise = null;
+
+function loadAltitudeData() {
+    if (!altitudeDataPromise) {
+        altitudeDataPromise = fetch(ALTITUDES_URL)
+            .then(r => r.ok ? r.json() : {})
+            .catch(() => ({}));
+    }
+    return altitudeDataPromise;
+}
 
 const GOOGLE_MAPS_LONG_PRESS_MS = 2000;
 
@@ -138,15 +148,10 @@ function latLonToWebMercator(lat, lon) {
 }
 
 async function fetchAltitude(lat, lon) {
-    try {
-        const resp = await fetch(`${ALTITUDE_API}?latitude=${lat}&longitude=${lon}`);
-        if (!resp.ok) throw new Error('bad response');
-        const data = await resp.json();
-        if (data && typeof data.elevation === 'number') return data.elevation;
-    } catch(e) {
-        console.error('Altitude fetch failed', e);
-    }
-    return null;
+    const data = await loadAltitudeData();
+    const round = v => (Math.round(v * 2) / 2).toFixed(1);
+    const key = `${round(lat)},${round(lon)}`;
+    return data[key] ?? null;
 }
 
 function updateAltitudeDisplay(lat, lon) {
