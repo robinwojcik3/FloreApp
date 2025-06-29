@@ -195,16 +195,20 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     .search-controls {
         flex-direction: column;
         align-items: stretch;
+        gap: 0.5rem;
     }
     .search-group {
         flex-basis: 100%;
     }
     .search-group.address-group {
-        flex-direction: column;
+        flex-direction: row;
     }
-    .search-group.address-group input,
+    .search-group.address-group input {
+        flex: 1;
+    }
     .search-group.address-group button {
-        width: 100%;
+        width: auto;
+        flex: 0 0 auto;
     }
     .button-grid {
         grid-template-columns: repeat(2, 1fr);
