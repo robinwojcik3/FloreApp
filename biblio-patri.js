@@ -121,6 +121,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let trackingMarker = null;
     let trackingActive = false;
     let ecology = {};
+    let floreAlpesIndex = {};
 
     function norm(txt) {
         if (typeof txt !== 'string') return '';
@@ -128,6 +129,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     const ecolOf = n => ecology[norm(n)] || '—';
+
+    const linkIcon = (url, img, alt, extraClass = '') => {
+        if (!url) return '';
+        const encoded = img.split('/').map(s => encodeURIComponent(s)).join('/');
+        const cls = extraClass ? `logo-icon ${extraClass}` : 'logo-icon';
+        return `<a href="${url}" target="_blank" rel="noopener"><img src="assets/${encoded}" alt="${alt}" class="${cls}"></a>`;
+    };
+
+    const floreAlpesUrl = (name) => {
+        const normalizedSci = norm(name);
+        const foundKey = Object.keys(floreAlpesIndex).find(key => norm(key.split('(')[0]) === normalizedSci);
+        if (foundKey) {
+            const urlPart = floreAlpesIndex[foundKey].split('?')[0];
+            return `https://www.florealpes.com/${urlPart}`;
+        }
+        return null;
+    };
     const SEARCH_RADIUS_KM = 2;
     const OBS_RADIUS_KM = 1;
     const ANALYSIS_MAX_RETRIES = 3;
@@ -174,18 +192,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     const initializeApp = async () => {
         try {
             setStatus("Chargement des données...", true);
-            const [bdcResp, ecoResp] = await Promise.all([
+            const [bdcResp, ecoResp, faResp] = await Promise.all([
                 fetch('/BDCstatut.csv'),
-                fetch('ecology.json')
+                fetch('ecology.json'),
+                fetch('assets/florealpes_index.json')
             ]);
             if (!bdcResp.ok) throw new Error("Le référentiel BDCstatut.csv est introuvable.");
             if (!ecoResp.ok) throw new Error("Le fichier ecology.json est introuvable.");
+            if (!faResp.ok) throw new Error("Le fichier florealpes_index.json est introuvable.");
             const csvText = await bdcResp.text();
             rulesByTaxonIndex = indexRulesFromCSV(csvText);
             const ecoJson = await ecoResp.json();
             Object.entries(ecoJson).forEach(([k,v]) => {
                 ecology[norm(k.split(';')[0])] = v;
             });
+            floreAlpesIndex = await faResp.json();
             setStatus("");
             console.log(`Référentiel chargé, ${rulesByTaxonIndex.size} taxons indexés.`);
         } catch (error) {
@@ -358,7 +379,8 @@ const initializeSelectionMap = (coords) => {
             let popupContent = `<div class="custom-popup"><b>${count} espèce(s) patrimoniale(s) :</b><ul>`;
             filtered.forEach(s => {
                 const eco = ecolOf(s.name);
-                popupContent += `<li><span class="legend-color" style="background-color:${s.color};"></span><i>${s.name}</i><br><small>${eco}</small></li>`;
+                const faLink = linkIcon(floreAlpesUrl(s.name), 'FloreAlpes.png', 'FloreAlpes');
+                popupContent += `<li><span class="legend-color" style="background-color:${s.color};"></span><i>${s.name}</i>${faLink}<br><small>${eco}</small></li>`;
             });
             popupContent += '</ul></div>';
             const tooltipHtml = `<i>${filtered.map(s => s.name).join('<br>')}</i>`;
