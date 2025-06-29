@@ -148,6 +148,14 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('open-gmaps').addEventListener('click', openInGmaps);
         document.getElementById('reset-selection').addEventListener('click', resetSelection);
         document.getElementById('measure-distance').addEventListener('click', toggleMeasure);
+        document.querySelectorAll('.subtab').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.subtab').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.subtab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById(btn.dataset.target).classList.add('active');
+            });
+        });
         initializeMap();
         toggleMap();
 });
