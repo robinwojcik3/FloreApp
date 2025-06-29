@@ -11,6 +11,7 @@ let envMarker = null; // Marqueur du point analysé
 let marker = null;
 let selectedLat = null;
 let selectedLon = null;
+let selectedAlt = null;
 
 // Cache des couches déjà chargées pour accélérer les changements
 let layerCache = {};
@@ -23,6 +24,30 @@ let measureLine = null;
 let measureTooltip = null;
 
 const GOOGLE_MAPS_LONG_PRESS_MS = 2000;
+
+// Récupère l'altitude à partir d'une API libre
+async function updateAltitude() {
+    if (!selectedLat || !selectedLon) return;
+    const span = document.getElementById('selected-altitude');
+    if (!span) return;
+    span.textContent = '...';
+    try {
+        const url = `https://api.opentopodata.org/v1/srtm90m?locations=${selectedLat},${selectedLon}`;
+        const resp = await fetch(url);
+        if (!resp.ok) throw new Error('Altitude service error');
+        const data = await resp.json();
+        const elev = data && data.results && data.results[0] && data.results[0].elevation;
+        if (typeof elev === 'number') {
+            selectedAlt = elev;
+            span.textContent = `${Math.round(elev)} m`;
+        } else {
+            span.textContent = 'N/A';
+        }
+    } catch (err) {
+        console.error('Altitude fetch failed', err);
+        span.textContent = 'N/A';
+    }
+}
 
 // Configuration des services externes (liens)
 const SERVICES = {
@@ -174,10 +199,11 @@ async function useGeolocation() {
 	}
 	
 	navigator.geolocation.getCurrentPosition(
-		(position) => {
-			selectedLat = position.coords.latitude;
-			selectedLon = position.coords.longitude;
-			button.textContent = 'Position récupérée ✓';
+                (position) => {
+                        selectedLat = position.coords.latitude;
+                        selectedLon = position.coords.longitude;
+                        updateAltitude();
+                        button.textContent = 'Position récupérée ✓';
 			setTimeout(() => {
 				button.disabled = false;
                                 button.textContent = '📍 Utiliser ma localisation';
@@ -261,9 +287,10 @@ function initializeMap() {
 		const lon = e.latlng.lng;
 		if (marker) map.removeLayer(marker);
 		marker = L.marker([lat, lon]).addTo(map);
-		selectedLat = lat;
-		selectedLon = lon;
-		document.getElementById('coordinates-display').style.display = 'block';
+                selectedLat = lat;
+                selectedLon = lon;
+                updateAltitude();
+                document.getElementById('coordinates-display').style.display = 'block';
 		document.getElementById('selected-coords').textContent = `${lat.toFixed(6)}°, ${lon.toFixed(6)}°`;
 		document.getElementById('validate-location').style.display = 'block';
 	}
@@ -306,8 +333,9 @@ async function searchAddress() {
 			return;
 		}
 		selectedLat = parseFloat(data[0].lat);
-		selectedLon = parseFloat(data[0].lon);
-		document.getElementById('coordinates-display').style.display = 'block';
+                selectedLon = parseFloat(data[0].lon);
+                updateAltitude();
+                document.getElementById('coordinates-display').style.display = 'block';
 		document.getElementById('selected-coords').textContent = `${selectedLat.toFixed(6)}°, ${selectedLon.toFixed(6)}°`;
 		document.getElementById('validate-location').style.display = 'block';
 		showResults();
@@ -321,10 +349,12 @@ async function searchAddress() {
 
 // Fonction principale pour afficher les résultats
 function showResults() {
-	if (!selectedLat || !selectedLon) {
-		showNotification('Aucune localisation sélectionnée', 'error');
-		return;
-	}
+        if (!selectedLat || !selectedLon) {
+                showNotification('Aucune localisation sélectionnée', 'error');
+                return;
+        }
+
+        updateAltitude();
 	
 	const loading = document.getElementById('loading');
 	loading.style.display = 'block';
@@ -628,6 +658,7 @@ function addMeasurePoint(e) {
 function resetSelection() {
     selectedLat = null;
     selectedLon = null;
+    selectedAlt = null;
     layerCache = {};
     lastCacheCoords = null;
     if (marker) { map.removeLayer(marker); marker = null; }
@@ -635,6 +666,8 @@ function resetSelection() {
     envMarker = null;
     document.getElementById('coordinates-display').style.display = 'none';
     document.getElementById('selected-coords').textContent = '--';
+    const altSpan = document.getElementById('selected-altitude');
+    if (altSpan) altSpan.textContent = '-- m';
     document.getElementById('validate-location').style.display = 'none';
     document.getElementById('results-section').style.display = 'none';
     document.getElementById('env-map').style.display = 'none';
