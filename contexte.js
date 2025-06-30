@@ -22,6 +22,10 @@ let measurePoints = [];
 let measureLine = null;
 let measureTooltip = null;
 
+// États de chargement des résultats pour chaque onglet
+let zoningLoaded = false;
+let resourcesLoaded = false;
+
 const ALTITUDES_URL = 'assets/altitudes_fr.json';
 let altitudeDataPromise = null;
 
@@ -207,6 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.getElementById(btn.dataset.target).classList.add('active');
             });
         });
+        document.getElementById('run-analysis').addEventListener('click', runAnalysis);
         initializeMap();
         toggleMap();
 });
@@ -370,38 +375,71 @@ async function searchAddress() {
 	}
 }
 
-// Fonction principale pour afficher les résultats
+// Fonction principale pour préparer l'affichage des résultats
 function showResults() {
-        if (!selectedLat || !selectedLon) {
-                showNotification('Aucune localisation sélectionnée', 'error');
-                return;
+    if (!selectedLat || !selectedLon) {
+        showNotification('Aucune localisation sélectionnée', 'error');
+        return;
+    }
+
+    updateAltitudeDisplay(selectedLat, selectedLon);
+
+    const resultsSection = document.getElementById('results-section');
+    resultsSection.style.display = 'block';
+    document.getElementById('run-analysis').style.display = 'block';
+
+    document.getElementById('results-grid').innerHTML = '';
+    document.getElementById('env-map').style.display = 'none';
+    document.getElementById('measure-distance').style.display = 'none';
+
+    resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// Génère les cartes de ressources environnementales
+function displayResources() {
+    const resultsGrid = document.getElementById('results-grid');
+    resultsGrid.innerHTML = '';
+    Object.keys(SERVICES).forEach(serviceKey => {
+        const service = SERVICES[serviceKey];
+        const url = service.buildUrl(selectedLat, selectedLon);
+        const card = document.createElement('div');
+        card.className = 'result-card';
+        card.innerHTML = `<h3>${service.name}</h3><p>${service.description}</p><a href="${url}" target="_blank" rel="noopener noreferrer">Ouvrir dans un nouvel onglet →</a>`;
+        resultsGrid.appendChild(card);
+    });
+}
+
+// Lance l'analyse en fonction de l'onglet actif
+function runAnalysis() {
+    if (!selectedLat || !selectedLon) {
+        showNotification('Aucune localisation sélectionnée', 'error');
+        return;
+    }
+
+    const active = document.querySelector('.subtab.active');
+    if (!active) return;
+    const target = active.dataset.target;
+
+    if (target === 'zoning-tab') {
+        if (!zoningLoaded) {
+            displayInteractiveEnvMap();
+            zoningLoaded = true;
+        } else {
+            document.getElementById('env-map').style.display = 'block';
+            document.getElementById('measure-distance').style.display = 'inline-block';
         }
-
-        updateAltitudeDisplay(selectedLat, selectedLon);
-	
-	const loading = document.getElementById('loading');
-	loading.style.display = 'block';
-	loading.textContent = 'Préparation des liens...';
-	
-	setTimeout(() => {
-		loading.style.display = 'none';
-		const resultsSection = document.getElementById('results-section');
-		resultsSection.style.display = 'block';
-		const resultsGrid = document.getElementById('results-grid');
-		resultsGrid.innerHTML = '';
-		
-		Object.keys(SERVICES).forEach(serviceKey => {
-			const service = SERVICES[serviceKey];
-			const url = service.buildUrl(selectedLat, selectedLon);
-			const card = document.createElement('div');
-			card.className = 'result-card';
-			card.innerHTML = `<h3>${service.name}</h3><p>${service.description}</p><a href="${url}" target="_blank" rel="noopener noreferrer">Ouvrir dans un nouvel onglet →</a>`;
-			resultsGrid.appendChild(card);
-		});
-
-		displayInteractiveEnvMap();
-        resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }, 500);
+    } else if (target === 'resources-tab') {
+        if (!resourcesLoaded) {
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+            loading.textContent = 'Préparation des liens...';
+            setTimeout(() => {
+                displayResources();
+                loading.style.display = 'none';
+            }, 200);
+            resourcesLoaded = true;
+        }
+    }
 }
 
 /**
@@ -683,6 +721,8 @@ function resetSelection() {
     selectedLon = null;
     layerCache = {};
     lastCacheCoords = null;
+    zoningLoaded = false;
+    resourcesLoaded = false;
     if (marker) { map.removeLayer(marker); marker = null; }
     if (envMap) { envMap.remove(); envMap = null; }
     envMarker = null;
@@ -693,6 +733,7 @@ function resetSelection() {
     document.getElementById('env-map').style.display = 'none';
     document.getElementById('map-container').style.display = 'none';
     document.getElementById('choose-on-map').textContent = '🗺️ Ouvrir la carte';
+    document.getElementById('run-analysis').style.display = 'none';
     document.getElementById('measure-distance').style.display = 'none';
     const alt = document.getElementById('altitude-info');
     if (alt) alt.textContent = '';
