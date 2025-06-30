@@ -22,7 +22,8 @@ let measurePoints = [];
 let measureLine = null;
 let measureTooltip = null;
 
-const ALTITUDES_URL = 'assets/altitudes_fr.json';
+// Fallback local dataset in case online lookup fails
+const ALTITUDES_URL = 'assets/altitudes_fallback.json';
 let altitudeDataPromise = null;
 
 function loadAltitudeData() {
@@ -147,7 +148,22 @@ function latLonToWebMercator(lat, lon) {
         return { x, y };
 }
 
+// Try retrieving altitude from the Open-Meteo API. If it fails, fall back
+// to a coarse local dataset stored in assets/altitudes_fallback.json.
 async function fetchAltitude(lat, lon) {
+    try {
+        const resp = await fetch(
+            `https://api.open-meteo.com/v1/elevation?latitude=${lat}&longitude=${lon}`
+        );
+        if (resp.ok) {
+            const json = await resp.json();
+            if (json && typeof json.elevation === 'number') {
+                return json.elevation;
+            }
+        }
+    } catch (err) {
+        // Network errors fall back on local data
+    }
     const data = await loadAltitudeData();
     const round = v => (Math.round(v * 2) / 2).toFixed(1);
     const key = `${round(lat)},${round(lon)}`;
