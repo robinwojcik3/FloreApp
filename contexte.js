@@ -147,7 +147,23 @@ function latLonToWebMercator(lat, lon) {
         return { x, y };
 }
 
+async function fetchAltitudeFromApi(lat, lon) {
+    try {
+        const resp = await fetch(
+            `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m`
+        );
+        if (!resp.ok) throw new Error('api');
+        const json = await resp.json();
+        if (typeof json.elevation === 'number') return json.elevation;
+    } catch (e) {
+        return null;
+    }
+    return null;
+}
+
 async function fetchAltitude(lat, lon) {
+    const apiAlt = await fetchAltitudeFromApi(lat, lon);
+    if (apiAlt !== null) return apiAlt;
     const data = await loadAltitudeData();
     const round = v => (Math.round(v * 2) / 2).toFixed(1);
     const key = `${round(lat)},${round(lon)}`;
