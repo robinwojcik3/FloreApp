@@ -35,6 +35,7 @@ function loadAltitudeData() {
 }
 
 const GOOGLE_MAPS_LONG_PRESS_MS = 2000;
+const MAP_LONG_PRESS_MS = 1000; // delay for selecting a point on the map
 
 // Configuration des services externes (liens)
 const SERVICES = {
@@ -318,10 +319,10 @@ function initializeMap() {
 		document.getElementById('validate-location').style.display = 'block';
 	}
 	
-	map.on('mousedown', (e) => { isPressing = true; pressTimer = setTimeout(() => { if (isPressing) selectPoint(e); }, 500); });
+        map.on('mousedown', (e) => { isPressing = true; pressTimer = setTimeout(() => { if (isPressing) selectPoint(e); }, MAP_LONG_PRESS_MS); });
 	map.on('mouseup', () => { isPressing = false; clearTimeout(pressTimer); });
 	map.on('mousemove', () => { if (isPressing) { isPressing = false; clearTimeout(pressTimer); }});
-	map.on('touchstart', (e) => { isPressing = true; pressTimer = setTimeout(() => { if (isPressing) selectPoint(e); }, 500); });
+        map.on('touchstart', (e) => { isPressing = true; pressTimer = setTimeout(() => { if (isPressing) selectPoint(e); }, MAP_LONG_PRESS_MS); });
 	map.on('touchend', () => { isPressing = false; clearTimeout(pressTimer); });
 	map.on('touchmove', () => { if (isPressing) { isPressing = false; clearTimeout(pressTimer); }});
 	map.on('contextmenu', (e) => { e.originalEvent.preventDefault(); selectPoint(e); });

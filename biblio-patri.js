@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const LAMBERT93_WKT = 'PROJCS["RGF93 / Lambert-93",GEOGCS["GCS_RGF93",DATUM["D_RGF93",SPHEROID["GRS_1980",6378137,298.257222101]],PRIMEM["Greenwich",0],UNIT["Degree",0.0174532925199433]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",49],PARAMETER["standard_parallel_2",44],PARAMETER["latitude_of_origin",46.5],PARAMETER["central_meridian",3],PARAMETER["false_easting",700000],PARAMETER["false_northing",6600000],UNIT["Meter",1]]';
 
-    const LONG_PRESS_MS = 2000; // duration required to trigger actions on the maps
+    const LONG_PRESS_MS = 1000; // long press delay to select a location
     
     
     // --- 2. Déclaration des variables et constantes globales ---
@@ -649,8 +649,10 @@ const initializeSelectionMap = (coords) => {
         map.on('contextmenu', onContextMenu);
         map.on('mousedown', onDown);
         map.on('mouseup', onUp);
+        map.on('mousemove', onUp);
         map.on('touchstart', onDown);
         map.on('touchend', onUp);
+        map.on('touchmove', onUp);
         map.on('dragstart', onUp);
         map.on('move', onUp);
         map.on('zoomstart', onUp);
@@ -766,7 +768,9 @@ const initializeSelectionMap = (coords) => {
         obsMap.on('mousedown', onDown);
         obsMap.on('touchstart', onDown);
         obsMap.on('mouseup', cancel);
+        obsMap.on('mousemove', cancel);
         obsMap.on('touchend', cancel);
+        obsMap.on('touchmove', cancel);
         obsMap.on('dragstart', cancel);
         obsMap.on('move', cancel);
         obsMap.on('zoomstart', cancel);
