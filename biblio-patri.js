@@ -615,11 +615,17 @@ const initializeSelectionMap = (coords) => {
     const startMapSelection = async () => {
         resultsContainer.innerHTML = '';
         downloadContainer.style.display = 'none';
-        let center = { latitude: 45.1885, longitude: 5.7245 };
-        try {
-            const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 }));
-            center = { latitude: coords.latitude, longitude: coords.longitude };
-        } catch (e) {}
+        let center;
+        if (map) {
+            const c = map.getCenter();
+            center = { latitude: c.lat, longitude: c.lng };
+        } else {
+            center = { latitude: 45.1885, longitude: 5.7245 };
+            try {
+                const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 }));
+                center = { latitude: coords.latitude, longitude: coords.longitude };
+            } catch (e) {}
+        }
         initializeSelectionMap(center);
         let pressTimer;
         const cleanup = () => {
@@ -662,11 +668,17 @@ const initializeSelectionMap = (coords) => {
     const startPolygonSelection = async () => {
         resultsContainer.innerHTML = '';
         downloadContainer.style.display = 'none';
-        let center = { latitude: 45.1885, longitude: 5.7245 };
-        try {
-            const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 }));
-            center = { latitude: coords.latitude, longitude: coords.longitude };
-        } catch (e) {}
+        let center;
+        if (map) {
+            const c = map.getCenter();
+            center = { latitude: c.lat, longitude: c.lng };
+        } else {
+            center = { latitude: 45.1885, longitude: 5.7245 };
+            try {
+                const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 }));
+                center = { latitude: coords.latitude, longitude: coords.longitude };
+            } catch (e) {}
+        }
         initializeSelectionMap(center);
         setStatus('Tracez un polygone pour définir la zone de recherche.', false);
         const drawer = new L.Draw.Polygon(map, { shapeOptions: { color: '#c62828' } });
