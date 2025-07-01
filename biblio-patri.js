@@ -24,24 +24,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const selectOnMapBtn = document.getElementById('select-on-map-btn');
     const drawPolygonBtn = document.getElementById('draw-polygon-btn');
     const toggleTrackingBtn = document.getElementById('toggle-tracking-btn');
-    const analysisTabBtn = document.getElementById('analysis-tab-btn');
-    const observationsTabBtn = document.getElementById('observations-tab-btn');
-    const analysisTab = document.getElementById('analysis-tab');
-    const observationsTab = document.getElementById('observations-tab');
-    const obsStatusDiv = document.getElementById('obs-status');
-    const obsMapContainer = document.getElementById('observations-map');
-    const obsGeolocBtn = document.getElementById('obs-geoloc-btn');
-    const obsDrawPolygonBtn = document.getElementById('obs-draw-polygon-btn');
-    const obsToggleTrackingBtn = document.getElementById('obs-toggle-tracking-btn');
+    const toggleZonagesBtn = document.getElementById('toggle-zonages-btn');
+    const resourcesBtn = document.getElementById('resources-btn');
     const toggleLabelsBtn = document.getElementById('toggle-labels-btn');
-    const obsToggleLabelsBtn = document.getElementById('obs-toggle-labels-btn');
     const downloadShapefileBtn = document.getElementById('download-shapefile-btn');
     const downloadContainer = document.getElementById('download-container');
 
     let trackingMap = null;
     let trackingButton = null;
     let analysisLabelsVisible = true;
-    let obsLabelsVisible = true;
 
     const stopLocationTracking = () => {
         if (trackingWatchId !== null) {
@@ -96,13 +87,42 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    const toggleObsLabels = () => {
-        obsLabelsVisible = !obsLabelsVisible;
-        obsMapContainer.classList.toggle('hide-labels', !obsLabelsVisible);
-        if (obsToggleLabelsBtn) {
-            obsToggleLabelsBtn.textContent = obsLabelsVisible ? 'Masquer les étiquettes' : 'Afficher les étiquettes';
+    // Affichage ou masquage des couches de zonage réglementaire
+    let zonageLayers = [];
+    const toggleZonages = () => {
+        if (!map) return;
+        if (zonageLayers.length === 0) {
+            const c = map.getCenter();
+            Object.entries(APICARTO_LAYERS).forEach(([name, cfg]) => {
+                fetch(`${cfg.endpoint}?lon=${c.lng}&lat=${c.lat}`)
+                    .then(r => r.ok ? r.json() : null)
+                    .then(data => {
+                        if (data && data.features && data.features.length) {
+                            const layer = L.geoJSON(data, { style: cfg.style });
+                            layer.addTo(map);
+                            if (layersControl) layersControl.addOverlay(layer, name);
+                            zonageLayers.push(layer);
+                        }
+                    });
+            });
+            toggleZonagesBtn.textContent = 'Masquer les zonages';
+        } else {
+            zonageLayers.forEach(l => map.removeLayer(l));
+            zonageLayers = [];
+            toggleZonagesBtn.textContent = 'Afficher les zonages';
         }
     };
+
+    // Affiche une liste de liens complémentaires dans une modale
+    const showResourcesModal = () => {
+        if (!map || typeof showModal !== 'function') return;
+        const c = map.getCenter();
+        const list = Object.values(SERVICES)
+            .map(s => `<li><a href="${s.buildUrl(c.lat, c.lng)}" target="_blank" rel="noopener">${s.name}</a></li>`)
+            .join('');
+        showModal(`<ul>${list}</ul>`);
+    };
+
 
     let currentShapefileData = null;
 
@@ -110,8 +130,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     let layersControl = null;
     let searchAreaLayer = null;
     let patrimonialLayerGroup = L.layerGroup();
-    let obsMap = null;
-    let obsSearchPolygon = null;
     let observationsLayerGroup = L.layerGroup();
     let speciesColorMap = new Map();
     let allPatrimonialLocations = null;
@@ -158,6 +176,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     const nonPatrimonialRedlistCodes = new Set(['LC', 'DD', 'NA', 'NE']);
     const HABITATS_DIRECTIVE_CODES = new Set(['CDH1', 'CDH2', 'CDH4', 'CDH5']);
     const OLD_REGIONS_TO_DEPARTMENTS = { 'Alsace': ['67', '68'], 'Aquitaine': ['24', '33', '40', '47', '64'], 'Auvergne': ['03', '15', '43', '63'], 'Basse-Normandie': ['14', '50', '61'], 'Bourgogne': ['21', '58', '71', '89'], 'Champagne-Ardenne': ['08', '10', '51', '52'], 'Franche-Comté': ['25', '39', '70', '90'], 'Haute-Normandie': ['27', '76'], 'Languedoc-Roussillon': ['11', '30', '34', '48', '66'], 'Limousin': ['19', '23', '87'], 'Lorraine': ['54', '55', '57', '88'], 'Midi-Pyrénées': ['09', '12', '31', '32', '46', '65', '81', '82'], 'Nord-Pas-de-Calais': ['59', '62'], 'Picardie': ['02', '60', '80'], 'Poitou-Charentes': ['16', '17', '79', '86'], 'Rhône-Alpes': ['01', '07', '26', '38', '42', '69', '73', '74'] };
+
+    // Ressources complémentaires issues de l'onglet Contexte éco
+    const latLonToWebMercator = (lat, lon) => {
+        const R = 6378137.0;
+        const x = R * (lon * Math.PI / 180);
+        const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
+        return { x, y };
+    };
+
+    const SERVICES = {
+        arcgis: {
+            name: "ArcGIS - Carte de la végétation",
+            buildUrl: (lat, lon) => {
+                const { x, y } = latLonToWebMercator(lat, lon);
+                const buffer = 1000;
+                return `https://www.arcgis.com/apps/webappviewer/index.html?id=bece6e542e4c42e0ba9374529c7de44c&extent=${x-buffer}%2C${y-buffer}%2C${x+buffer}%2C${y+buffer}%2C102100`;
+            }
+        },
+        inaturalist: {
+            name: "iNaturalist - Observations",
+            buildUrl: (lat, lon) => `https://www.inaturalist.org/observations?lat=${lat.toFixed(8)}&lng=${lon.toFixed(8)}&radius=5&subview=map&threatened&iconic_taxa=Plantae`
+        }
+    };
+
+    const APICARTO_LAYERS = {
+        'ZNIEFF I': { endpoint: 'https://apicarto.ign.fr/api/nature/znieff1', style: { color: '#AFB42B', weight: 2, opacity: 0.9, fillOpacity: 0.2, dashArray: '5, 5' } },
+        'Natura 2000 (Habitats)': { endpoint: 'https://apicarto.ign.fr/api/nature/natura-habitat', style: { color: '#2E7D32', weight: 2, opacity: 0.9, fillOpacity: 0.2 } }
+    };
     const ADMIN_NAME_TO_CODE_MAP = { "France": "FR", "Ain": "01", "Aisne": "02", "Allier": "03", "Alpes-de-Haute-Provence": "04", "Hautes-Alpes": "05", "Alpes-Maritimes": "06", "Ardèche": "07", "Ardennes": "08", "Ariège": "09", "Aube": "10", "Aude": "11", "Aveyron": "12", "Bouches-du-Rhône": "13", "Calvados": "14", "Cantal": "15", "Charente": "16", "Charente-Maritime": "17", "Cher": "18", "Corrèze": "19", "Corse-du-Sud": "2A", "Haute-Corse": "2B", "Côte-d'Or": "21", "Côtes-d'Armor": "22", "Creuse": "23", "Dordogne": "24", "Doubs": "25", "Drôme": "26", "Eure": "27", "Eure-et-Loir": "28", "Finistère": "29", "Gard": "30", "Haute-Garonne": "31", "Gers": "32", "Gironde": "33", "Hérault": "34", "Ille-et-Vilaine": "35", "Indre": "36", "Indre-et-Loire": "37", "Isère": "38", "Jura": "39", "Landes": "40", "Loir-et-Cher": "41", "Loire": "42", "Haute-Loire": "43", "Loire-Atlantique": "44", "Loiret": "45", "Lot": "46", "Lot-et-Garonne": "47", "Lozère": "48", "Maine-et-Loire": "49", "Manche": "50", "Marne": "51", "Haute-Marne": "52", "Mayenne": "53", "Meurthe-et-Moselle": "54", "Meuse": "55", "Morbihan": "56", "Moselle": "57", "Nièvre": "58", "Nord": "59", "Oise": "60", "Orne": "61", "Pas-de-Calais": "62", "Puy-de-Dôme": "63", "Pyrénées-Atlantiques": "64", "Hautes-Pyrénées": "65", "Pyrénées-Orientales": "66", "Bas-Rhin": "67", "Haut-Rhin": "68", "Rhône": "69", "Haute-Saône": "70", "Saône-et-Loire": "71", "Sarthe": "72", "Savoie": "73", "Haute-Savoie": "74", "Paris": "75", "Seine-Maritime": "76", "Seine-et-Marne": "77", "Yvelines": "78", "Deux-Sèvres": "79", "Somme": "80", "Tarn": "81", "Tarn-et-Garonne": "82", "Var": "83", "Vaucluse": "84", "Vendée": "85", "Vienne": "86", "Haute-Vienne": "87", "Vosges": "88", "Yonne": "89", "Territoire de Belfort": "90", "Essonne": "91", "Hauts-de-Seine": "92", "Seine-Saint-Denis": "93", "Val-de-Marne": "94", "Val-d'Oise": "95", "Auvergne-Rhône-Alpes": "84", "Bourgogne-Franche-Comté": "27", "Bretagne": "53", "Centre-Val de Loire": "24", "Corse": "94", "Grand Est": "44", "Hauts-de-France": "32", "Île-de-France": "11", "Normandie": "28", "Nouvelle-Aquitaine": "75", "Occitanie": "76", "Pays de la Loire": "52", "Provence-Alpes-Côte d'Azur": "93", "Guadeloupe": "01", "Martinique": "02", "Guyane": "03", "La Réunion": "04", "Mayotte": "06" };
 
     const setStatus = (message, isLoading = false) => {
@@ -665,10 +711,12 @@ const initializeSelectionMap = (coords) => {
             map.off('zoomstart', onUp);
         };
         const selectPoint = (latlng) => {
-            if (confirm("Voulez-vous lancer l'analyse sur ce lieu ?")) {
-                cleanup();
-                runAnalysis({ latitude: latlng.lat, longitude: latlng.lng });
-            }
+            const content = `<button id="patri-btn">Flore patrimoniale</button><br><button id="all-btn">Toute la flore</button>`;
+            L.popup().setLatLng(latlng).setContent(content).openOn(map);
+            const patriBtn = document.getElementById('patri-btn');
+            const allBtn = document.getElementById('all-btn');
+            if (patriBtn) patriBtn.onclick = () => { map.closePopup(); cleanup(); runAnalysis({ latitude: latlng.lat, longitude: latlng.lng }); };
+            if (allBtn) allBtn.onclick = () => { map.closePopup(); cleanup(); loadObservationsAt({ latitude: latlng.lat, longitude: latlng.lng }); };
         };
         const onContextMenu = (e) => {
             e.originalEvent.preventDefault();
@@ -715,103 +763,16 @@ const initializeSelectionMap = (coords) => {
         });
     };
 
-    const switchTab = (tab) => {
-        if (tab === 'analysis') {
-            analysisTab.style.display = 'block';
-            observationsTab.style.display = 'none';
-            analysisTabBtn.classList.add('active');
-            observationsTabBtn.classList.remove('active');
-        } else {
-            analysisTab.style.display = 'none';
-            observationsTab.style.display = 'block';
-            analysisTabBtn.classList.remove('active');
-            observationsTabBtn.classList.add('active');
-            stopLocationTracking();
-            initializeObservationMap();
-            obsStatusDiv.textContent = "";
-        }
-    };
+    const switchTab = () => {};
 
     let obsSearchCircle = null;
+    let obsSearchPolygon = null;
 
-    const initializeObservationMap = () => {
-        if (obsMap) return;
-        obsMapContainer.style.display = 'block';
-        const planMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        });
-
-        const topoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-            attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)'
-        });
-
-        const satelliteMap = L.tileLayer(
-            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-            {
-                attribution:
-                    'Tiles © Esri — Source: Esri, Earthstar Geographics, and the GIS User Community',
-                maxZoom: 19,
-                crossOrigin: true
-            }
-        );
-
-        // Vue initiale identique à la carte d'analyse patrimoniale
-        obsMap = L.map(obsMapContainer, {
-            center: [45.1885, 5.7245],
-            zoom: 12,
-            layers: [topoMap]
-        });
-
-        // Centrer la carte sur la position de l'utilisateur si disponible
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    obsMap.setView([pos.coords.latitude, pos.coords.longitude], 12);
-                },
-                () => {
-                    // En cas d'erreur ou de refus, la vue par défaut (Grenoble) est conservée
-                }
-            );
+    const initializeObservationMap = (coords) => {
+        if (!map) {
+            initializeSelectionMap(coords);
         }
-
-        observationsLayerGroup = L.layerGroup().addTo(obsMap);
-
-        const baseMaps = {
-            "OpenTopoMap": topoMap,
-            "Plan": planMap,
-            "Satellite": satelliteMap
-        };
-
-        const overlayMaps = {
-            "Observations": observationsLayerGroup
-        };
-
-        L.control.layers(baseMaps, overlayMaps).addTo(obsMap);
-
-        let pressTimer;
-        const handleSelect = (latlng) => {
-            if (confirm("Voulez-vous lancer la recherche sur ce point ?")) {
-                loadObservationsAt({ latitude: latlng.lat, longitude: latlng.lng });
-            }
-        };
-        obsMap.on('contextmenu', (e) => {
-            e.originalEvent.preventDefault();
-            handleSelect(e.latlng);
-        });
-        const onDown = (e) => {
-            if (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches.length > 1) return;
-            pressTimer = setTimeout(() => handleSelect(e.latlng), LONG_PRESS_MS);
-        };
-        const cancel = () => clearTimeout(pressTimer);
-        obsMap.on('mousedown', onDown);
-        obsMap.on('touchstart', onDown);
-        obsMap.on('mouseup', cancel);
-        obsMap.on('mousemove', cancel);
-        obsMap.on('touchend', cancel);
-        obsMap.on('touchmove', cancel);
-        obsMap.on('dragstart', cancel);
-        obsMap.on('move', cancel);
-        obsMap.on('zoomstart', cancel);
+        observationsLayerGroup.addTo(map);
     };
 
     const displayObservations = (occurrences) => {
@@ -827,7 +788,7 @@ const initializeSelectionMap = (coords) => {
                 observationsLayerGroup.addLayer(m);
             }
         });
-        obsStatusDiv.innerHTML = `${floraOccs.length} observation(s) de flore trouvée(s).`;
+        statusDiv.innerHTML = `${floraOccs.length} observation(s) de flore trouvée(s).`;
     };
 
     const triggerShapefileDownload = () => {
@@ -845,47 +806,46 @@ const initializeSelectionMap = (coords) => {
 
     const loadObservationsAt = async (params) => {
         try {
-            if (!obsMap) initializeObservationMap();
-            obsMapContainer.style.display = 'block';
-            obsMap.setView([params.latitude, params.longitude], 18);
-            if (obsSearchCircle) { obsMap.removeLayer(obsSearchCircle); obsSearchCircle = null; }
-            if (obsSearchPolygon) { obsMap.removeLayer(obsSearchPolygon); obsSearchPolygon = null; }
+            initializeObservationMap(params);
+            map.setView([params.latitude, params.longitude], 18);
+            if (obsSearchCircle) { map.removeLayer(obsSearchCircle); obsSearchCircle = null; }
+            if (obsSearchPolygon) { map.removeLayer(obsSearchPolygon); obsSearchPolygon = null; }
             let wkt;
             if (params.wkt) {
-                obsSearchPolygon = L.polygon(params.polygon, { color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(obsMap);
+                obsSearchPolygon = L.polygon(params.polygon, { color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(map);
                 wkt = params.wkt;
             } else {
-                obsSearchCircle = L.circle([params.latitude, params.longitude], { radius: OBS_RADIUS_KM * 1000, color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(obsMap);
+                obsSearchCircle = L.circle([params.latitude, params.longitude], { radius: OBS_RADIUS_KM * 1000, color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(map);
                 wkt = 'POLYGON((' + Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return `${(params.longitude+OBS_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+OBS_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`;}).join(', ') + '))';
             }
-            obsStatusDiv.textContent = 'Recherche des occurrences GBIF...';
+            statusDiv.textContent = 'Recherche des occurrences GBIF...';
             const url = `https://api.gbif.org/v1/occurrence/search?limit=300&geometry=${encodeURIComponent(wkt)}&taxonKey=${TRACHEOPHYTA_TAXON_KEY}`;
             const resp = await fetch(url);
             if (!resp.ok) throw new Error("L'API GBIF est indisponible.");
             const data = await resp.json();
-            if (!data.results || data.results.length === 0) { obsStatusDiv.textContent = 'Aucune observation trouvée.'; return; }
+            if (!data.results || data.results.length === 0) { statusDiv.textContent = 'Aucune observation trouvée.'; return; }
             displayObservations(data.results);
         } catch(error) {
-            obsStatusDiv.textContent = `Erreur : ${error.message}`;
+            statusDiv.textContent = `Erreur : ${error.message}`;
         }
     };
 
     const geolocateAndLoadObservations = async () => {
         try {
-            obsStatusDiv.textContent = 'Récupération de votre position...';
+            statusDiv.textContent = 'Récupération de votre position...';
             const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 }));
             loadObservationsAt(coords);
         } catch(error) {
-            obsStatusDiv.textContent = `Erreur : ${error.message}`;
+            statusDiv.textContent = `Erreur : ${error.message}`;
         }
     };
 
     const startObsPolygonSelection = async () => {
-        obsStatusDiv.textContent = '';
-        if (!obsMap) initializeObservationMap();
-        const drawer = new L.Draw.Polygon(obsMap, { shapeOptions: { color: '#c62828' } });
+        statusDiv.textContent = '';
+        initializeObservationMap({ latitude: map.getCenter().lat, longitude: map.getCenter().lng });
+        const drawer = new L.Draw.Polygon(map, { shapeOptions: { color: '#c62828' } });
         drawer.enable();
-        obsMap.once(L.Draw.Event.CREATED, (e) => {
+        map.once(L.Draw.Event.CREATED, (e) => {
             const latlngs = e.layer.getLatLngs()[0];
             const centroid = centroidOf(latlngs);
             const wkt = polygonToWkt(latlngs);
@@ -895,29 +855,19 @@ const initializeSelectionMap = (coords) => {
     
     // --- 6. DÉMARRAGE DE L'APPLICATION ---
     await initializeApp();
-    switchTab('analysis');
     startMapSelection();
     searchAddressBtn.addEventListener('click', handleAddressSearch);
     useGeolocationBtn.addEventListener('click', handleGeolocationSearch);
     selectOnMapBtn.addEventListener('click', startMapSelection);
     drawPolygonBtn.addEventListener('click', startPolygonSelection);
     addressInput.addEventListener('keypress', (e) => e.key === 'Enter' && handleAddressSearch());
-    analysisTabBtn.addEventListener('click', () => switchTab('analysis'));
-    observationsTabBtn.addEventListener('click', () => switchTab('observations'));
-    obsGeolocBtn.addEventListener('click', geolocateAndLoadObservations);
-    obsDrawPolygonBtn.addEventListener('click', startObsPolygonSelection);
+    toggleZonagesBtn.addEventListener('click', toggleZonages);
+    resourcesBtn.addEventListener('click', showResourcesModal);
+    useGeolocationBtn.addEventListener('contextmenu', geolocateAndLoadObservations);
     downloadShapefileBtn.addEventListener('click', triggerShapefileDownload);
     toggleTrackingBtn.addEventListener('click', () => toggleLocationTracking(map, toggleTrackingBtn));
     if (toggleLabelsBtn) {
         toggleLabelsBtn.addEventListener('click', toggleAnalysisLabels);
     }
-    if (obsToggleTrackingBtn) {
-        obsToggleTrackingBtn.addEventListener('click', () => {
-            initializeObservationMap();
-            toggleLocationTracking(obsMap, obsToggleTrackingBtn);
-        });
-    }
-    if (obsToggleLabelsBtn) {
-        obsToggleLabelsBtn.addEventListener('click', toggleObsLabels);
-    }
+    // end listeners for removed observation tab
 });
