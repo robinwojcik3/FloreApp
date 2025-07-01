@@ -37,6 +37,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const obsToggleLabelsBtn = document.getElementById('obs-toggle-labels-btn');
     const downloadShapefileBtn = document.getElementById('download-shapefile-btn');
     const downloadContainer = document.getElementById('download-container');
+    const toggleZonagesBtn = document.getElementById('toggle-zonages-btn');
+    const resourcesBtn = document.getElementById('resources-btn');
+    const resourcesContainer = document.getElementById('resources-container');
 
     let trackingMap = null;
     let trackingButton = null;
@@ -123,6 +126,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     let trackingActive = false;
     let ecology = {};
     let floreAlpesIndex = {};
+    let analysisLat = null;
+    let analysisLon = null;
+    let zoningLayers = {};
+    let zonagesLoaded = false;
+    let zonagesVisible = false;
+    let resourcesLoaded = false;
 
     function norm(txt) {
         if (typeof txt !== 'string') return '';
@@ -158,6 +167,61 @@ document.addEventListener('DOMContentLoaded', async () => {
     const nonPatrimonialRedlistCodes = new Set(['LC', 'DD', 'NA', 'NE']);
     const HABITATS_DIRECTIVE_CODES = new Set(['CDH1', 'CDH2', 'CDH4', 'CDH5']);
     const OLD_REGIONS_TO_DEPARTMENTS = { 'Alsace': ['67', '68'], 'Aquitaine': ['24', '33', '40', '47', '64'], 'Auvergne': ['03', '15', '43', '63'], 'Basse-Normandie': ['14', '50', '61'], 'Bourgogne': ['21', '58', '71', '89'], 'Champagne-Ardenne': ['08', '10', '51', '52'], 'Franche-Comté': ['25', '39', '70', '90'], 'Haute-Normandie': ['27', '76'], 'Languedoc-Roussillon': ['11', '30', '34', '48', '66'], 'Limousin': ['19', '23', '87'], 'Lorraine': ['54', '55', '57', '88'], 'Midi-Pyrénées': ['09', '12', '31', '32', '46', '65', '81', '82'], 'Nord-Pas-de-Calais': ['59', '62'], 'Picardie': ['02', '60', '80'], 'Poitou-Charentes': ['16', '17', '79', '86'], 'Rhône-Alpes': ['01', '07', '26', '38', '42', '69', '73', '74'] };
+
+    const APICARTO_LAYERS = {
+        'ZNIEFF I': { endpoint: 'https://apicarto.ign.fr/api/nature/znieff1', style: { color: '#AFB42B', weight: 2, opacity: 0.9, fillOpacity: 0.2, dashArray: '5, 5' } },
+        'ZNIEFF II': { endpoint: 'https://apicarto.ign.fr/api/nature/znieff2', style: { color: '#E65100', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Natura 2000 (Habitats)': { endpoint: 'https://apicarto.ign.fr/api/nature/natura-habitat', style: { color: '#2E7D32', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Réserves Naturelles Nationales': { endpoint: 'https://apicarto.ign.fr/api/nature/rnn', style: { color: '#7B1FA2', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Parcs Nationaux': { endpoint: 'https://apicarto.ign.fr/api/nature/pn', style: { color: '#AD1457', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Parcs Naturels Régionaux': { endpoint: 'https://apicarto.ign.fr/api/nature/pnr', style: { color: '#558B2F', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Natura 2000 (Oiseaux)': { endpoint: 'https://apicarto.ign.fr/api/nature/natura-oiseaux', style: { color: '#0277BD', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Réserves Naturelles': { endpoint: 'https://apicarto.ign.fr/api/nature/rn', style: { color: '#6A1B9A', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Réserves Naturelles Régionales': { endpoint: 'https://apicarto.ign.fr/api/nature/rnr', style: { color: '#9C27B0', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Arrêtés de Protection de Biotope': { endpoint: 'https://apicarto.ign.fr/api/nature/apb', style: { color: '#1B5E20', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Espaces Naturels Sensibles': { endpoint: 'https://apicarto.ign.fr/api/nature/ens', style: { color: '#004D40', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Zones humides': { endpoint: 'https://apicarto.ign.fr/api/nature/zones_humides', style: { color: '#1565C0', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Pelouses sèches': { endpoint: 'https://apicarto.ign.fr/api/nature/pelouses_seches', style: { color: '#8BC34A', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Sites Ramsar': { endpoint: 'https://apicarto.ign.fr/api/nature/ramsar', style: { color: '#00ACC1', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'ZICO (Zones importantes pour la conservation des oiseaux)': { endpoint: 'https://apicarto.ign.fr/api/nature/zico', style: { color: '#FF9800', weight: 2, opacity: 0.9, fillOpacity: 0.2 } }
+    };
+
+    function latLonToWebMercator(lat, lon) {
+        const R = 6378137.0;
+        const x = R * (lon * Math.PI / 180);
+        const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
+        return { x, y };
+    }
+
+    const SERVICES = {
+        arcgis: {
+            name: 'ArcGIS - Carte de la végétation',
+            description: 'Visualisez la carte de végétation de la zone',
+            buildUrl: (lat, lon) => {
+                const { x, y } = latLonToWebMercator(lat, lon);
+                const buffer = 1000;
+                return `https://www.arcgis.com/apps/webappviewer/index.html?id=bece6e542e4c42e0ba9374529c7de44c&extent=${x-buffer}%2C${y-buffer}%2C${x+buffer}%2C${y+buffer}%2C102100`;
+            }
+        },
+        geoportail: {
+            name: 'Géoportail - Carte des sols',
+            description: 'Explorez la carte pédologique de la zone',
+            buildUrl: (lat, lon) => `https://www.geoportail.gouv.fr/carte?c=${lon},${lat}&z=15&l0=ORTHOIMAGERY.ORTHOPHOTOS::GEOPORTAIL:OGC:WMTS(1)&l1=AGRICULTURE.CARTE.PEDOLOGIQUE::GEOPORTAIL:OGC:WMS(0.5)&permalink=yes`
+        },
+        ign: {
+            name: 'IGN Remonter le temps',
+            description: "Comparez l'évolution du paysage dans le temps",
+            buildUrl: (lat, lon) => `https://remonterletemps.ign.fr/comparer?lon=${lon.toFixed(6)}&lat=${lat.toFixed(6)}&z=17&layer1=16&layer2=19&mode=split-h`
+        },
+        inaturalist: {
+            name: 'iNaturalist - Observations',
+            description: 'Découvrez les observations naturalistes de la zone',
+            buildUrl: (lat, lon) => {
+                const radius = 5;
+                return `https://www.inaturalist.org/observations?lat=${lat.toFixed(8)}&lng=${lon.toFixed(8)}&radius=${radius}&subview=map&threatened&iconic_taxa=Plantae`;
+            }
+        }
+    };
     const ADMIN_NAME_TO_CODE_MAP = { "France": "FR", "Ain": "01", "Aisne": "02", "Allier": "03", "Alpes-de-Haute-Provence": "04", "Hautes-Alpes": "05", "Alpes-Maritimes": "06", "Ardèche": "07", "Ardennes": "08", "Ariège": "09", "Aube": "10", "Aude": "11", "Aveyron": "12", "Bouches-du-Rhône": "13", "Calvados": "14", "Cantal": "15", "Charente": "16", "Charente-Maritime": "17", "Cher": "18", "Corrèze": "19", "Corse-du-Sud": "2A", "Haute-Corse": "2B", "Côte-d'Or": "21", "Côtes-d'Armor": "22", "Creuse": "23", "Dordogne": "24", "Doubs": "25", "Drôme": "26", "Eure": "27", "Eure-et-Loir": "28", "Finistère": "29", "Gard": "30", "Haute-Garonne": "31", "Gers": "32", "Gironde": "33", "Hérault": "34", "Ille-et-Vilaine": "35", "Indre": "36", "Indre-et-Loire": "37", "Isère": "38", "Jura": "39", "Landes": "40", "Loir-et-Cher": "41", "Loire": "42", "Haute-Loire": "43", "Loire-Atlantique": "44", "Loiret": "45", "Lot": "46", "Lot-et-Garonne": "47", "Lozère": "48", "Maine-et-Loire": "49", "Manche": "50", "Marne": "51", "Haute-Marne": "52", "Mayenne": "53", "Meurthe-et-Moselle": "54", "Meuse": "55", "Morbihan": "56", "Moselle": "57", "Nièvre": "58", "Nord": "59", "Oise": "60", "Orne": "61", "Pas-de-Calais": "62", "Puy-de-Dôme": "63", "Pyrénées-Atlantiques": "64", "Hautes-Pyrénées": "65", "Pyrénées-Orientales": "66", "Bas-Rhin": "67", "Haut-Rhin": "68", "Rhône": "69", "Haute-Saône": "70", "Saône-et-Loire": "71", "Sarthe": "72", "Savoie": "73", "Haute-Savoie": "74", "Paris": "75", "Seine-Maritime": "76", "Seine-et-Marne": "77", "Yvelines": "78", "Deux-Sèvres": "79", "Somme": "80", "Tarn": "81", "Tarn-et-Garonne": "82", "Var": "83", "Vaucluse": "84", "Vendée": "85", "Vienne": "86", "Haute-Vienne": "87", "Vosges": "88", "Yonne": "89", "Territoire de Belfort": "90", "Essonne": "91", "Hauts-de-Seine": "92", "Seine-Saint-Denis": "93", "Val-de-Marne": "94", "Val-d'Oise": "95", "Auvergne-Rhône-Alpes": "84", "Bourgogne-Franche-Comté": "27", "Bretagne": "53", "Centre-Val de Loire": "24", "Corse": "94", "Grand Est": "44", "Hauts-de-France": "32", "Île-de-France": "11", "Normandie": "28", "Nouvelle-Aquitaine": "75", "Occitanie": "76", "Pays de la Loire": "52", "Provence-Alpes-Côte d'Azur": "93", "Guadeloupe": "01", "Martinique": "02", "Guyane": "03", "La Réunion": "04", "Mayotte": "06" };
 
     const setStatus = (message, isLoading = false) => {
@@ -438,7 +502,7 @@ const initializeSelectionMap = (coords) => {
         setStatus(`${selectedSpecies.size} espèce(s) patrimoniale(s) cartographiée(s) sur ${pointCount} points.`, false);
     };
 
-    const displayResults = (occurrences, patrimonialMap, wkt) => {
+const displayResults = (occurrences, patrimonialMap, wkt) => {
         resultsContainer.innerHTML = '';
         // Ne pas effacer les points précédents pour conserver l'historique
         if (Object.keys(patrimonialMap).length === 0) {
@@ -479,7 +543,80 @@ const initializeSelectionMap = (coords) => {
 
         const updateSelectAllButton = () => {
             selectAllBtn.textContent = selectedSpecies.size === allPatrimonialSpecies.length ? 'Tout désélectionner' : 'Tout sélectionner';
-        };
+};
+
+    async function fetchAndDisplayApiLayer(name, config) {
+        const url = `${config.endpoint}?lon=${analysisLon}&lat=${analysisLat}`;
+        try {
+            const resp = await fetch(url);
+            if (!resp.ok) return;
+            const geojson = await resp.json();
+            if (geojson && geojson.features && geojson.features.length > 0) {
+                const layer = L.geoJSON(geojson, { renderer: L.canvas(), style: config.style });
+                zoningLayers[name] = layer;
+                layersControl.addOverlay(layer, name);
+                if (zonagesVisible) layer.addTo(map);
+            }
+        } catch (e) { console.error(e); }
+    }
+
+    async function loadZonageLayers() {
+        if (zonagesLoaded) return;
+        zonagesLoaded = true;
+        for (const [name, cfg] of Object.entries(APICARTO_LAYERS)) {
+            await fetchAndDisplayApiLayer(name, cfg);
+        }
+    }
+
+    async function toggleZonages() {
+        if (!analysisLat || !analysisLon) {
+            if (typeof showNotification === 'function') {
+                showNotification('Aucune analyse en cours', 'error');
+            }
+            return;
+        }
+        if (!zonagesLoaded) {
+            statusDiv.textContent = 'Chargement des zonages...';
+            await loadZonageLayers();
+            statusDiv.textContent = '';
+            zonagesVisible = true;
+            toggleZonagesBtn.textContent = 'Masquer les zonages';
+        } else {
+            zonagesVisible = !zonagesVisible;
+            Object.values(zoningLayers).forEach(layer => {
+                if (zonagesVisible) layer.addTo(map); else map.removeLayer(layer);
+            });
+            toggleZonagesBtn.textContent = zonagesVisible ? 'Masquer les zonages' : 'Afficher les zonages';
+        }
+    }
+
+    function displayResources() {
+        resourcesContainer.innerHTML = '';
+        for (const key in SERVICES) {
+            const s = SERVICES[key];
+            const url = s.buildUrl(analysisLat, analysisLon);
+            const card = document.createElement('div');
+            card.className = 'result-card';
+            card.innerHTML = `<h3>${s.name}</h3><p>${s.description}</p><a href="${url}" target="_blank" rel="noopener noreferrer">Ouvrir →</a>`;
+            resourcesContainer.appendChild(card);
+        }
+    }
+
+    function toggleResources() {
+        if (!analysisLat || !analysisLon) {
+            if (typeof showNotification === 'function') {
+                showNotification('Aucune analyse en cours', 'error');
+            }
+            return;
+        }
+        if (!resourcesLoaded) {
+            displayResources();
+            resourcesLoaded = true;
+        }
+        const visible = resourcesContainer.style.display !== 'none';
+        resourcesContainer.style.display = visible ? 'none' : 'grid';
+        resourcesBtn.textContent = visible ? 'Autres ressources' : 'Masquer les ressources';
+    }
 
         table.querySelectorAll('.species-toggle').forEach(cb => {
             cb.addEventListener('change', () => {
@@ -534,6 +671,8 @@ const initializeSelectionMap = (coords) => {
             resultsContainer.innerHTML = '';
             mapContainer.style.display = 'none';
             initializeMap(params);
+            analysisLat = params.latitude;
+            analysisLon = params.longitude;
             setStatus("Étape 1/4: Initialisation de la carte...", true);
             let wkt = params.wkt;
             if (!wkt) {
@@ -919,5 +1058,11 @@ const initializeSelectionMap = (coords) => {
     }
     if (obsToggleLabelsBtn) {
         obsToggleLabelsBtn.addEventListener('click', toggleObsLabels);
+    }
+    if (toggleZonagesBtn) {
+        toggleZonagesBtn.addEventListener('click', toggleZonages);
+    }
+    if (resourcesBtn) {
+        resourcesBtn.addEventListener('click', toggleResources);
     }
 });

@@ -95,6 +95,38 @@ h1 {
     width: 100%;
 }
 
+.results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.result-card {
+    background: var(--card);
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: transform .2s;
+}
+.result-card:hover {
+    transform: scale(1.02);
+}
+.result-card h3 {
+    color: var(--primary);
+    margin: 0 0 0.5rem;
+    font-size: 1.1rem;
+}
+.result-card a {
+    display: inline-block;
+    margin-top: 0.5rem;
+    color: var(--primary);
+    text-decoration: none;
+}
+.result-card a:hover {
+    text-decoration: underline;
+}
+
 #address-input {
     flex: 1;
     padding: 0.6rem;
