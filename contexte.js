@@ -225,7 +225,7 @@ async function useGeolocation() {
 	if (!navigator.geolocation) {
 		showNotification('La géolocalisation n\'est pas supportée par votre navigateur', 'error');
 		button.disabled = false;
-                button.textContent = '📍 Utiliser ma localisation';
+                button.textContent = '📍 Ma position';
 		return;
 	}
 	
@@ -236,7 +236,7 @@ async function useGeolocation() {
 			button.textContent = 'Position récupérée ✓';
 			setTimeout(() => {
 				button.disabled = false;
-                                button.textContent = '📍 Utiliser ma localisation';
+                                button.textContent = '📍 Ma position';
 			}, 2000);
 			showResults();
 		},
@@ -255,7 +255,7 @@ async function useGeolocation() {
 			}
 			showNotification(message, 'error');
 			button.disabled = false;
-                        button.textContent = '📍 Utiliser ma localisation';
+                        button.textContent = '📍 Ma position';
 		},
 		{
 			enableHighAccuracy: true,
@@ -748,6 +748,6 @@ function resetSelection() {
 window.addEventListener('pageshow', (event) => {
 	if (event.persisted) {
                 document.getElementById('use-geolocation').disabled = false;
-                document.getElementById('use-geolocation').textContent = '📍 Utiliser ma localisation';
+                document.getElementById('use-geolocation').textContent = '📍 Ma position';
 	}
 });
