@@ -107,6 +107,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentShapefileData = null;
 
     let map = null;
+    let layersControl = null;
     let searchAreaLayer = null;
     let patrimonialLayerGroup = L.layerGroup();
     let obsMap = null;
@@ -218,10 +219,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // --- *** MODIFICATION MAJEURE : Ajout du contrôle des couches *** ---
     const initializeMap = (params) => {
         stopLocationTracking();
-        if (map) {
-            map.remove();
-        }
-    
+
         // 1. Définition des couches de base
         const topoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
             attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)'
@@ -237,26 +235,32 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         );
     
-        // 2. Création de la carte avec une couche par défaut
+        // 2. Création de la carte (ou mise à jour si elle existe déjà)
         mapContainer.style.display = 'block';
-        map = L.map(mapContainer, {
-            center: [params.latitude, params.longitude],
-            zoom: 13,
-            layers: [topoMap]
-        });
-    
+        if (!map) {
+            map = L.map(mapContainer, {
+                center: [params.latitude, params.longitude],
+                zoom: 13,
+                layers: [topoMap]
+            });
+        } else {
+            map.setView([params.latitude, params.longitude], 13);
+        }
+
         // 3. Définition des objets pour le contrôle des couches
         const baseMaps = {
             "Topographique": topoMap,
             "Satellite": satelliteMap
         };
-    
+
         const overlayMaps = {
             "Espèces Patrimoniales": patrimonialLayerGroup
         };
-    
-        // 4. Ajout du contrôle à la carte
-        L.control.layers(baseMaps, overlayMaps).addTo(map);
+
+        // 4. Ajout du contrôle à la carte (une seule fois)
+        if (!layersControl) {
+            layersControl = L.control.layers(baseMaps, overlayMaps).addTo(map);
+        }
 
         if (searchAreaLayer) {
             map.removeLayer(searchAreaLayer);
@@ -271,7 +275,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 const initializeSelectionMap = (coords) => {
         stopLocationTracking();
-        if (map) { map.remove(); }
         const topoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
             attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)'
         });
@@ -284,8 +287,14 @@ const initializeSelectionMap = (coords) => {
             }
         );
         mapContainer.style.display = 'block';
-        map = L.map(mapContainer, { center: [coords.latitude, coords.longitude], zoom: 12, layers: [topoMap] });
-        L.control.layers({ "Topographique": topoMap, "Satellite": satelliteMap }).addTo(map);
+        if (!map) {
+            map = L.map(mapContainer, { center: [coords.latitude, coords.longitude], zoom: 12, layers: [topoMap] });
+            if (!layersControl) {
+                layersControl = L.control.layers({ "Topographique": topoMap, "Satellite": satelliteMap }, { "Espèces Patrimoniales": patrimonialLayerGroup }).addTo(map);
+            }
+        } else {
+            map.setView([coords.latitude, coords.longitude], map.getZoom() || 12);
+        }
 };
 
     const polygonToWkt = (latlngs) => {
@@ -366,7 +375,7 @@ const initializeSelectionMap = (coords) => {
 
     const renderPatrimonialLocations = () => {
         if (!allPatrimonialLocations) return;
-        patrimonialLayerGroup.clearLayers();
+        // Ne pas effacer les points précédents pour conserver l'historique
         const features = [];
         let pointCount = 0;
         for (const location of allPatrimonialLocations.values()) {
@@ -412,7 +421,7 @@ const initializeSelectionMap = (coords) => {
 
     const displayResults = (occurrences, patrimonialMap, wkt) => {
         resultsContainer.innerHTML = '';
-        patrimonialLayerGroup.clearLayers();
+        // Ne pas effacer les points précédents pour conserver l'historique
         if (Object.keys(patrimonialMap).length === 0) {
             setStatus(`Aucune occurrence d'espèce patrimoniale trouvée dans ce rayon de ${SEARCH_RADIUS_KM} km.`);
             return;
@@ -613,13 +622,17 @@ const initializeSelectionMap = (coords) => {
     };
 
     const startMapSelection = async () => {
-        resultsContainer.innerHTML = '';
-        downloadContainer.style.display = 'none';
-        let center = { latitude: 45.1885, longitude: 5.7245 };
-        try {
-            const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 }));
-            center = { latitude: coords.latitude, longitude: coords.longitude };
-        } catch (e) {}
+        let center;
+        if (map) {
+            const c = map.getCenter();
+            center = { latitude: c.lat, longitude: c.lng };
+        } else {
+            center = { latitude: 45.1885, longitude: 5.7245 };
+            try {
+                const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 }));
+                center = { latitude: coords.latitude, longitude: coords.longitude };
+            } catch (e) {}
+        }
         initializeSelectionMap(center);
         let pressTimer;
         const cleanup = () => {
@@ -660,13 +673,17 @@ const initializeSelectionMap = (coords) => {
     };
 
     const startPolygonSelection = async () => {
-        resultsContainer.innerHTML = '';
-        downloadContainer.style.display = 'none';
-        let center = { latitude: 45.1885, longitude: 5.7245 };
-        try {
-            const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 }));
-            center = { latitude: coords.latitude, longitude: coords.longitude };
-        } catch (e) {}
+        let center;
+        if (map) {
+            const c = map.getCenter();
+            center = { latitude: c.lat, longitude: c.lng };
+        } else {
+            center = { latitude: 45.1885, longitude: 5.7245 };
+            try {
+                const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 }));
+                center = { latitude: coords.latitude, longitude: coords.longitude };
+            } catch (e) {}
+        }
         initializeSelectionMap(center);
         setStatus('Tracez un polygone pour définir la zone de recherche.', false);
         const drawer = new L.Draw.Polygon(map, { shapeOptions: { color: '#c62828' } });
