@@ -151,6 +151,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const OBS_RADIUS_KM = 1;
     const ANALYSIS_MAX_RETRIES = 3;
     const RETRY_DELAY_MS = 3000;
+    const FETCH_TIMEOUT_MS = 15000;
     const TRACHEOPHYTA_TAXON_KEY = 7707728; // GBIF taxonKey for vascular plants
     const SPECIES_COLORS = ['#E6194B', '#3CB44B', '#FFE119', '#4363D8', '#F58231', '#911EB4', '#46F0F0', '#F032E6', '#BCF60C', '#FABEBE', '#800000', '#AA6E28', '#000075', '#A9A9A9'];
     const nonPatrimonialLabels = new Set(["Liste des espèces végétales sauvages pouvant faire l'objet d'une réglementation préfectorale dans les départements d'outre-mer : Article 1"]);
@@ -171,11 +172,15 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const fetchWithRetry = async (url, options = {}, maxRetries = ANALYSIS_MAX_RETRIES) => {
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
             try {
-                const resp = await fetch(url, options);
+                const resp = await fetch(url, { ...options, signal: controller.signal });
+                clearTimeout(timeoutId);
                 if (!resp.ok) throw new Error(resp.statusText || 'Request failed');
                 return resp;
             } catch (err) {
+                clearTimeout(timeoutId);
                 if (attempt === maxRetries) throw err;
                 setStatus(`Erreur : ${err.message}. Nouvelle tentative (${maxRetries - attempt} restante(s))...`, true);
                 await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
