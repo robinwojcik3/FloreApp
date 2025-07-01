@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carte unifiée</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="unified-map.js"></script>
+  <script defer src="sw-register.js"></script>
+</head>
+<body>
+  <nav class="tabs-container">
+    <div class="tabs">
+      <button class="tab" onclick="window.location.href='index.html'">Identification</button>
+      <button class="tab active">Carte unifiée</button>
+    </div>
+  </nav>
+  <div class="main-content">
+    <div class="search-controls">
+      <div class="search-group address-group">
+        <input type="text" id="address-input" placeholder="Saisir une adresse, une ville, un lieu...">
+        <button id="search-address" class="action-button">🔍 Rechercher</button>
+      </div>
+      <div class="button-grid">
+        <button id="geoloc" class="action-button">📍 Ma position</button>
+      </div>
+    </div>
+    <div id="map"></div>
+    <div class="button-grid" style="margin-bottom:1rem;">
+      <button id="toggle-zones" class="action-button">Afficher les zonages</button>
+      <button id="show-resources" class="action-button">Autres ressources</button>
+    </div>
+    <div id="results" class="results-container"></div>
+  </div>
+</body>
+</html>
