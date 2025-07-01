@@ -140,49 +140,39 @@
    <div class="main-content">
       <h1>🌿 Contexte environnemental</h1>
       
-      <div class="location-options">
-         <div class="location-card">
-            <div class="search-inline">
-               <input type="text" id="address-input" placeholder="Saisissez une adresse">
-               <button class="action-button" id="search-address">🔍 Rechercher</button>
-            </div>
+      <div class="search-controls">
+         <div class="search-group address-group">
+            <input type="text" id="address-input" placeholder="Saisissez une adresse, une ville, un lieu...">
+            <button class="action-button" id="search-address">🔍 Rechercher</button>
          </div>
-
-         <div class="location-card">
-           <button class="action-button" id="use-geolocation">
-               📍 Utiliser ma localisation
-            </button>
-         </div>
-
-         <div class="location-card">
-           <button class="action-button" id="choose-on-map">
-               🗺️ Ouvrir la carte
-            </button>
-
-            <div id="map-container" class="map-fullwidth">
-               <div class="map-instruction" id="map-instruction">
-                  Cliquez longuement pour sélectionner un point
-               </div>
-               <div id="map"></div>
-            </div>
-
-         <div class="coordinates-display" id="coordinates-display">
-            <div>
-               Coordonnées sélectionnées :
-               <span id="selected-coords">--</span>
-            </div>
-            <div class="coords-actions">
-               <button class="small-button" id="copy-coords">Copier</button>
-               <button class="small-button" id="open-gmaps">Google Maps</button>
-               <button class="small-button" id="reset-selection">Réinitialiser</button>
-            </div>
-         </div>
-
-         <button class="action-button" id="validate-location" style="display:none; margin-top:1rem;">
-            Valider cette localisation
-         </button>
+         <div class="button-grid">
+            <button class="action-button" id="use-geolocation">📍 Ma position</button>
+            <button class="action-button" id="choose-on-map">🗺️ Choisir sur la carte</button>
          </div>
       </div>
+
+      <div id="map-container" class="map-fullwidth">
+         <div class="map-instruction" id="map-instruction">
+            Cliquez longuement pour sélectionner un point
+         </div>
+         <div id="map"></div>
+      </div>
+
+      <div class="coordinates-display" id="coordinates-display">
+         <div>
+            Coordonnées sélectionnées :
+            <span id="selected-coords">--</span>
+         </div>
+         <div class="coords-actions">
+            <button class="small-button" id="copy-coords">Copier</button>
+            <button class="small-button" id="open-gmaps">Google Maps</button>
+            <button class="small-button" id="reset-selection">Réinitialiser</button>
+         </div>
+      </div>
+
+      <button class="action-button" id="validate-location" style="display:none; margin-top:1rem;">
+         Valider cette localisation
+      </button>
       
       <div class="loading" id="loading"></div>
 
