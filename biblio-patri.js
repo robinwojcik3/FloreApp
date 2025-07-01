@@ -167,6 +167,20 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         if (message) statusDiv.innerHTML += `<p>${message}</p>`;
     };
+
+    const fetchWithRetry = async (url, options = {}, maxRetries = ANALYSIS_MAX_RETRIES) => {
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                const resp = await fetch(url, options);
+                if (!resp.ok) throw new Error(resp.statusText || 'Request failed');
+                return resp;
+            } catch (err) {
+                if (attempt === maxRetries) throw err;
+                setStatus(`Erreur : ${err.message}. Nouvelle tentative (${maxRetries - attempt} restante(s))...`, true);
+                await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
+            }
+        }
+    };
     
     const indexRulesFromCSV = (csvText) => {
         const lines = csvText.trim().split(/\r?\n/);
@@ -324,7 +338,7 @@ const initializeSelectionMap = (coords) => {
             for (let page = 0; page < 10 && !endOfRecords; page++) {
                 const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=1000&offset=${page*1000}&geometry=${encodeURIComponent(wkt)}&taxonKey=${taxonKey}`;
                 try {
-                    const resp = await fetch(gbifUrl);
+                    const resp = await fetchWithRetry(gbifUrl);
                     if (!resp.ok) break;
                     const pageData = await resp.json();
                     if (pageData.results?.length > 0) {
@@ -519,7 +533,7 @@ const initializeSelectionMap = (coords) => {
                 const offset = page * limit;
                 setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${maxPages})`, true);
                 const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
-                const gbifResp = await fetch(gbifUrl);
+                const gbifResp = await fetchWithRetry(gbifUrl);
                 if (!gbifResp.ok) throw new Error("L'API GBIF est indisponible.");
                 const pageData = await gbifResp.json();
                 if (pageData.results?.length > 0) { allOccurrences = allOccurrences.concat(pageData.results); }
