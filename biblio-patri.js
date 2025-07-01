@@ -512,7 +512,7 @@ const initializeSelectionMap = (coords) => {
                 wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
             }
             let allOccurrences = [];
-            const maxPages = 12;
+            const maxPages = 20;
             const limit = 1000;
             setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${maxPages})`, true);
             for (let page = 0; page < maxPages; page++) {
