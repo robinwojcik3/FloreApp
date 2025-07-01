@@ -146,6 +146,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         return null;
     };
+
+    const hexToRgba = (hex, alpha) => {
+        hex = hex.replace('#', '');
+        if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+        const num = parseInt(hex, 16);
+        const r = (num >> 16) & 255;
+        const g = (num >> 8) & 255;
+        const b = num & 255;
+        return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    };
     const SEARCH_RADIUS_KM = 2;
     const OBS_RADIUS_KM = 1;
     const ANALYSIS_MAX_RETRIES = 3;
@@ -374,7 +384,8 @@ const initializeSelectionMap = (coords) => {
             if (filtered.length === 0) continue;
             pointCount++;
             const count = filtered.length;
-            const iconHtml = `<div class="marker-cluster-icon" style="background-color: ${count > 1 ? '#c62828' : filtered[0].color};"><span>${count}</span></div>`;
+            const bgColor = count > 1 ? '#c62828' : filtered[0].color;
+            const iconHtml = `<div class="marker-cluster-icon" style="background-color: ${hexToRgba(bgColor, 0.5)};"><span>${count}</span></div>`;
             const icon = L.divIcon({ html: iconHtml, className: 'custom-cluster', iconSize: [28, 28], iconAnchor: [14, 14] });
             let popupContent = `<div class="custom-popup"><b>${count} espèce(s) patrimoniale(s) :</b><ul>`;
             filtered.forEach(s => {
