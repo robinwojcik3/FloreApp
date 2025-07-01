@@ -8,6 +8,8 @@
    <link rel="icon" href="icons/icon-192.png">
    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
    <script defer src="ui.js"></script>
    <script defer src="contexte.js"></script>
    <script defer src="sw-register.js"></script>
@@ -128,7 +130,7 @@
    </style>
 </head>
 <body>
-   <p id="altitude-info" style="text-align:center;margin:0.5rem 0;"></p>
+   <nav class="tabs-container">
    <nav class="tabs-container">
       <div class="tabs">
          <button class="tab" onclick="window.location.href='index.html'">Identification</button>
@@ -156,9 +158,14 @@
 
          <div class="location-card">
            <button class="action-button" id="choose-on-map">
-               🗺️ Ouvrir la carte
+               🗺️ Choisir sur la carte
             </button>
 
+            <button class="action-button" id="draw-polygon-btn">
+               🔶 Zone personnalisée
+            </button>
+
+            <p id="altitude-info" style="text-align:center;margin:0.5rem 0;"></p>
             <div id="map-container" class="map-fullwidth">
                <div class="map-instruction" id="map-instruction">
                   Cliquez longuement pour sélectionner un point

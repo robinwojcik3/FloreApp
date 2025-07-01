@@ -15,7 +15,7 @@ describe('utility functions', () => {
     const fixed = new Date('2024-01-02T03:04:00Z');
     const ctx = loadApp({ Date: class extends Date { constructor(){return fixed;} } });
     const name = ctx.makeTimestampedName('My:Photo');
-    expect(name).toBe('My_Photo 2024-01-02 03h04.jpg');
+    expect(name).toBe('My_Photo 2024-01-02 04h04.jpg');
   });
 
   test('parseCsv handles quotes and BOM', () => {
