@@ -169,13 +169,18 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (message) statusDiv.innerHTML += `<p>${message}</p>`;
     };
 
-    const fetchWithRetry = async (url, options = {}, maxRetries = ANALYSIS_MAX_RETRIES) => {
+    const FETCH_TIMEOUT_MS = 15000;
+    const fetchWithRetry = async (url, options = {}, maxRetries = ANALYSIS_MAX_RETRIES, timeout = FETCH_TIMEOUT_MS) => {
         for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
             try {
-                const resp = await fetch(url, options);
+                const resp = await fetch(url, { ...options, signal: controller.signal });
+                clearTimeout(id);
                 if (!resp.ok) throw new Error(resp.statusText || 'Request failed');
                 return resp;
             } catch (err) {
+                clearTimeout(id);
                 if (attempt === maxRetries) throw err;
                 setStatus(`Erreur : ${err.message}. Nouvelle tentative (${maxRetries - attempt} restante(s))...`, true);
                 await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
