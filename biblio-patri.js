@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const drawPolygonBtn = document.getElementById('draw-polygon-btn');
     const toggleTrackingBtn = document.getElementById('toggle-tracking-btn');
     const toggleLabelsBtn = document.getElementById('toggle-labels-btn');
+    const loadEcoBtn = document.getElementById('load-eco-btn');
     const downloadShapefileBtn = document.getElementById('download-shapefile-btn');
     const downloadContainer = document.getElementById('download-container');
 
@@ -112,6 +113,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     let patrimonialLayerGroup = L.layerGroup();
     let obsSearchPolygon = null;
     let observationsLayerGroup = L.layerGroup();
+    let ecoContextGroup = L.layerGroup();
+    let ecoLayersLoaded = false;
     let obsLayerAddedToControl = false;
     let speciesColorMap = new Map();
     let allPatrimonialLocations = null;
@@ -158,6 +161,154 @@ document.addEventListener('DOMContentLoaded', async () => {
     const nonPatrimonialRedlistCodes = new Set(['LC', 'DD', 'NA', 'NE']);
     const HABITATS_DIRECTIVE_CODES = new Set(['CDH1', 'CDH2', 'CDH4', 'CDH5']);
     const OLD_REGIONS_TO_DEPARTMENTS = { 'Alsace': ['67', '68'], 'Aquitaine': ['24', '33', '40', '47', '64'], 'Auvergne': ['03', '15', '43', '63'], 'Basse-Normandie': ['14', '50', '61'], 'Bourgogne': ['21', '58', '71', '89'], 'Champagne-Ardenne': ['08', '10', '51', '52'], 'Franche-Comté': ['25', '39', '70', '90'], 'Haute-Normandie': ['27', '76'], 'Languedoc-Roussillon': ['11', '30', '34', '48', '66'], 'Limousin': ['19', '23', '87'], 'Lorraine': ['54', '55', '57', '88'], 'Midi-Pyrénées': ['09', '12', '31', '32', '46', '65', '81', '82'], 'Nord-Pas-de-Calais': ['59', '62'], 'Picardie': ['02', '60', '80'], 'Poitou-Charentes': ['16', '17', '79', '86'], 'Rhône-Alpes': ['01', '07', '26', '38', '42', '69', '73', '74'] };
+
+    const APICARTO_LAYERS = {
+        'ZNIEFF I': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/znieff1',
+            style: { color: '#AFB42B', weight: 2, opacity: 0.9, fillOpacity: 0.2, dashArray: '5, 5' }
+        },
+        'ZNIEFF II': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/znieff2',
+            style: { color: '#E65100', weight: 2, opacity: 0.9, fillOpacity: 0.2 }
+        },
+        'Natura 2000 (Habitats)': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/natura-habitat',
+            style: { color: '#2E7D32', weight: 2, opacity: 0.9, fillOpacity: 0.2 }
+        },
+        'Réserves Naturelles Nationales': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/rnn',
+            style: { color: '#7B1FA2', weight: 2, opacity: 0.9, fillOpacity: 0.2 }
+        },
+        'Parcs Nationaux': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/pn',
+            style: { color: '#AD1457', weight: 2, opacity: 0.9, fillOpacity: 0.2 }
+        },
+        'Parcs Naturels Régionaux': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/pnr',
+            style: { color: '#558B2F', weight: 2, opacity: 0.9, fillOpacity: 0.2 }
+        },
+        'Natura 2000 (Oiseaux)': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/natura-oiseaux',
+            style: { color: '#0277BD', weight: 2, opacity: 0.9, fillOpacity: 0.2 }
+        },
+        'Réserves Naturelles': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/rn',
+            style: { color: '#6A1B9A', weight: 2, opacity: 0.9, fillOpacity: 0.2 }
+        },
+        'Réserves Naturelles Régionales': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/rnr',
+            style: { color: '#9C27B0', weight: 2, opacity: 0.9, fillOpacity: 0.2 }
+        },
+        'Arrêtés de Protection de Biotope': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/apb',
+            style: { color: '#1B5E20', weight: 2, opacity: 0.9, fillOpacity: 0.2 }
+        },
+        'Espaces Naturels Sensibles': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/ens',
+            style: { color: '#004D40', weight: 2, opacity: 0.9, fillOpacity: 0.2 }
+        },
+        'Zones humides': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/zones_humides',
+            style: { color: '#1565C0', weight: 2, opacity: 0.9, fillOpacity: 0.2 }
+        },
+        'Pelouses sèches': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/pelouses_seches',
+            style: { color: '#8BC34A', weight: 2, opacity: 0.9, fillOpacity: 0.2 }
+        },
+        'Sites Ramsar': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/ramsar',
+            style: { color: '#00ACC1', weight: 2, opacity: 0.9, fillOpacity: 0.2 }
+        },
+        'ZICO (Zones importantes pour la conservation des oiseaux)': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/zico',
+            style: { color: '#FF9800', weight: 2, opacity: 0.9, fillOpacity: 0.2 }
+        }
+    };
+
+    function getZoneName(props) {
+        if (!props) return 'Zonage';
+        const candidates = ['zone_name', 'nom', 'name', 'libelle', 'NOM', 'NOM_SITE', 'nom_zone'];
+        for (const key of candidates) {
+            if (props[key]) return props[key];
+            if (props[key && key.toUpperCase()]) return props[key.toUpperCase()];
+        }
+        for (const k in props) {
+            if (typeof props[k] === 'string' && props[k]) return props[k];
+        }
+        return 'Zonage';
+    }
+
+    function addDynamicPopup(feature, layer) {
+        const props = feature.properties || {};
+        const zoneName = getZoneName(props);
+        const url = props.url;
+        const content = `<strong>${zoneName}</strong><br><button class="zone-info-btn">Cliquer ici pour plus d\'informations</button>`;
+        const popup = L.popup().setContent(content);
+        layer.on('click', (e) => {
+            const existing = layer.getPopup();
+            if (existing && existing.isOpen()) {
+                if (url) window.open(url, '_blank');
+            } else {
+                layer.bindPopup(popup).openPopup(e.latlng);
+                const element = layer.getPopup().getElement();
+                if (element) {
+                    const btn = element.querySelector('.zone-info-btn');
+                    if (btn) {
+                        btn.addEventListener('click', (ev) => {
+                            ev.stopPropagation();
+                            if (url) window.open(url, '_blank');
+                        });
+                    }
+                }
+            }
+        });
+    }
+
+    async function fetchContextLayer(name, config, lat, lon) {
+        try {
+            const url = `${config.endpoint}?lon=${lon}&lat=${lat}`;
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Réponse réseau non OK: ${response.statusText}`);
+            }
+            const geojsonData = await response.json();
+            if (geojsonData && geojsonData.features && geojsonData.features.length > 0) {
+                const layer = L.geoJSON(geojsonData, {
+                    renderer: L.canvas(),
+                    style: config.style,
+                    onEachFeature: addDynamicPopup
+                });
+                layersControl.addOverlay(layer, name);
+                return layer;
+            }
+        } catch (err) {
+            console.error(`Erreur lors du chargement de la couche ${name}:`, err);
+        }
+        return null;
+    }
+
+    async function loadEcoLayers() {
+        if (!map) return;
+        if (ecoLayersLoaded) {
+            if (!map.hasLayer(ecoContextGroup)) map.addLayer(ecoContextGroup);
+            return;
+        }
+        const center = map.getCenter();
+        const lat = center.lat;
+        const lon = center.lng;
+        const total = Object.keys(APICARTO_LAYERS).length;
+        let loaded = 0;
+        setStatus('Chargement des couches contexte éco 0/' + total + '...', true);
+        for (const [name, cfg] of Object.entries(APICARTO_LAYERS)) {
+            const layer = await fetchContextLayer(name, cfg, lat, lon);
+            if (layer) ecoContextGroup.addLayer(layer);
+            loaded++;
+            setStatus(`Chargement des couches contexte éco ${loaded}/${total}...`, true);
+        }
+        ecoLayersLoaded = true;
+        setStatus('Couches contexte éco chargées');
+        map.addLayer(ecoContextGroup);
+    }
     const ADMIN_NAME_TO_CODE_MAP = { "France": "FR", "Ain": "01", "Aisne": "02", "Allier": "03", "Alpes-de-Haute-Provence": "04", "Hautes-Alpes": "05", "Alpes-Maritimes": "06", "Ardèche": "07", "Ardennes": "08", "Ariège": "09", "Aube": "10", "Aude": "11", "Aveyron": "12", "Bouches-du-Rhône": "13", "Calvados": "14", "Cantal": "15", "Charente": "16", "Charente-Maritime": "17", "Cher": "18", "Corrèze": "19", "Corse-du-Sud": "2A", "Haute-Corse": "2B", "Côte-d'Or": "21", "Côtes-d'Armor": "22", "Creuse": "23", "Dordogne": "24", "Doubs": "25", "Drôme": "26", "Eure": "27", "Eure-et-Loir": "28", "Finistère": "29", "Gard": "30", "Haute-Garonne": "31", "Gers": "32", "Gironde": "33", "Hérault": "34", "Ille-et-Vilaine": "35", "Indre": "36", "Indre-et-Loire": "37", "Isère": "38", "Jura": "39", "Landes": "40", "Loir-et-Cher": "41", "Loire": "42", "Haute-Loire": "43", "Loire-Atlantique": "44", "Loiret": "45", "Lot": "46", "Lot-et-Garonne": "47", "Lozère": "48", "Maine-et-Loire": "49", "Manche": "50", "Marne": "51", "Haute-Marne": "52", "Mayenne": "53", "Meurthe-et-Moselle": "54", "Meuse": "55", "Morbihan": "56", "Moselle": "57", "Nièvre": "58", "Nord": "59", "Oise": "60", "Orne": "61", "Pas-de-Calais": "62", "Puy-de-Dôme": "63", "Pyrénées-Atlantiques": "64", "Hautes-Pyrénées": "65", "Pyrénées-Orientales": "66", "Bas-Rhin": "67", "Haut-Rhin": "68", "Rhône": "69", "Haute-Saône": "70", "Saône-et-Loire": "71", "Sarthe": "72", "Savoie": "73", "Haute-Savoie": "74", "Paris": "75", "Seine-Maritime": "76", "Seine-et-Marne": "77", "Yvelines": "78", "Deux-Sèvres": "79", "Somme": "80", "Tarn": "81", "Tarn-et-Garonne": "82", "Var": "83", "Vaucluse": "84", "Vendée": "85", "Vienne": "86", "Haute-Vienne": "87", "Vosges": "88", "Yonne": "89", "Territoire de Belfort": "90", "Essonne": "91", "Hauts-de-Seine": "92", "Seine-Saint-Denis": "93", "Val-de-Marne": "94", "Val-d'Oise": "95", "Auvergne-Rhône-Alpes": "84", "Bourgogne-Franche-Comté": "27", "Bretagne": "53", "Centre-Val de Loire": "24", "Corse": "94", "Grand Est": "44", "Hauts-de-France": "32", "Île-de-France": "11", "Normandie": "28", "Nouvelle-Aquitaine": "75", "Occitanie": "76", "Pays de la Loire": "52", "Provence-Alpes-Côte d'Azur": "93", "Guadeloupe": "01", "Martinique": "02", "Guyane": "03", "La Réunion": "04", "Mayotte": "06" };
 
     const setStatus = (message, isLoading = false) => {
@@ -790,5 +941,8 @@ const initializeSelectionMap = (coords) => {
     toggleTrackingBtn.addEventListener('click', () => toggleLocationTracking(map, toggleTrackingBtn));
     if (toggleLabelsBtn) {
         toggleLabelsBtn.addEventListener('click', toggleAnalysisLabels);
+    }
+    if (loadEcoBtn) {
+        loadEcoBtn.addEventListener('click', loadEcoLayers);
     }
 });
