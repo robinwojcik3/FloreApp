@@ -21,27 +21,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     const addressInput = document.getElementById('address-input');
     const searchAddressBtn = document.getElementById('search-address-btn');
     const useGeolocationBtn = document.getElementById('use-geolocation-btn');
-    const selectOnMapBtn = document.getElementById('select-on-map-btn');
-    const drawPolygonBtn = document.getElementById('draw-polygon-btn');
     const toggleTrackingBtn = document.getElementById('toggle-tracking-btn');
-    const analysisTabBtn = document.getElementById('analysis-tab-btn');
-    const observationsTabBtn = document.getElementById('observations-tab-btn');
-    const analysisTab = document.getElementById('analysis-tab');
-    const observationsTab = document.getElementById('observations-tab');
-    const obsStatusDiv = document.getElementById('obs-status');
-    const obsMapContainer = document.getElementById('observations-map');
-    const obsGeolocBtn = document.getElementById('obs-geoloc-btn');
-    const obsDrawPolygonBtn = document.getElementById('obs-draw-polygon-btn');
-    const obsToggleTrackingBtn = document.getElementById('obs-toggle-tracking-btn');
     const toggleLabelsBtn = document.getElementById('toggle-labels-btn');
-    const obsToggleLabelsBtn = document.getElementById('obs-toggle-labels-btn');
+    const obsStatusDiv = document.getElementById('obs-status');
     const downloadShapefileBtn = document.getElementById('download-shapefile-btn');
     const downloadContainer = document.getElementById('download-container');
 
     let trackingMap = null;
     let trackingButton = null;
     let analysisLabelsVisible = true;
-    let obsLabelsVisible = true;
 
     const stopLocationTracking = () => {
         if (trackingWatchId !== null) {
@@ -96,13 +84,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    const toggleObsLabels = () => {
-        obsLabelsVisible = !obsLabelsVisible;
-        obsMapContainer.classList.toggle('hide-labels', !obsLabelsVisible);
-        if (obsToggleLabelsBtn) {
-            obsToggleLabelsBtn.textContent = obsLabelsVisible ? 'Masquer les étiquettes' : 'Afficher les étiquettes';
-        }
-    };
 
     let currentShapefileData = null;
 
@@ -110,7 +91,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     let layersControl = null;
     let searchAreaLayer = null;
     let patrimonialLayerGroup = L.layerGroup();
-    let obsMap = null;
     let obsSearchPolygon = null;
     let observationsLayerGroup = L.layerGroup();
     let speciesColorMap = new Map();
@@ -311,6 +291,7 @@ const initializeSelectionMap = (coords) => {
             if (!layersControl) {
                 layersControl = L.control.layers({ "Topographique": topoMap, "Satellite": satelliteMap }, { "Espèces Patrimoniales": patrimonialLayerGroup }).addTo(map);
             }
+            setupContextMenu();
         } else {
             map.setView([coords.latitude, coords.longitude], map.getZoom() || 12);
         }
@@ -324,11 +305,50 @@ const initializeSelectionMap = (coords) => {
         return `POLYGON((${pts.map(p => `${p.lng.toFixed(5)} ${p.lat.toFixed(5)}`).join(', ')}))`;
     };
 
-    const centroidOf = (latlngs) => {
-        let lat = 0, lng = 0;
-        latlngs.forEach(p => { lat += p.lat; lng += p.lng; });
-        const n = latlngs.length;
-        return { latitude: lat/n, longitude: lng/n };
+const centroidOf = (latlngs) => {
+    let lat = 0, lng = 0;
+    latlngs.forEach(p => { lat += p.lat; lng += p.lng; });
+    const n = latlngs.length;
+    return { latitude: lat/n, longitude: lng/n };
+};
+
+    const setupContextMenu = () => {
+        let pressTimer;
+        const showMenu = (latlng) => {
+            const html = `<button id="run-patri" class="action-button">Flore Patri</button><br>` +
+                         `<button id="run-obs" class="action-button">Observations locales</button>`;
+            L.popup({ closeOnClick: true })
+                .setLatLng(latlng)
+                .setContent(html)
+                .openOn(map);
+            document.getElementById('run-patri').addEventListener('click', () => {
+                map.closePopup();
+                runAnalysis({ latitude: latlng.lat, longitude: latlng.lng });
+            });
+            document.getElementById('run-obs').addEventListener('click', () => {
+                map.closePopup();
+                loadObservationsAt({ latitude: latlng.lat, longitude: latlng.lng });
+            });
+        };
+        const onContextMenu = (e) => {
+            e.originalEvent.preventDefault();
+            showMenu(e.latlng);
+        };
+        const onDown = (e) => {
+            if (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches.length > 1) return;
+            pressTimer = setTimeout(() => showMenu(e.latlng), LONG_PRESS_MS);
+        };
+        const cancel = () => clearTimeout(pressTimer);
+        map.on('contextmenu', onContextMenu);
+        map.on('mousedown', onDown);
+        map.on('touchstart', onDown);
+        map.on('mouseup', cancel);
+        map.on('mousemove', cancel);
+        map.on('touchend', cancel);
+        map.on('touchmove', cancel);
+        map.on('dragstart', cancel);
+        map.on('move', cancel);
+        map.on('zoomstart', cancel);
     };
     
     const fetchAndDisplayAllPatrimonialOccurrences = async (patrimonialMap, wkt, initialOccurrences) => {
@@ -532,7 +552,6 @@ const initializeSelectionMap = (coords) => {
     const runAnalysis = async (params) => {
         try {
             resultsContainer.innerHTML = '';
-            mapContainer.style.display = 'none';
             initializeMap(params);
             setStatus("Étape 1/4: Initialisation de la carte...", true);
             let wkt = params.wkt;
@@ -615,7 +634,6 @@ const initializeSelectionMap = (coords) => {
         } catch (error) {
             console.error("Erreur durant l'analyse:", error);
             setStatus(`Erreur : ${error.message}`);
-            if (mapContainer) mapContainer.style.display = 'none';
         }
     };
     
@@ -628,7 +646,8 @@ const initializeSelectionMap = (coords) => {
             if (!resp.ok) throw new Error("Service de géocodage indisponible.");
             const data = await resp.json();
             if (data.length === 0) throw new Error("Adresse non trouvée.");
-            runAnalysis({ latitude: parseFloat(data[0].lat), longitude: parseFloat(data[0].lon) });
+            initializeSelectionMap({ latitude: parseFloat(data[0].lat), longitude: parseFloat(data[0].lon) });
+            setStatus("");
         } catch (error) { setStatus(`Erreur : ${error.message}`); }
     };
     
@@ -636,183 +655,13 @@ const initializeSelectionMap = (coords) => {
         try {
             setStatus("Récupération de votre position...", true);
             const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 }));
-            runAnalysis(coords);
+            initializeSelectionMap(coords);
+            setStatus("");
         } catch(error) { setStatus(`Erreur de géolocalisation : ${error.message}`); }
     };
 
-    const startMapSelection = async () => {
-        let center;
-        if (map) {
-            const c = map.getCenter();
-            center = { latitude: c.lat, longitude: c.lng };
-        } else {
-            center = { latitude: 45.1885, longitude: 5.7245 };
-            try {
-                const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 }));
-                center = { latitude: coords.latitude, longitude: coords.longitude };
-            } catch (e) {}
-        }
-        initializeSelectionMap(center);
-        let pressTimer;
-        const cleanup = () => {
-            map.off('contextmenu', onContextMenu);
-            map.off('mousedown', onDown);
-            map.off('mouseup', onUp);
-            map.off('touchstart', onDown);
-            map.off('touchend', onUp);
-            map.off('dragstart', onUp);
-            map.off('move', onUp);
-            map.off('zoomstart', onUp);
-        };
-        const selectPoint = (latlng) => {
-            if (confirm("Voulez-vous lancer l'analyse sur ce lieu ?")) {
-                cleanup();
-                runAnalysis({ latitude: latlng.lat, longitude: latlng.lng });
-            }
-        };
-        const onContextMenu = (e) => {
-            e.originalEvent.preventDefault();
-            selectPoint(e.latlng);
-        };
-        const onDown = (e) => {
-            if (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches.length > 1) return;
-            pressTimer = setTimeout(() => selectPoint(e.latlng), LONG_PRESS_MS);
-        };
-        const onUp = () => clearTimeout(pressTimer);
-        map.on('contextmenu', onContextMenu);
-        map.on('mousedown', onDown);
-        map.on('mouseup', onUp);
-        map.on('mousemove', onUp);
-        map.on('touchstart', onDown);
-        map.on('touchend', onUp);
-        map.on('touchmove', onUp);
-        map.on('dragstart', onUp);
-        map.on('move', onUp);
-        map.on('zoomstart', onUp);
-    };
-
-    const startPolygonSelection = async () => {
-        let center;
-        if (map) {
-            const c = map.getCenter();
-            center = { latitude: c.lat, longitude: c.lng };
-        } else {
-            center = { latitude: 45.1885, longitude: 5.7245 };
-            try {
-                const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 }));
-                center = { latitude: coords.latitude, longitude: coords.longitude };
-            } catch (e) {}
-        }
-        initializeSelectionMap(center);
-        setStatus('Tracez un polygone pour définir la zone de recherche.', false);
-        const drawer = new L.Draw.Polygon(map, { shapeOptions: { color: '#c62828' } });
-        drawer.enable();
-        map.once(L.Draw.Event.CREATED, (e) => {
-            const latlngs = e.layer.getLatLngs()[0];
-            const centroid = centroidOf(latlngs);
-            const wkt = polygonToWkt(latlngs);
-            runAnalysis({ latitude: centroid.latitude, longitude: centroid.longitude, wkt, polygon: latlngs });
-        });
-    };
-
-    const switchTab = (tab) => {
-        if (tab === 'analysis') {
-            analysisTab.style.display = 'block';
-            observationsTab.style.display = 'none';
-            analysisTabBtn.classList.add('active');
-            observationsTabBtn.classList.remove('active');
-        } else {
-            analysisTab.style.display = 'none';
-            observationsTab.style.display = 'block';
-            analysisTabBtn.classList.remove('active');
-            observationsTabBtn.classList.add('active');
-            stopLocationTracking();
-            initializeObservationMap();
-            obsStatusDiv.textContent = "";
-        }
-    };
 
     let obsSearchCircle = null;
-
-    const initializeObservationMap = () => {
-        if (obsMap) return;
-        obsMapContainer.style.display = 'block';
-        const planMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        });
-
-        const topoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-            attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)'
-        });
-
-        const satelliteMap = L.tileLayer(
-            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-            {
-                attribution:
-                    'Tiles © Esri — Source: Esri, Earthstar Geographics, and the GIS User Community',
-                maxZoom: 19,
-                crossOrigin: true
-            }
-        );
-
-        // Vue initiale identique à la carte d'analyse patrimoniale
-        obsMap = L.map(obsMapContainer, {
-            center: [45.1885, 5.7245],
-            zoom: 12,
-            layers: [topoMap]
-        });
-
-        // Centrer la carte sur la position de l'utilisateur si disponible
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    obsMap.setView([pos.coords.latitude, pos.coords.longitude], 12);
-                },
-                () => {
-                    // En cas d'erreur ou de refus, la vue par défaut (Grenoble) est conservée
-                }
-            );
-        }
-
-        observationsLayerGroup = L.layerGroup().addTo(obsMap);
-
-        const baseMaps = {
-            "OpenTopoMap": topoMap,
-            "Plan": planMap,
-            "Satellite": satelliteMap
-        };
-
-        const overlayMaps = {
-            "Observations": observationsLayerGroup
-        };
-
-        L.control.layers(baseMaps, overlayMaps).addTo(obsMap);
-
-        let pressTimer;
-        const handleSelect = (latlng) => {
-            if (confirm("Voulez-vous lancer la recherche sur ce point ?")) {
-                loadObservationsAt({ latitude: latlng.lat, longitude: latlng.lng });
-            }
-        };
-        obsMap.on('contextmenu', (e) => {
-            e.originalEvent.preventDefault();
-            handleSelect(e.latlng);
-        });
-        const onDown = (e) => {
-            if (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches.length > 1) return;
-            pressTimer = setTimeout(() => handleSelect(e.latlng), LONG_PRESS_MS);
-        };
-        const cancel = () => clearTimeout(pressTimer);
-        obsMap.on('mousedown', onDown);
-        obsMap.on('touchstart', onDown);
-        obsMap.on('mouseup', cancel);
-        obsMap.on('mousemove', cancel);
-        obsMap.on('touchend', cancel);
-        obsMap.on('touchmove', cancel);
-        obsMap.on('dragstart', cancel);
-        obsMap.on('move', cancel);
-        obsMap.on('zoomstart', cancel);
-    };
 
     const displayObservations = (occurrences) => {
         observationsLayerGroup.clearLayers();
@@ -845,17 +694,16 @@ const initializeSelectionMap = (coords) => {
 
     const loadObservationsAt = async (params) => {
         try {
-            if (!obsMap) initializeObservationMap();
-            obsMapContainer.style.display = 'block';
-            obsMap.setView([params.latitude, params.longitude], 18);
-            if (obsSearchCircle) { obsMap.removeLayer(obsSearchCircle); obsSearchCircle = null; }
-            if (obsSearchPolygon) { obsMap.removeLayer(obsSearchPolygon); obsSearchPolygon = null; }
+            if (!map) initializeSelectionMap({ latitude: params.latitude, longitude: params.longitude });
+            map.setView([params.latitude, params.longitude], 18);
+            if (obsSearchCircle) { map.removeLayer(obsSearchCircle); obsSearchCircle = null; }
+            if (obsSearchPolygon) { map.removeLayer(obsSearchPolygon); obsSearchPolygon = null; }
             let wkt;
             if (params.wkt) {
-                obsSearchPolygon = L.polygon(params.polygon, { color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(obsMap);
+                obsSearchPolygon = L.polygon(params.polygon, { color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(map);
                 wkt = params.wkt;
             } else {
-                obsSearchCircle = L.circle([params.latitude, params.longitude], { radius: OBS_RADIUS_KM * 1000, color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(obsMap);
+                obsSearchCircle = L.circle([params.latitude, params.longitude], { radius: OBS_RADIUS_KM * 1000, color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(map);
                 wkt = 'POLYGON((' + Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return `${(params.longitude+OBS_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+OBS_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`;}).join(', ') + '))';
             }
             obsStatusDiv.textContent = 'Recherche des occurrences GBIF...';
@@ -870,54 +718,18 @@ const initializeSelectionMap = (coords) => {
         }
     };
 
-    const geolocateAndLoadObservations = async () => {
-        try {
-            obsStatusDiv.textContent = 'Récupération de votre position...';
-            const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 }));
-            loadObservationsAt(coords);
-        } catch(error) {
-            obsStatusDiv.textContent = `Erreur : ${error.message}`;
-        }
-    };
 
-    const startObsPolygonSelection = async () => {
-        obsStatusDiv.textContent = '';
-        if (!obsMap) initializeObservationMap();
-        const drawer = new L.Draw.Polygon(obsMap, { shapeOptions: { color: '#c62828' } });
-        drawer.enable();
-        obsMap.once(L.Draw.Event.CREATED, (e) => {
-            const latlngs = e.layer.getLatLngs()[0];
-            const centroid = centroidOf(latlngs);
-            const wkt = polygonToWkt(latlngs);
-            loadObservationsAt({ latitude: centroid.latitude, longitude: centroid.longitude, wkt, polygon: latlngs });
-        });
-    };
     
     // --- 6. DÉMARRAGE DE L'APPLICATION ---
     await initializeApp();
-    switchTab('analysis');
-    startMapSelection();
+    initializeSelectionMap({ latitude: 45.1885, longitude: 5.7245 });
     searchAddressBtn.addEventListener('click', handleAddressSearch);
     useGeolocationBtn.addEventListener('click', handleGeolocationSearch);
-    selectOnMapBtn.addEventListener('click', startMapSelection);
-    drawPolygonBtn.addEventListener('click', startPolygonSelection);
     addressInput.addEventListener('keypress', (e) => e.key === 'Enter' && handleAddressSearch());
-    analysisTabBtn.addEventListener('click', () => switchTab('analysis'));
-    observationsTabBtn.addEventListener('click', () => switchTab('observations'));
-    obsGeolocBtn.addEventListener('click', geolocateAndLoadObservations);
-    obsDrawPolygonBtn.addEventListener('click', startObsPolygonSelection);
     downloadShapefileBtn.addEventListener('click', triggerShapefileDownload);
     toggleTrackingBtn.addEventListener('click', () => toggleLocationTracking(map, toggleTrackingBtn));
     if (toggleLabelsBtn) {
         toggleLabelsBtn.addEventListener('click', toggleAnalysisLabels);
     }
-    if (obsToggleTrackingBtn) {
-        obsToggleTrackingBtn.addEventListener('click', () => {
-            initializeObservationMap();
-            toggleLocationTracking(obsMap, obsToggleTrackingBtn);
-        });
-    }
-    if (obsToggleLabelsBtn) {
-        obsToggleLabelsBtn.addEventListener('click', toggleObsLabels);
-    }
+
 });
