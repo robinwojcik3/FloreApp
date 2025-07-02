@@ -154,6 +154,71 @@ document.addEventListener('DOMContentLoaded', async () => {
     const FETCH_TIMEOUT_MS = 10000;
     const TRACHEOPHYTA_TAXON_KEY = 7707728; // GBIF taxonKey for vascular plants
     const SPECIES_COLORS = ['#E6194B', '#3CB44B', '#FFE119', '#4363D8', '#F58231', '#911EB4', '#46F0F0', '#F032E6', '#BCF60C', '#FABEBE', '#800000', '#AA6E28', '#000075', '#A9A9A9'];
+
+    const APICARTO_LAYERS = {
+        'ZNIEFF I': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/znieff1',
+            style: { color: '#AFB42B', weight: 2, opacity: 0.9, fillOpacity: 0.2, dashArray: '5, 5' },
+        },
+        'ZNIEFF II': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/znieff2',
+            style: { color: '#E65100', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+        },
+        'Natura 2000 (Habitats)': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/natura-habitat',
+            style: { color: '#2E7D32', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+        },
+        'Réserves Naturelles Nationales': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/rnn',
+            style: { color: '#7B1FA2', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+        },
+        'Parcs Nationaux': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/pn',
+            style: { color: '#AD1457', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+        },
+        'Parcs Naturels Régionaux': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/pnr',
+            style: { color: '#558B2F', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+        },
+        'Natura 2000 (Oiseaux)': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/natura-oiseaux',
+            style: { color: '#0277BD', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+        },
+        'Réserves Naturelles': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/rn',
+            style: { color: '#6A1B9A', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+        },
+        'Réserves Naturelles Régionales': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/rnr',
+            style: { color: '#9C27B0', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+        },
+        'Arrêtés de Protection de Biotope': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/apb',
+            style: { color: '#1B5E20', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+        },
+        'Espaces Naturels Sensibles': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/ens',
+            style: { color: '#004D40', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+        },
+        'Zones humides': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/zones_humides',
+            style: { color: '#1565C0', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+        },
+        'Pelouses sèches': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/pelouses_seches',
+            style: { color: '#8BC34A', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+        },
+        'Sites Ramsar': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/ramsar',
+            style: { color: '#00ACC1', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+        },
+        'ZICO (Zones importantes pour la conservation des oiseaux)': {
+            endpoint: 'https://apicarto.ign.fr/api/nature/zico',
+            style: { color: '#FF9800', weight: 2, opacity: 0.9, fillOpacity: 0.2 },
+        }
+    };
+
+    let contextLayerCache = {};
     const nonPatrimonialLabels = new Set(["Liste des espèces végétales sauvages pouvant faire l'objet d'une réglementation préfectorale dans les départements d'outre-mer : Article 1"]);
     const nonPatrimonialRedlistCodes = new Set(['LC', 'DD', 'NA', 'NE']);
     const HABITATS_DIRECTIVE_CODES = new Set(['CDH1', 'CDH2', 'CDH4', 'CDH5']);
@@ -777,6 +842,39 @@ const initializeSelectionMap = (coords) => {
         }
     };
 
+    const fetchAndDisplayApiLayer = async (name, config, lat, lon) => {
+        try {
+            const url = `${config.endpoint}?lon=${lon}&lat=${lat}`;
+            const resp = await fetch(url);
+            if (!resp.ok) return null;
+            const geojson = await resp.json();
+            if (geojson && geojson.features && geojson.features.length > 0) {
+                const layer = L.geoJSON(geojson, { style: config.style });
+                contextLayerCache[name] = layer;
+                layer.addTo(map);
+                if (layersControl) layersControl.addOverlay(layer, name);
+                return layer;
+            }
+        } catch (e) {
+            console.error('Contexte éco', e);
+        }
+        return null;
+    };
+
+    const loadContextLayers = async (coords) => {
+        if (!map) initializeSelectionMap(coords);
+        setStatus('Chargement des couches contexte éco...', true);
+        for (const [name, cfg] of Object.entries(APICARTO_LAYERS)) {
+            if (contextLayerCache[name]) {
+                if (!map.hasLayer(contextLayerCache[name])) contextLayerCache[name].addTo(map);
+                if (layersControl) layersControl.addOverlay(contextLayerCache[name], name);
+            } else {
+                await fetchAndDisplayApiLayer(name, cfg, coords.latitude, coords.longitude);
+            }
+        }
+        setStatus('Couches contexte éco chargées.');
+    };
+
     
     // --- 6. DÉMARRAGE DE L'APPLICATION ---
     await initializeApp();
@@ -790,5 +888,12 @@ const initializeSelectionMap = (coords) => {
     toggleTrackingBtn.addEventListener('click', () => toggleLocationTracking(map, toggleTrackingBtn));
     if (toggleLabelsBtn) {
         toggleLabelsBtn.addEventListener('click', toggleAnalysisLabels);
+    }
+    const contextBtn = document.getElementById('load-context-btn');
+    if (contextBtn) {
+        contextBtn.addEventListener('click', () => {
+            const center = map ? map.getCenter() : { lat: 45.1885, lng: 5.7245 };
+            loadContextLayers({ latitude: center.lat, longitude: center.lng });
+        });
     }
 });
