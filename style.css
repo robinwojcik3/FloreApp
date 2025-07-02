@@ -121,7 +121,7 @@ h1 {
     min-height: 24px;
 }
 
-#map, #observations-map {
+#map {
     height: 60vh;
     width: 100%;
     border-radius: 8px;
@@ -130,8 +130,7 @@ h1 {
     margin: 1.5rem 0;
 }
 
-#map.hide-labels .leaflet-tooltip,
-#observations-map.hide-labels .leaflet-tooltip {
+#map.hide-labels .leaflet-tooltip {
     display: none;
 }
 
@@ -182,8 +181,7 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
 }
 
 @media (max-width: 599px) {
-    #map,
-    #observations-map {
+    #map {
         margin-left: -1rem;
         margin-right: -1rem;
         width: calc(100% + 2rem);
@@ -246,4 +244,16 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
 .custom-cluster .marker-cluster-icon span {
     opacity: 1;
     line-height: 1;
+}
+
+.popup-action {
+    display: block;
+    width: 100%;
+    margin: 0.2rem 0;
+    padding: 0.3rem 0.5rem;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
 }

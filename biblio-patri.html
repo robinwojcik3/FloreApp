@@ -34,49 +34,29 @@
         </div>
     </nav>
     <div class="main-content">
-        <div class="tabs">
-            <button id="analysis-tab-btn" class="tab-button active">Analyse patrimoniale</button>
-            <button id="observations-tab-btn" class="tab-button">Observations locales</button>
-        </div>
-        
-        <div id="analysis-tab" class="tab-content" style="display:block;">
-            <div class="search-controls">
-                <div class="search-group address-group">
-                    <input type="text" id="address-input" placeholder="Saisir une adresse, une ville, un lieu...">
-                    <button id="search-address-btn" class="action-button">🔍 Rechercher</button>
-                </div>
-                <div class="button-grid">
-                    <button id="use-geolocation-btn" class="action-button">📍 Ma position</button>
-                    <button id="select-on-map-btn" class="action-button">🗺️ Choisir sur la carte</button>
-                    <button id="draw-polygon-btn" class="action-button">🔶 Zone personnalisée</button>
-                    <button id="toggle-tracking-btn" class="action-button">⭐ Suivi de position</button>
-                    <button id="toggle-labels-btn" class="action-button">Masquer les étiquettes</button>
-                </div>
+        <div class="search-controls">
+            <div class="search-group address-group">
+                <input type="text" id="address-input" placeholder="Saisir une adresse, une ville, un lieu...">
+                <button id="search-address-btn" class="action-button">🔍 Rechercher</button>
             </div>
-
-            <div id="status" class="status-container"></div>
-
-            <div id="map"></div>
-
-            <div id="download-container" style="text-align:center; display:none; margin-bottom:1rem;">
-                <button id="download-shapefile-btn" class="action-button">⬇️ Shapefile</button>
+            <div class="button-grid">
+                <button id="use-geolocation-btn" class="action-button">📍 Ma position</button>
+                <button id="select-on-map-btn" class="action-button">🗺️ Choisir sur la carte</button>
+                <button id="draw-polygon-btn" class="action-button">🔶 Zone personnalisée</button>
+                <button id="toggle-tracking-btn" class="action-button">⭐ Suivi de position</button>
+                <button id="toggle-labels-btn" class="action-button">Masquer les étiquettes</button>
             </div>
-
-            <div id="results" class="results-container"></div>
         </div>
 
-        <div id="observations-tab" class="tab-content" style="display:none;">
-            <div class="search-controls">
-                <div class="button-grid">
-                    <button id="obs-geoloc-btn" class="action-button">📍 Ma position</button>
-                    <button id="obs-draw-polygon-btn" class="action-button">🔶 Zone personnalisée</button>
-                    <button id="obs-toggle-tracking-btn" class="action-button">⭐ Suivi de position</button>
-                    <button id="obs-toggle-labels-btn" class="action-button">Masquer les étiquettes</button>
-                </div>
-            </div>
-            <div id="obs-status" class="status-container"></div>
-            <div id="observations-map"></div>
+        <div id="status" class="status-container"></div>
+
+        <div id="map"></div>
+
+        <div id="download-container" style="text-align:center; display:none; margin-bottom:1rem;">
+            <button id="download-shapefile-btn" class="action-button">⬇️ Shapefile</button>
         </div>
+
+        <div id="results" class="results-container"></div>
     </div>
 </body>
 </html>
