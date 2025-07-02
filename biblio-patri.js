@@ -29,7 +29,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const analysisTab = document.getElementById('analysis-tab');
     const observationsTab = document.getElementById('observations-tab');
     const obsStatusDiv = document.getElementById('obs-status');
-    const obsMapContainer = document.getElementById('observations-map');
     const obsGeolocBtn = document.getElementById('obs-geoloc-btn');
     const obsDrawPolygonBtn = document.getElementById('obs-draw-polygon-btn');
     const obsToggleTrackingBtn = document.getElementById('obs-toggle-tracking-btn');
@@ -37,6 +36,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const obsToggleLabelsBtn = document.getElementById('obs-toggle-labels-btn');
     const downloadShapefileBtn = document.getElementById('download-shapefile-btn');
     const downloadContainer = document.getElementById('download-container');
+    const actionMenu = document.getElementById('action-menu');
 
     let trackingMap = null;
     let trackingButton = null;
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const toggleObsLabels = () => {
         obsLabelsVisible = !obsLabelsVisible;
-        obsMapContainer.classList.toggle('hide-labels', !obsLabelsVisible);
+        mapContainer.classList.toggle('hide-labels', !obsLabelsVisible);
         if (obsToggleLabelsBtn) {
             obsToggleLabelsBtn.textContent = obsLabelsVisible ? 'Masquer les étiquettes' : 'Afficher les étiquettes';
         }
@@ -110,7 +110,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     let layersControl = null;
     let searchAreaLayer = null;
     let patrimonialLayerGroup = L.layerGroup();
-    let obsMap = null;
     let obsSearchPolygon = null;
     let observationsLayerGroup = L.layerGroup();
     let speciesColorMap = new Map();
@@ -236,7 +235,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     // --- *** MODIFICATION MAJEURE : Ajout du contrôle des couches *** ---
-    const initializeMap = (params) => {
+    const initializeMap = (params, radius = SEARCH_RADIUS_KM) => {
         stopLocationTracking();
 
         // 1. Définition des couches de base
@@ -262,6 +261,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 zoom: 13,
                 layers: [topoMap]
             });
+            patrimonialLayerGroup.addTo(map);
+            observationsLayerGroup.addTo(map);
         } else {
             map.setView([params.latitude, params.longitude], 13);
         }
@@ -273,7 +274,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
 
         const overlayMaps = {
-            "Espèces Patrimoniales": patrimonialLayerGroup
+            "Espèces Patrimoniales": patrimonialLayerGroup,
+            "Observations": observationsLayerGroup
         };
 
         // 4. Ajout du contrôle à la carte (une seule fois)
@@ -288,7 +290,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (params.polygon) {
             searchAreaLayer = L.polygon(params.polygon, { color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(map);
         } else {
-            searchAreaLayer = L.circle([params.latitude, params.longitude], { radius: SEARCH_RADIUS_KM * 1000, color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(map);
+            searchAreaLayer = L.circle([params.latitude, params.longitude], { radius: radius * 1000, color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(map);
         }
     };
 
@@ -308,8 +310,13 @@ const initializeSelectionMap = (coords) => {
         mapContainer.style.display = 'block';
         if (!map) {
             map = L.map(mapContainer, { center: [coords.latitude, coords.longitude], zoom: 12, layers: [topoMap] });
+            patrimonialLayerGroup.addTo(map);
+            observationsLayerGroup.addTo(map);
             if (!layersControl) {
-                layersControl = L.control.layers({ "Topographique": topoMap, "Satellite": satelliteMap }, { "Espèces Patrimoniales": patrimonialLayerGroup }).addTo(map);
+                layersControl = L.control.layers(
+                    { "Topographique": topoMap, "Satellite": satelliteMap },
+                    { "Espèces Patrimoniales": patrimonialLayerGroup, "Observations": observationsLayerGroup }
+                ).addTo(map);
             }
         } else {
             map.setView([coords.latitude, coords.longitude], map.getZoom() || 12);
@@ -654,29 +661,21 @@ const initializeSelectionMap = (coords) => {
         }
         initializeSelectionMap(center);
         let pressTimer;
-        const cleanup = () => {
-            map.off('contextmenu', onContextMenu);
-            map.off('mousedown', onDown);
-            map.off('mouseup', onUp);
-            map.off('touchstart', onDown);
-            map.off('touchend', onUp);
-            map.off('dragstart', onUp);
-            map.off('move', onUp);
-            map.off('zoomstart', onUp);
+        const hideMenu = () => { actionMenu.style.display = 'none'; };
+        const showMenu = (latlng, point) => {
+            actionMenu.innerHTML = `
+                <button id="menu-analysis-btn" class="action-button">Analyse patrimoniale</button>
+                <button id="menu-observation-btn" class="action-button">Observations locales</button>`;
+            actionMenu.style.left = `${point.x}px`;
+            actionMenu.style.top = `${point.y}px`;
+            actionMenu.style.display = 'block';
+            document.getElementById('menu-analysis-btn').onclick = () => { hideMenu(); runAnalysis({ latitude: latlng.lat, longitude: latlng.lng }); };
+            document.getElementById('menu-observation-btn').onclick = () => { hideMenu(); loadObservationsAt({ latitude: latlng.lat, longitude: latlng.lng }); };
         };
-        const selectPoint = (latlng) => {
-            if (confirm("Voulez-vous lancer l'analyse sur ce lieu ?")) {
-                cleanup();
-                runAnalysis({ latitude: latlng.lat, longitude: latlng.lng });
-            }
-        };
-        const onContextMenu = (e) => {
-            e.originalEvent.preventDefault();
-            selectPoint(e.latlng);
-        };
+        const onContextMenu = (e) => { e.originalEvent.preventDefault(); showMenu(e.latlng, e.containerPoint); };
         const onDown = (e) => {
             if (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches.length > 1) return;
-            pressTimer = setTimeout(() => selectPoint(e.latlng), LONG_PRESS_MS);
+            pressTimer = setTimeout(() => showMenu(e.latlng, e.containerPoint), LONG_PRESS_MS);
         };
         const onUp = () => clearTimeout(pressTimer);
         map.on('contextmenu', onContextMenu);
@@ -689,6 +688,7 @@ const initializeSelectionMap = (coords) => {
         map.on('dragstart', onUp);
         map.on('move', onUp);
         map.on('zoomstart', onUp);
+        map.on('click', hideMenu);
     };
 
     const startPolygonSelection = async () => {
@@ -734,86 +734,6 @@ const initializeSelectionMap = (coords) => {
 
     let obsSearchCircle = null;
 
-    const initializeObservationMap = () => {
-        if (obsMap) return;
-        obsMapContainer.style.display = 'block';
-        const planMap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
-        });
-
-        const topoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-            attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)'
-        });
-
-        const satelliteMap = L.tileLayer(
-            'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
-            {
-                attribution:
-                    'Tiles © Esri — Source: Esri, Earthstar Geographics, and the GIS User Community',
-                maxZoom: 19,
-                crossOrigin: true
-            }
-        );
-
-        // Vue initiale identique à la carte d'analyse patrimoniale
-        obsMap = L.map(obsMapContainer, {
-            center: [45.1885, 5.7245],
-            zoom: 12,
-            layers: [topoMap]
-        });
-
-        // Centrer la carte sur la position de l'utilisateur si disponible
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    obsMap.setView([pos.coords.latitude, pos.coords.longitude], 12);
-                },
-                () => {
-                    // En cas d'erreur ou de refus, la vue par défaut (Grenoble) est conservée
-                }
-            );
-        }
-
-        observationsLayerGroup = L.layerGroup().addTo(obsMap);
-
-        const baseMaps = {
-            "OpenTopoMap": topoMap,
-            "Plan": planMap,
-            "Satellite": satelliteMap
-        };
-
-        const overlayMaps = {
-            "Observations": observationsLayerGroup
-        };
-
-        L.control.layers(baseMaps, overlayMaps).addTo(obsMap);
-
-        let pressTimer;
-        const handleSelect = (latlng) => {
-            if (confirm("Voulez-vous lancer la recherche sur ce point ?")) {
-                loadObservationsAt({ latitude: latlng.lat, longitude: latlng.lng });
-            }
-        };
-        obsMap.on('contextmenu', (e) => {
-            e.originalEvent.preventDefault();
-            handleSelect(e.latlng);
-        });
-        const onDown = (e) => {
-            if (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches.length > 1) return;
-            pressTimer = setTimeout(() => handleSelect(e.latlng), LONG_PRESS_MS);
-        };
-        const cancel = () => clearTimeout(pressTimer);
-        obsMap.on('mousedown', onDown);
-        obsMap.on('touchstart', onDown);
-        obsMap.on('mouseup', cancel);
-        obsMap.on('mousemove', cancel);
-        obsMap.on('touchend', cancel);
-        obsMap.on('touchmove', cancel);
-        obsMap.on('dragstart', cancel);
-        obsMap.on('move', cancel);
-        obsMap.on('zoomstart', cancel);
-    };
-
     const displayObservations = (occurrences) => {
         observationsLayerGroup.clearLayers();
         const floraOccs = occurrences.filter(o =>
@@ -845,17 +765,16 @@ const initializeSelectionMap = (coords) => {
 
     const loadObservationsAt = async (params) => {
         try {
-            if (!obsMap) initializeObservationMap();
-            obsMapContainer.style.display = 'block';
-            obsMap.setView([params.latitude, params.longitude], 18);
-            if (obsSearchCircle) { obsMap.removeLayer(obsSearchCircle); obsSearchCircle = null; }
-            if (obsSearchPolygon) { obsMap.removeLayer(obsSearchPolygon); obsSearchPolygon = null; }
+            initializeMap(params, OBS_RADIUS_KM);
+            map.setView([params.latitude, params.longitude], 18);
+            if (obsSearchCircle) { map.removeLayer(obsSearchCircle); obsSearchCircle = null; }
+            if (obsSearchPolygon) { map.removeLayer(obsSearchPolygon); obsSearchPolygon = null; }
             let wkt;
             if (params.wkt) {
-                obsSearchPolygon = L.polygon(params.polygon, { color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(obsMap);
+                obsSearchPolygon = L.polygon(params.polygon, { color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(map);
                 wkt = params.wkt;
             } else {
-                obsSearchCircle = L.circle([params.latitude, params.longitude], { radius: OBS_RADIUS_KM * 1000, color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(obsMap);
+                obsSearchCircle = L.circle([params.latitude, params.longitude], { radius: OBS_RADIUS_KM * 1000, color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(map);
                 wkt = 'POLYGON((' + Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return `${(params.longitude+OBS_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+OBS_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`;}).join(', ') + '))';
             }
             obsStatusDiv.textContent = 'Recherche des occurrences GBIF...';
@@ -882,10 +801,10 @@ const initializeSelectionMap = (coords) => {
 
     const startObsPolygonSelection = async () => {
         obsStatusDiv.textContent = '';
-        if (!obsMap) initializeObservationMap();
-        const drawer = new L.Draw.Polygon(obsMap, { shapeOptions: { color: '#c62828' } });
+        initializeSelectionMap({ latitude: map.getCenter().lat, longitude: map.getCenter().lng });
+        const drawer = new L.Draw.Polygon(map, { shapeOptions: { color: '#c62828' } });
         drawer.enable();
-        obsMap.once(L.Draw.Event.CREATED, (e) => {
+        map.once(L.Draw.Event.CREATED, (e) => {
             const latlngs = e.layer.getLatLngs()[0];
             const centroid = centroidOf(latlngs);
             const wkt = polygonToWkt(latlngs);
@@ -895,17 +814,16 @@ const initializeSelectionMap = (coords) => {
     
     // --- 6. DÉMARRAGE DE L'APPLICATION ---
     await initializeApp();
-    switchTab('analysis');
     startMapSelection();
     searchAddressBtn.addEventListener('click', handleAddressSearch);
     useGeolocationBtn.addEventListener('click', handleGeolocationSearch);
     selectOnMapBtn.addEventListener('click', startMapSelection);
     drawPolygonBtn.addEventListener('click', startPolygonSelection);
     addressInput.addEventListener('keypress', (e) => e.key === 'Enter' && handleAddressSearch());
-    analysisTabBtn.addEventListener('click', () => switchTab('analysis'));
-    observationsTabBtn.addEventListener('click', () => switchTab('observations'));
-    obsGeolocBtn.addEventListener('click', geolocateAndLoadObservations);
-    obsDrawPolygonBtn.addEventListener('click', startObsPolygonSelection);
+    if (analysisTabBtn) analysisTabBtn.addEventListener('click', () => switchTab('analysis'));
+    if (observationsTabBtn) observationsTabBtn.addEventListener('click', () => switchTab('observations'));
+    if (obsGeolocBtn) obsGeolocBtn.addEventListener('click', geolocateAndLoadObservations);
+    if (obsDrawPolygonBtn) obsDrawPolygonBtn.addEventListener('click', startObsPolygonSelection);
     downloadShapefileBtn.addEventListener('click', triggerShapefileDownload);
     toggleTrackingBtn.addEventListener('click', () => toggleLocationTracking(map, toggleTrackingBtn));
     if (toggleLabelsBtn) {
@@ -913,8 +831,7 @@ const initializeSelectionMap = (coords) => {
     }
     if (obsToggleTrackingBtn) {
         obsToggleTrackingBtn.addEventListener('click', () => {
-            initializeObservationMap();
-            toggleLocationTracking(obsMap, obsToggleTrackingBtn);
+            toggleLocationTracking(map, obsToggleTrackingBtn);
         });
     }
     if (obsToggleLabelsBtn) {

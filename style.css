@@ -247,3 +247,17 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     opacity: 1;
     line-height: 1;
 }
+
+/* Menu contextuel sur la carte */
+.context-menu {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+.context-menu .action-button {
+    width: 100%;
+}
