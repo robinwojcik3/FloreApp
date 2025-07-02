@@ -95,6 +95,18 @@ h1 {
     width: 100%;
 }
 
+/* Horizontal scrolling layout for action buttons */
+.button-scroll {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 0.5rem;
+    width: 100%;
+}
+.button-scroll > .action-button {
+    flex: 1 0 auto;
+}
+
 #address-input {
     flex: 1;
     padding: 0.6rem;
