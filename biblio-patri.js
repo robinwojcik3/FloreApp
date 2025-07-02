@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const showChoicePopup = (latlng, extra = {}) => {
         if (!map) return;
-        const container = L.DomUtil.create('div');
+        const container = L.DomUtil.create('div', 'popup-button-container');
         const patrBtn = L.DomUtil.create('button', 'action-button', container);
         patrBtn.textContent = 'Flore patrimoniale';
         const obsBtn = L.DomUtil.create('button', 'action-button', container);
