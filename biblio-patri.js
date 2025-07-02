@@ -633,12 +633,14 @@ const initializeSelectionMap = (coords) => {
         } catch (error) { setStatus(`Erreur : ${error.message}`); }
     };
     
-    const handleGeolocationSearch = async () => {
+    const handleGeolocationSearch = async (showPopup = true) => {
         try {
             setStatus("Récupération de votre position...", true);
             const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 }));
             initializeSelectionMap(coords);
-            showChoicePopup(L.latLng(coords.latitude, coords.longitude));
+            if (showPopup) {
+                showChoicePopup(L.latLng(coords.latitude, coords.longitude));
+            }
         } catch(error) { setStatus(`Erreur de géolocalisation : ${error.message}`); }
     };
 
@@ -763,6 +765,7 @@ const initializeSelectionMap = (coords) => {
     
     // --- 6. DÉMARRAGE DE L'APPLICATION ---
     await initializeApp();
+    await handleGeolocationSearch(false);
     startMapSelection();
     searchAddressBtn.addEventListener('click', handleAddressSearch);
     useGeolocationBtn.addEventListener('click', handleGeolocationSearch);
