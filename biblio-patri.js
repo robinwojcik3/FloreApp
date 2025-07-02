@@ -744,16 +744,17 @@ const initializeSelectionMap = (coords) => {
         try {
             if (!map) initializeSelectionMap(params);
             mapContainer.style.display = 'block';
-            map.setView([params.latitude, params.longitude], 18);
             if (obsSearchCircle) { map.removeLayer(obsSearchCircle); obsSearchCircle = null; }
             if (obsSearchPolygon) { map.removeLayer(obsSearchPolygon); obsSearchPolygon = null; }
             let wkt;
             if (params.wkt) {
                 obsSearchPolygon = L.polygon(params.polygon, { color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(map);
                 wkt = params.wkt;
+                map.fitBounds(obsSearchPolygon.getBounds());
             } else {
                 obsSearchCircle = L.circle([params.latitude, params.longitude], { radius: OBS_RADIUS_KM * 1000, color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(map);
                 wkt = 'POLYGON((' + Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return `${(params.longitude+OBS_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+OBS_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`;}).join(', ') + '))';
+                map.fitBounds(obsSearchCircle.getBounds());
             }
             statusDiv.textContent = 'Recherche des occurrences GBIF...';
             const url = `https://api.gbif.org/v1/occurrence/search?limit=300&geometry=${encodeURIComponent(wkt)}&taxonKey=${TRACHEOPHYTA_TAXON_KEY}`;
