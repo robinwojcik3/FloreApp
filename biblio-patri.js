@@ -112,6 +112,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let patrimonialLayerGroup = L.layerGroup();
     let obsSearchPolygon = null;
     let observationsLayerGroup = L.layerGroup();
+    let obsLayerAddedToControl = false;
     let speciesColorMap = new Map();
     let allPatrimonialLocations = null;
     let allPatrimonialSpecies = [];
@@ -272,7 +273,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
 
         const overlayMaps = {
-            "Espèces Patrimoniales": patrimonialLayerGroup
+            "Espèces Patrimoniales": patrimonialLayerGroup,
+            "Observations GBIF": observationsLayerGroup
         };
 
         // 4. Ajout du contrôle à la carte (une seule fois)
@@ -308,7 +310,10 @@ const initializeSelectionMap = (coords) => {
         if (!map) {
             map = L.map(mapContainer, { center: [coords.latitude, coords.longitude], zoom: 12, layers: [topoMap] });
             if (!layersControl) {
-                layersControl = L.control.layers({ "Topographique": topoMap, "Satellite": satelliteMap }, { "Espèces Patrimoniales": patrimonialLayerGroup }).addTo(map);
+                layersControl = L.control.layers(
+                    { "Topographique": topoMap, "Satellite": satelliteMap },
+                    { "Espèces Patrimoniales": patrimonialLayerGroup, "Observations GBIF": observationsLayerGroup }
+                ).addTo(map);
             }
         } else {
             map.setView([coords.latitude, coords.longitude], map.getZoom() || 12);
@@ -755,8 +760,18 @@ const initializeSelectionMap = (coords) => {
             const resp = await fetch(url);
             if (!resp.ok) throw new Error("L'API GBIF est indisponible.");
             const data = await resp.json();
-            if (!data.results || data.results.length === 0) { statusDiv.textContent = 'Aucune observation trouvée.'; return; }
+            if (!data.results || data.results.length === 0) {
+                statusDiv.textContent = 'Aucune observation trouvée.';
+                return;
+            }
             displayObservations(data.results);
+            if (!map.hasLayer(observationsLayerGroup)) {
+                observationsLayerGroup.addTo(map);
+            }
+            if (layersControl && !obsLayerAddedToControl) {
+                layersControl.addOverlay(observationsLayerGroup, 'Observations GBIF');
+                obsLayerAddedToControl = true;
+            }
         } catch(error) {
             statusDiv.textContent = `Erreur : ${error.message}`;
         }
