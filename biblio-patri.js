@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         const patrBtn = L.DomUtil.create('button', 'action-button', container);
         patrBtn.textContent = 'Flore patrimoniale';
         const obsBtn = L.DomUtil.create('button', 'action-button', container);
-        obsBtn.textContent = 'Observations locales';
+        obsBtn.textContent = 'Flore commune';
         L.DomEvent.on(patrBtn, 'click', () => {
             map.closePopup();
             runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra });
