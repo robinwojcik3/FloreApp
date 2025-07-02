@@ -247,3 +247,9 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     opacity: 1;
     line-height: 1;
 }
+
+/* Espace dans la fenêtre de choix des analyses */
+.popup-button-container {
+    display: flex;
+    gap: 0.5rem;
+}
