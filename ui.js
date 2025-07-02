@@ -11,6 +11,7 @@
         #modal-overlay.show { display: flex; }
         #modal-overlay .modal-content { background: var(--card, #fff); color: var(--text, #000); padding: 1rem 1.5rem; border-radius: 6px; max-width: 500px; width: 100%; }
         #modal-overlay .modal-close { float: right; cursor: pointer; background: none; border: none; font-size: 1.5rem; }
+        #modal-overlay .modal-actions { margin-top: 1rem; display: flex; gap: .5rem; justify-content: center; }
         #spinner-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,.7); display: none; align-items: center; justify-content: center; z-index: 4000; }
         #spinner-overlay.show { display: flex; }
         #spinner-overlay .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #4caf50; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
@@ -54,6 +55,26 @@
         const overlay = document.getElementById('modal-overlay');
         if (!overlay) return;
         overlay.querySelector('.modal-body').textContent = message;
+        overlay.classList.add('show');
+    };
+
+    window.showChoiceModal = function(message, choices) {
+        const overlay = document.getElementById('modal-overlay');
+        if (!overlay) return;
+        const body = overlay.querySelector('.modal-body');
+        body.innerHTML = `<p>${message}</p><div class="modal-actions"></div>`;
+        const actions = body.querySelector('.modal-actions');
+        choices.forEach((c, i) => {
+            const btn = document.createElement('button');
+            btn.className = 'action-button';
+            btn.textContent = c.label;
+            btn.addEventListener('click', () => {
+                overlay.classList.remove('show');
+                body.textContent = '';
+                c.onSelect();
+            });
+            actions.appendChild(btn);
+        });
         overlay.classList.add('show');
     };
     
