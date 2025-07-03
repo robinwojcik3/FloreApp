@@ -40,6 +40,8 @@ function loadAltitudeData() {
 
 const GOOGLE_MAPS_LONG_PRESS_MS = 2000;
 const MAP_LONG_PRESS_MS = 3000; // delay for selecting a point on the map
+// Rayon maximum pour charger les couches autour du point sélectionné (100 km)
+const MAX_LAYER_DISTANCE_METERS = 100 * 1000;
 
 // Configuration des services externes (liens)
 const SERVICES = {
@@ -591,13 +593,20 @@ async function fetchAndDisplayApiLayer(name, config, lat, lon) {
         const geojsonData = await response.json();
 
         if (geojsonData && geojsonData.features && geojsonData.features.length > 0) {
-            const geoJsonLayer = L.geoJSON(geojsonData, {
-                renderer: L.canvas(),
-                style: config.style,
-                onEachFeature: addDynamicPopup
-            });
-            layerControl.addOverlay(geoJsonLayer, name);
-            return geoJsonLayer;
+            const filtered = geojsonData.features.filter(f =>
+                isFeatureWithinRadius(f, lat, lon, MAX_LAYER_DISTANCE_METERS)
+            );
+            if (filtered.length > 0) {
+                const geoJsonLayer = L.geoJSON({ type: 'FeatureCollection', features: filtered }, {
+                    renderer: L.canvas(),
+                    style: config.style,
+                    onEachFeature: addDynamicPopup
+                });
+                layerControl.addOverlay(geoJsonLayer, name);
+                return geoJsonLayer;
+            } else {
+                console.log(`Pas de données ${name} dans le rayon autorisé.`);
+            }
         } else {
             console.log(`Aucune donnée de type "${name}" trouvée pour ce point.`);
         }
@@ -649,6 +658,18 @@ function addDynamicPopup(feature, layer) {
             }
         }
     });
+}
+
+// Vérifie si une entité se trouve dans le rayon spécifié autour du point donné
+function isFeatureWithinRadius(feature, lat, lon, radiusMeters) {
+    try {
+        const layer = L.geoJSON(feature);
+        const center = layer.getBounds().getCenter();
+        const dist = L.latLng(lat, lon).distanceTo(center);
+        return dist <= radiusMeters;
+    } catch (e) {
+        return false;
+    }
 }
 
 // Fonction de notification générique
