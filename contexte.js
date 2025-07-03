@@ -29,6 +29,9 @@ let resourcesLoaded = false;
 const ALTITUDES_URL = 'assets/altitudes_fr.json';
 let altitudeDataPromise = null;
 
+// Rayon de recherche maximal pour les couches (en km)
+const SEARCH_RADIUS_KM = 50;
+
 function loadAltitudeData() {
     if (!altitudeDataPromise) {
         altitudeDataPromise = fetch(ALTITUDES_URL)
@@ -150,6 +153,29 @@ function latLonToWebMercator(lat, lon) {
         const x = R * (lon * Math.PI / 180);
         const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
         return { x, y };
+}
+
+// Calcule une bbox [minLon, minLat, maxLon, maxLat] autour d'un point
+function getBoundingBox(lat, lon, radiusKm) {
+    const R = 6371; // rayon terrestre moyen en km
+    const dLat = (radiusKm / R) * (180 / Math.PI);
+    const dLon = (radiusKm / R) * (180 / Math.PI) / Math.cos(lat * Math.PI / 180);
+    return [
+        lon - dLon,
+        lat - dLat,
+        lon + dLon,
+        lat + dLat
+    ];
+}
+
+// Distance de Haversine entre deux points (km)
+function haversineDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat/2) ** 2 + Math.cos(lat1*Math.PI/180) * Math.cos(lat2*Math.PI/180) * Math.sin(dLon/2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
 }
 
 async function fetchAltitudeFromApi(lat, lon) {
@@ -583,15 +609,33 @@ async function displayInteractiveEnvMap() {
  */
 async function fetchAndDisplayApiLayer(name, config, lat, lon) {
     try {
-        const url = `${config.endpoint}?lon=${lon}&lat=${lat}`;
+        const [minLon, minLat, maxLon, maxLat] = getBoundingBox(lat, lon, SEARCH_RADIUS_KM);
+        const url = `${config.endpoint}?bbox=${minLon},${minLat},${maxLon},${maxLat}`;
         const response = await fetch(url);
         if (!response.ok) {
             throw new Error(`Réponse réseau non OK: ${response.statusText}`);
         }
         const geojsonData = await response.json();
 
-        if (geojsonData && geojsonData.features && geojsonData.features.length > 0) {
-            const geoJsonLayer = L.geoJSON(geojsonData, {
+        const filtered = (geojsonData.features || []).filter(f => {
+            const g = f.geometry;
+            if (!g) return false;
+            let coord;
+            if (g.type === 'Point') {
+                coord = g.coordinates;
+            } else if (Array.isArray(g.coordinates)) {
+                coord = g.coordinates[0];
+                if (Array.isArray(coord[0])) coord = coord[0];
+            }
+            if (!coord || coord.length < 2) return false;
+            const d = haversineDistance(lat, lon, coord[1], coord[0]);
+            return d <= SEARCH_RADIUS_KM;
+        });
+
+        const finalData = { type: 'FeatureCollection', features: filtered };
+
+        if (finalData.features.length > 0) {
+            const geoJsonLayer = L.geoJSON(finalData, {
                 renderer: L.canvas(),
                 style: config.style,
                 onEachFeature: addDynamicPopup
