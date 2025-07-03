@@ -77,6 +77,8 @@ const SERVICES = {
 };
 
 // NOUVEAU : Configuration des couches via l'API Carto de l'IGN
+// Seules les entités dans un rayon défini seront conservées
+const MAX_LAYER_DISTANCE_KM = 100;
 const APICARTO_LAYERS = {
     // Les couches à enjeux naturalistes forts sont chargées en priorité
     'ZNIEFF I': {
@@ -581,6 +583,17 @@ async function displayInteractiveEnvMap() {
  * @param {number} lat - Latitude du point d'interrogation.
  * @param {number} lon - Longitude du point d'interrogation.
  */
+function featureWithinRadius(feature, lat, lon, radiusMeters) {
+    const point = L.latLng(lat, lon);
+    const layer = L.geoJSON(feature);
+    const bounds = layer.getBounds();
+    if (bounds.contains(point)) return true;
+    const corners = [bounds.getNorthWest(), bounds.getNorthEast(), bounds.getSouthWest(), bounds.getSouthEast()];
+    let min = Infinity;
+    corners.forEach(c => { const d = point.distanceTo(c); if (d < min) min = d; });
+    return min <= radiusMeters;
+}
+
 async function fetchAndDisplayApiLayer(name, config, lat, lon) {
     try {
         const url = `${config.endpoint}?lon=${lon}&lat=${lat}`;
@@ -591,7 +604,13 @@ async function fetchAndDisplayApiLayer(name, config, lat, lon) {
         const geojsonData = await response.json();
 
         if (geojsonData && geojsonData.features && geojsonData.features.length > 0) {
-            const geoJsonLayer = L.geoJSON(geojsonData, {
+            const filtered = geojsonData.features.filter(f =>
+                featureWithinRadius(f, lat, lon, MAX_LAYER_DISTANCE_KM * 1000));
+            if (filtered.length === 0) {
+                console.log(`Aucune donnée de type "${name}" dans le rayon spécifié.`);
+                return null;
+            }
+            const geoJsonLayer = L.geoJSON({ type: 'FeatureCollection', features: filtered }, {
                 renderer: L.canvas(),
                 style: config.style,
                 onEachFeature: addDynamicPopup
