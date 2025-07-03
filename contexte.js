@@ -40,6 +40,7 @@ function loadAltitudeData() {
 
 const GOOGLE_MAPS_LONG_PRESS_MS = 2000;
 const MAP_LONG_PRESS_MS = 3000; // delay for selecting a point on the map
+const MAX_LAYER_RADIUS_KM = 50; // rayon maximal pour charger les couches
 
 // Configuration des services externes (liens)
 const SERVICES = {
@@ -150,6 +151,39 @@ function latLonToWebMercator(lat, lon) {
         const x = R * (lon * Math.PI / 180);
         const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
         return { x, y };
+}
+
+// Calcule la distance "haversine" en kilomètres
+function distanceKm(lat1, lon1, lat2, lon2) {
+    const R = 6371; // rayon terrestre moyen
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 +
+              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+              Math.sin(dLon / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(a));
+}
+
+// Estime le centre d'une entité GeoJSON (point ou polygone)
+function getFeatureCenterCoords(feature) {
+    if (!feature || !feature.geometry) return null;
+    const geom = feature.geometry;
+    if (geom.type === 'Point') {
+        return [geom.coordinates[1], geom.coordinates[0]];
+    }
+    const flat = [];
+    (function collect(coords) {
+        if (!Array.isArray(coords)) return;
+        if (typeof coords[0] === 'number') {
+            flat.push(coords);
+        } else {
+            coords.forEach(collect);
+        }
+    })(geom.coordinates);
+    if (!flat.length) return null;
+    let sumLon = 0, sumLat = 0;
+    flat.forEach(c => { sumLon += c[0]; sumLat += c[1]; });
+    return [sumLat / flat.length, sumLon / flat.length];
 }
 
 async function fetchAltitudeFromApi(lat, lon) {
@@ -591,7 +625,21 @@ async function fetchAndDisplayApiLayer(name, config, lat, lon) {
         const geojsonData = await response.json();
 
         if (geojsonData && geojsonData.features && geojsonData.features.length > 0) {
-            const geoJsonLayer = L.geoJSON(geojsonData, {
+            const centerLat = lat;
+            const centerLon = lon;
+            const filteredFeatures = geojsonData.features.filter(f => {
+                const c = getFeatureCenterCoords(f);
+                if (!c) return false;
+                return distanceKm(centerLat, centerLon, c[0], c[1]) <= MAX_LAYER_RADIUS_KM;
+            });
+
+            if (filteredFeatures.length === 0) {
+                console.log(`Aucune donnée de type "${name}" dans le rayon`);
+                return null;
+            }
+
+            const filteredData = { ...geojsonData, features: filteredFeatures };
+            const geoJsonLayer = L.geoJSON(filteredData, {
                 renderer: L.canvas(),
                 style: config.style,
                 onEachFeature: addDynamicPopup
