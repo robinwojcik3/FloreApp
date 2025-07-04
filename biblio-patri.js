@@ -411,7 +411,7 @@ const initializeSelectionMap = (coords) => {
             let popupContent = `<div class="custom-popup"><b>${count} espèce(s) patrimoniale(s) :</b><ul>`;
             filtered.forEach(s => {
                 const eco = ecolOf(s.name);
-                const faLink = linkIcon(floreAlpesUrl(s.name), 'FloreAlpes.png', 'FloreAlpes');
+                const faLink = linkIcon(floreAlpesUrl(s.name), 'FloreAlpes.png', 'FloreAlpes', 'flore-alpes-logo');
                 popupContent += `<li><span class="legend-color" style="background-color:${s.color};"></span><i>${s.name}</i>${faLink}<br><small>${eco}</small></li>`;
             });
             popupContent += '</ul></div>';
@@ -461,7 +461,7 @@ const initializeSelectionMap = (coords) => {
                 ? '<ul>' + patrimonialMap[speciesName].map(s => `<li>${s}</li>`).join('') + '</ul>'
                 : patrimonialMap[speciesName];
             const faUrl = floreAlpesUrl(speciesName);
-            const faLink = faUrl ? linkIcon(faUrl, 'FloreAlpes.png', 'FloreAlpes') : '—';
+            const faLink = faUrl ? linkIcon(faUrl, 'FloreAlpes.png', 'FloreAlpes', 'flore-alpes-logo') : '—';
             row.innerHTML = `<td><input type="checkbox" class="species-toggle" data-species="${speciesName}" checked></td><td><span class="legend-color" style="background-color:${color};"></span><i>${speciesName}</i></td><td class="col-link">${faLink}</td><td>${statusCellContent}</td>`;
         });
 
