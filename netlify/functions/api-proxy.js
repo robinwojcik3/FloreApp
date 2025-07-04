@@ -13,8 +13,15 @@ exports.handler = async (event) => {
         return { statusCode: 405, body: 'Method Not Allowed' };
     }
 
+    let target, payload;
     try {
-        const { target, payload } = JSON.parse(event.body);
+        ({ target, payload } = JSON.parse(event.body));
+    } catch (parseErr) {
+        console.error('Invalid JSON body for api-proxy:', parseErr);
+        return { statusCode: 400, body: 'Requête JSON invalide' };
+    }
+
+    try {
         let upstreamUrl = '';
         let upstreamOptions = {};
 
