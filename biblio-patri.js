@@ -462,7 +462,7 @@ const initializeSelectionMap = (coords) => {
                 : patrimonialMap[speciesName];
             const faUrl = floreAlpesUrl(speciesName);
             const faLink = faUrl ? linkIcon(faUrl, 'FloreAlpes.png', 'FloreAlpes') : '—';
-            row.innerHTML = `<td><input type="checkbox" class="species-toggle" data-species="${speciesName}" checked></td><td><span class="legend-color" style="background-color:${color};"></span><i>${speciesName}</i></td><td class="col-link">${faLink}</td><td>${statusCellContent}</td>`;
+            row.innerHTML = `<td><input type="checkbox" class="species-toggle" data-species="${speciesName}" checked></td><td><span class="legend-color" style="background-color:${color};"></span><i>${speciesName}</i></td><td>${statusCellContent}</td><td class="col-link">${faLink}</td>`;
         });
 
         const selectAllBtn = document.createElement('button');
@@ -479,7 +479,7 @@ const initializeSelectionMap = (coords) => {
         resultsContainer.appendChild(detailsBtn);
 
         const table = document.createElement('table');
-        table.innerHTML = `<thead><tr><th></th><th>Nom scientifique</th><th>Flore Alpes</th><th>Statut de patrimonialité</th></tr></thead>`;
+        table.innerHTML = `<thead><tr><th></th><th>Nom scientifique</th><th>Statut de patrimonialité</th><th>Flore Alpes</th></tr></thead>`;
         table.appendChild(tableBody);
         resultsContainer.appendChild(table);
 
