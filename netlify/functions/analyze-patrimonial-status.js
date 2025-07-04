@@ -7,9 +7,15 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 exports.handler = async function(event) {
     if (event.httpMethod !== 'POST') return { statusCode: 405, body: 'Method Not Allowed' };
 
+    let relevantRules, uniqueSpeciesNames, coords;
     try {
-        // Le corps de la requête contient maintenant les règles déjà filtrées.
-        const { relevantRules, uniqueSpeciesNames, coords } = JSON.parse(event.body);
+        ({ relevantRules, uniqueSpeciesNames, coords } = JSON.parse(event.body));
+    } catch (parseErr) {
+        console.error('Invalid JSON body for analyze-patrimonial-status:', parseErr);
+        return { statusCode: 400, body: 'Requête JSON invalide' };
+    }
+
+    try {
         if (!relevantRules || !uniqueSpeciesNames || !coords) return { statusCode: 400, body: 'Données d\'entrée invalides.' };
 
         const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${coords.latitude}&lon=${coords.longitude}&fields=departement,region`)).json())[0];
