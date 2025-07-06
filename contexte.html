@@ -146,59 +146,15 @@
          </div>
          <div class="button-grid">
             <button class="action-button" id="use-geolocation">📍 Ma position</button>
-            <button class="action-button" id="choose-on-map">🗺️ Choisir sur la carte</button>
          </div>
       </div>
 
-      <div id="map-container" class="map-fullwidth">
-         <div class="map-instruction" id="map-instruction">
-            Cliquez longuement pour sélectionner un point
-         </div>
-         <div id="map"></div>
-      </div>
-
-      <div class="coordinates-display" id="coordinates-display">
-         <div>
-            Coordonnées sélectionnées :
-            <span id="selected-coords">--</span>
-         </div>
-         <div class="coords-actions">
-            <button class="small-button" id="copy-coords">Copier</button>
-            <button class="small-button" id="open-gmaps">Google Maps</button>
-            <button class="small-button" id="reset-selection">Réinitialiser</button>
-         </div>
-      </div>
-
-      <button class="action-button" id="validate-location" style="display:none; margin-top:1rem;">
-         Valider cette localisation
-      </button>
-      
       <div class="loading" id="loading"></div>
 
-      <div class="results-section" id="results-section">
-        <div class="subtabs">
-           <button class="subtab active" data-target="zoning-tab">Zonage</button>
-           <button class="subtab" data-target="resources-tab">Ressources</button>
-        </div>
-        <button id="run-analysis" class="action-button" style="margin:0.5rem 0; display:none;">Lancer l'analyse</button>
-        <p id="altitude-info" style="text-align:center;margin:0.5rem 0;"></p>
-
-         <div id="zoning-tab" class="subtab-content active">
-            <h2 style="margin-top:2rem;">Carte interactive</h2>
-            <div id="layer-controls" style="margin-bottom:0.5rem;"></div>
-            <button id="measure-distance" class="small-button" style="display:none;margin-bottom:0.5rem;">Mesurer une distance</button>
-            <div id="env-map" class="map-fullwidth" style="height:80vh;display:none;"></div>
-         </div>
-
-         <div id="resources-tab" class="subtab-content">
-            <h2>Ressources environnementales</h2>
-            <p style="margin-bottom: 1rem; color: #666;">
-               Cliquez sur les liens ci-dessous pour explorer le contexte environnemental de la zone sélectionnée :
-            </p>
-            <div class="results-grid" id="results-grid">
-               </div>
-         </div>
-      </div>
+      <div id="env-map" class="map-fullwidth" style="height:80vh;"></div>
+      <p id="altitude-info" style="text-align:center;margin:0.5rem 0;"></p>
+      <button id="measure-distance" class="small-button" style="display:none;margin-bottom:0.5rem;">Mesurer une distance</button>
+      <div class="results-grid" id="results-grid" style="display:none;"></div>
    </div>
 </body>
 </html>
