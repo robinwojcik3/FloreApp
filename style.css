@@ -123,6 +123,24 @@ h1 {
     min-height: 24px;
 }
 
+/* Animation d'un robot au travail pour patienter pendant l'analyse */
+.robot-working {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    gap: 0.25rem;
+    margin-bottom: 0.25rem;
+}
+.robot-working .gear {
+    display: inline-block;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
 #map {
     height: 75vh;
     width: 100%;
