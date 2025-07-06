@@ -473,7 +473,7 @@ const initializeSelectionMap = (coords) => {
         detailsBtn.id = 'show-details-btn';
         detailsBtn.className = 'action-button';
         detailsBtn.style.marginLeft = '0.5rem';
-        detailsBtn.textContent = 'Voir le détail des espèces patri';
+        detailsBtn.textContent = 'Ouvrir dans le tableau de synthèse';
         resultsContainer.appendChild(detailsBtn);
 
         const table = document.createElement('table');
