@@ -592,7 +592,9 @@ const initializeSelectionMap = (coords) => {
             }
             let allOccurrences = [];
             const maxPages = 20;
-            const limit = 1000;
+            // GBIF search offsets are limited to ~10000 records.
+            // Use a page size of 300 to safely paginate beyond 10 pages.
+            const limit = 300;
             setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${maxPages})`, true);
             for (let page = 0; page < maxPages; page++) {
                 const offset = page * limit;
