@@ -14,6 +14,8 @@ function showTab(name) {
     }
 }
 
+const SPEAKER_ICON = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="logo-icon" style="height:32px;"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-1 7-4.69 7-8.77s-2.99-7.77-7-8.77z"/></svg>';
+
 let comparisonLoaded = false;
 async function loadComparisonResults() {
     if (comparisonLoaded) return;
@@ -45,7 +47,7 @@ async function loadComparisonResults() {
                 <div id="comparison-summary" style="margin-top:1rem;display:flex;align-items:flex-start;gap:0.5rem;">
                     <p id="comparison-summary-text" style="margin:0;">${summary}</p>
                     <a href="#" id="comparison-tts-btn" title="Écouter la synthèse" style="flex-shrink:0;">
-                        <img src="assets/Audio.png" alt="Écouter" class="logo-icon" style="height:32px;">
+                        ${SPEAKER_ICON}
                     </a>
                 </div>`;
             document.getElementById('comparison-tts-btn').addEventListener('click', async (e) => {
@@ -62,7 +64,7 @@ async function loadComparisonResults() {
                 } else {
                     showInfoModal("Échec de la synthèse audio", "La conversion du texte en audio a échoué.");
                 }
-                btn.innerHTML = '<img src="assets/Audio.png" alt="Écouter" class="logo-icon" style="height:32px;">';
+                btn.innerHTML = SPEAKER_ICON;
                 btn.style.pointerEvents = 'auto';
             });
         }

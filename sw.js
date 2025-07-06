@@ -2,7 +2,7 @@
  * Service-Worker – PlantID PWA
  * ================================================================ */
 
-const CACHE_NAME = "plantid-v24";
+const CACHE_NAME = "plantid-v25";
 
 const WASM_ASSETS = {
    "openjpeg.wasm": "./pdfjs/wasm/openjpeg.wasm.b64",
@@ -37,7 +37,6 @@ const CORE_ASSETS = [
    "./assets/INPN.png",
    "./assets/Biodiv'AURA.png",
    "./assets/Info Flora.png",
-   "./assets/Audio.png",
    "./assets/PFAF.png",
    "./pdfjs/build/pdf.mjs",
    "./pdfjs/build/pdf.worker.mjs",

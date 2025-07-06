@@ -4,6 +4,8 @@
 const MAX_RESULTS = 5;
 const MAX_MULTI_IMAGES = 5;
 const PROXY_ENDPOINT = '/.netlify/functions/api-proxy';
+// Icône haut-parleur au format SVG pour la synthèse vocale
+const SPEAKER_ICON = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="logo-icon"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-1 7-4.69 7-8.77s-2.99-7.77-7-8.77z"/></svg>';
 
 /* ================================================================
     INITIALISATION ET GESTION DES DONNÉES
@@ -725,7 +727,7 @@ function buildTable(items){
           	 	 </td>
           	 	 <td class="col-link">${linkIcon(cd && aura(cd), "Biodiv'AURA.png", "Biodiv'AURA")}</td>
           	 	 <td class="col-link">${linkIcon(infoFlora(sci), "Info Flora.png", "Info Flora")}</td>
-                <td class="col-link"><a href="#" onclick="handleSynthesisClick(event, this, '${escapedSci}')"><img src="assets/Audio.png" alt="Audio" class="logo-icon"></a></td>
+                <td class="col-link"><a href="#" onclick="handleSynthesisClick(event, this, '${escapedSci}')">${SPEAKER_ICON}</a></td>
           	 	 <td class="col-link">${linkIcon(pfaf(sci), "PFAF.png", "PFAF")}</td>
          <td class="col-link">${regalVegetalLink}</td>
             <td class="col-link">${floreMedLink}</td>
