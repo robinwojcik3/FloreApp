@@ -51,11 +51,13 @@ netlify dev
 
 ## Tests
 
-Le projet inclut une suite Jest. Installez les dépendances puis lancez :
+
+Le projet inclut une suite Jest. Pour faciliter l'exécution des tests sur
+toute plateforme, un script est fourni pour installer les dépendances et
+lancer Jest automatiquement :
 
 ```bash
-npm install
-npm test
+./scripts/setup-tests.sh
 ```
 
 ## Déploiement
