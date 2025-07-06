@@ -132,13 +132,34 @@ h1 {
     gap: 0.25rem;
     margin-bottom: 0.25rem;
 }
+
+.robot-working .robot {
+    animation: nod 0.8s ease-in-out infinite alternate;
+}
+
 .robot-working .gear {
     display: inline-block;
     animation: spin 1s linear infinite;
 }
 
+.robot-working .tool {
+    display: inline-block;
+    transform-origin: top center;
+    animation: dig 0.6s ease-in-out infinite;
+}
+
 @keyframes spin {
     to { transform: rotate(360deg); }
+}
+
+@keyframes dig {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(-40deg); }
+}
+
+@keyframes nod {
+    from { transform: translateY(0); }
+    to { transform: translateY(-3px); }
 }
 
 #map {

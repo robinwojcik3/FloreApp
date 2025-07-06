@@ -210,7 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (isLoading) {
             const worker = document.createElement('div');
             worker.className = 'robot-working';
-            worker.innerHTML = '<span class="robot">🤖</span><span class="gear">⚙️</span>';
+            worker.innerHTML = '<span class="robot">🤖</span><span class="tool">⛏️</span><span class="gear">⚙️</span>';
             statusDiv.appendChild(worker);
         }
         if (message) statusDiv.innerHTML += `<p>${message}</p>`;
