@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return null;
     };
     const SEARCH_RADIUS_KM = 2;
-    const OBS_RADIUS_KM = 1;
+    const OBS_RADIUS_KM = 0.5;
     const ANALYSIS_MAX_RETRIES = 3;
     const RETRY_DELAY_MS = 3000;
     const FETCH_TIMEOUT_MS = 10000;
