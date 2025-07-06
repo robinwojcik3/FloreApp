@@ -26,6 +26,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     const toggleLabelsBtn = document.getElementById('toggle-labels-btn');
     const downloadShapefileBtn = document.getElementById('download-shapefile-btn');
     const downloadContainer = document.getElementById('download-container');
+    const navContainer = document.getElementById('section-nav');
+    const scrollMapBtn = document.getElementById('scroll-map-btn');
+    const scrollTableBtn = document.getElementById('scroll-table-btn');
+    const addressGroup = document.querySelector('.address-group');
+
+    const showNavigation = () => {
+        if (navContainer) navContainer.style.display = 'flex';
+        if (addressGroup) addressGroup.style.display = 'none';
+    };
+
+    if (scrollMapBtn) {
+        scrollMapBtn.addEventListener('click', () => {
+            mapContainer.scrollIntoView({ behavior: 'smooth' });
+        });
+    }
+    if (scrollTableBtn) {
+        scrollTableBtn.addEventListener('click', () => {
+            resultsContainer.scrollIntoView({ behavior: 'smooth' });
+        });
+    }
 
     let trackingMap = null;
     let trackingButton = null;
@@ -94,10 +114,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         obsBtn.textContent = 'Flore commune';
         L.DomEvent.on(patrBtn, 'click', () => {
             map.closePopup();
+            showNavigation();
             runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra });
         });
         L.DomEvent.on(obsBtn, 'click', () => {
             map.closePopup();
+            showNavigation();
             loadObservationsAt({ latitude: latlng.lat, longitude: latlng.lng, ...extra });
         });
         L.DomEvent.disableClickPropagation(container);
