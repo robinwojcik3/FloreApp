@@ -32,3 +32,9 @@
   status = 200
   # Force l'application de cette règle
   force = true
+
+[[redirects]]
+  from = "/api/gbif/*"
+  to = "/.netlify/functions/gbif-proxy/:splat"
+  status = 200
+  force = true

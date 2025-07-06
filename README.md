@@ -26,7 +26,7 @@ npm init -y
 npm install jsdom node-fetch
 ```
 
-Les fonctions `inpn-proxy.js` et `aura-images.js` utilisent ces modules.
+Les fonctions `inpn-proxy.js`, `aura-images.js` et `gbif-proxy.js` utilisent ces modules.
 
 ## Configuration
 
@@ -70,4 +70,5 @@ Poussez le dépôt sur GitHub puis créez un site sur Netlify. Le fichier `netli
 - carte contextuelle avec couches IGN (réserves, zones humides, etc.)
 - recherche par trigramme et suggestions via TaxRef Match
 - comparaison d'espèces et synthèse vocale optionnelle
+- carte interactive de localisation via l'API GBIF (proxy Netlify)
 
