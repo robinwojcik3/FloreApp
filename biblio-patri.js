@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const drawPolygonBtn = document.getElementById('draw-polygon-btn');
     const toggleTrackingBtn = document.getElementById('toggle-tracking-btn');
     const toggleLabelsBtn = document.getElementById('toggle-labels-btn');
+    const addZnieffBtn = document.getElementById('add-znieff-btn');
     const downloadShapefileBtn = document.getElementById('download-shapefile-btn');
     const downloadContainer = document.getElementById('download-container');
     const navContainer = document.getElementById('section-nav');
@@ -168,6 +169,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let trackingActive = false;
     let ecology = {};
     let floreAlpesIndex = {};
+    let currentResults = { occurrences: [], wkt: '', patrimonialMap: {} };
 
     function norm(txt) {
         if (typeof txt !== 'string') return '';
@@ -662,6 +664,7 @@ const initializeSelectionMap = (coords) => {
                 }
             }
             const patrimonialMap = await analysisResp.json();
+            currentResults = { occurrences: allOccurrences, wkt, patrimonialMap };
             displayResults(allOccurrences, patrimonialMap, wkt);
         } catch (error) {
             console.error("Erreur durant l'analyse:", error);
@@ -807,6 +810,26 @@ const initializeSelectionMap = (coords) => {
         }
     };
 
+    const appendZnieffSpecies = () => {
+        if (!currentResults.occurrences.length) return;
+        const speciesSet = new Set(currentResults.occurrences.map(o => o.species).filter(Boolean));
+        speciesSet.forEach(name => {
+            const rules = rulesByTaxonIndex.get(name);
+            if (!rules) return;
+            const znStatuses = rules.filter(r => /znieff/i.test(r.type) && /d\xE9terminante/i.test(r.label)).map(r => r.label);
+            if (znStatuses.length) {
+                if (currentResults.patrimonialMap[name]) {
+                    const existing = Array.isArray(currentResults.patrimonialMap[name]) ? new Set(currentResults.patrimonialMap[name]) : new Set([currentResults.patrimonialMap[name]]);
+                    znStatuses.forEach(s => existing.add(s));
+                    currentResults.patrimonialMap[name] = Array.from(existing);
+                } else {
+                    currentResults.patrimonialMap[name] = znStatuses;
+                }
+            }
+        });
+        displayResults(currentResults.occurrences, currentResults.patrimonialMap, currentResults.wkt);
+    };
+
       const loadObservationsAt = async (params) => {
           try {
               if (!map) initializeSelectionMap(params);
@@ -877,5 +900,8 @@ const initializeSelectionMap = (coords) => {
     toggleTrackingBtn.addEventListener('click', () => toggleLocationTracking(map, toggleTrackingBtn));
     if (toggleLabelsBtn) {
         toggleLabelsBtn.addEventListener('click', toggleAnalysisLabels);
+    }
+    if (addZnieffBtn) {
+        addZnieffBtn.addEventListener('click', appendZnieffSpecies);
     }
 });
