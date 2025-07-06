@@ -208,6 +208,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     const setStatus = (message, isLoading = false) => {
         statusDiv.innerHTML = '';
         if (isLoading) {
+            const robot = document.createElement('span');
+            robot.className = 'robot-loading';
+            robot.textContent = '🤖';
+            statusDiv.appendChild(robot);
             const spinner = document.createElement('div');
             spinner.className = 'loading';
             statusDiv.appendChild(spinner);
