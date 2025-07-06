@@ -26,6 +26,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const toggleLabelsBtn = document.getElementById('toggle-labels-btn');
     const downloadShapefileBtn = document.getElementById('download-shapefile-btn');
     const downloadContainer = document.getElementById('download-container');
+    const scrollMapBtn = document.getElementById('scroll-map-btn');
+    const scrollTableBtn = document.getElementById('scroll-table-btn');
 
     let trackingMap = null;
     let trackingButton = null;
@@ -831,6 +833,12 @@ const initializeSelectionMap = (coords) => {
     addressInput.addEventListener('keypress', (e) => e.key === 'Enter' && handleAddressSearch());
     downloadShapefileBtn.addEventListener('click', triggerShapefileDownload);
     toggleTrackingBtn.addEventListener('click', () => toggleLocationTracking(map, toggleTrackingBtn));
+    if (scrollMapBtn) {
+        scrollMapBtn.addEventListener('click', () => mapContainer.scrollIntoView({ behavior: 'smooth' }));
+    }
+    if (scrollTableBtn) {
+        scrollTableBtn.addEventListener('click', () => resultsContainer.scrollIntoView({ behavior: 'smooth' }));
+    }
     if (toggleLabelsBtn) {
         toggleLabelsBtn.addEventListener('click', toggleAnalysisLabels);
     }

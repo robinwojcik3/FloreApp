@@ -253,3 +253,13 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     display: flex;
     gap: 0.5rem;
 }
+
+/* Navigation rapide carte/tableau dans Biblio Patri */
+.nav-buttons {
+    display: flex;
+    gap: 0.5rem;
+    margin: 0.5rem 0;
+}
+.nav-buttons .action-button {
+    flex: 1;
+}
