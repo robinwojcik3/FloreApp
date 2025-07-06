@@ -466,7 +466,7 @@ window.handleSynthesisClick = async function(event, element, speciesName) {
 async function getComparisonFromGemini(speciesData) {
     const speciesDataString = speciesData.map(s => `Espèce: ${s.species}\nDonnées morphologiques (Physionomie): ${s.physio || 'Non renseignée'}\nDonnées écologiques: ${s.eco || 'Non renseignée'}`).join('\n\n');
     
-    const promptTemplate = `En tant qu'expert botaniste, rédige une analyse comparative détaillée à partir des données ci-dessous. Mentionne systématiquement le nom latin de chaque espèce et insiste sur les critères morphologiques fiables et évidents permettant de les distinguer, ainsi que sur leur écologie.
+    const promptTemplate = `En tant qu'expert botaniste, rédige une analyse comparative détaillée à partir des données ci-dessous. Les informations écologiques et morphologiques doivent uniquement provenir des champs "Critères physiologiques", "Écologie" et "Physionomie" indiqués.
 Données :
 ---
 ${speciesDataString}
@@ -475,7 +475,7 @@ Structure ta réponse en trois parties sans texte introductif superflu.
 
 Commence par une phrase unique (1 à 2 lignes) soulignant le trait distinctif le plus facilement observable.
 
-Ensuite, fournis un tableau en Markdown listant pour chaque espèce son nom français et son nom latin, les critères morphologiques discriminants (forme, taille, couleur, etc.) et les éléments écologiques majeurs (habitat, type de sol, altitude). Présente en priorité les critères les plus aisés à vérifier et n'utilise ni gras ni italique.
+Ensuite, fournis un tableau en Markdown où chaque espèce (nom latin seulement) constitue une colonne. Les lignes correspondent aux organes comparés et incluent une première ligne indiquant la nature de la caractéristique observée. Remplis les cellules uniquement à partir des informations contenues dans les colonnes "Critères physiologiques", "Écologie" et "Physionomie". N'utilise ni gras ni italique.
 
 Termine par un paragraphe de synthèse d'environ cinq à six phrases, rédigé dans un style oral mais rigoureux, rappelant les points clés pour ne pas confondre les espèces. Ce paragraphe ne doit contenir aucun formatage Markdown ni liste, ni caractères tels que '*' ou '/'.`;
 
