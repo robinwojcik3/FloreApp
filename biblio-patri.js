@@ -29,21 +29,39 @@ document.addEventListener('DOMContentLoaded', async () => {
     const navContainer = document.getElementById('section-nav');
     const scrollMapBtn = document.getElementById('scroll-map-btn');
     const scrollTableBtn = document.getElementById('scroll-table-btn');
+    const mainNav = document.querySelector('.tabs-container');
+
+    const adjustSectionNav = () => {
+        if (navContainer && mainNav) {
+            navContainer.style.top = mainNav.offsetHeight + 'px';
+        }
+    };
+    window.addEventListener('resize', adjustSectionNav);
+    adjustSectionNav();
     const addressGroup = document.querySelector('.address-group');
 
     const showNavigation = () => {
         if (navContainer) navContainer.style.display = 'flex';
         if (addressGroup) addressGroup.style.display = 'none';
+        if (scrollMapBtn && scrollTableBtn) {
+            scrollMapBtn.classList.add('active');
+            scrollTableBtn.classList.remove('active');
+        }
+        adjustSectionNav();
     };
 
     if (scrollMapBtn) {
         scrollMapBtn.addEventListener('click', () => {
             mapContainer.scrollIntoView({ behavior: 'smooth' });
+            scrollMapBtn.classList.add('active');
+            if (scrollTableBtn) scrollTableBtn.classList.remove('active');
         });
     }
     if (scrollTableBtn) {
         scrollTableBtn.addEventListener('click', () => {
             resultsContainer.scrollIntoView({ behavior: 'smooth' });
+            scrollTableBtn.classList.add('active');
+            if (scrollMapBtn) scrollMapBtn.classList.remove('active');
         });
     }
 

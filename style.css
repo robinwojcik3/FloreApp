@@ -261,8 +261,13 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     top: 0;
     z-index: 90;
     background: var(--card);
-    padding: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.section-nav .tabs {
     display: flex;
-    justify-content: center;
-    gap: 0.5rem;
+    border-bottom: 2px solid var(--border);
+    margin-bottom: 0;
+    gap: 0;
+    width: 100%;
 }
