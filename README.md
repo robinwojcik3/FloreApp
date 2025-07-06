@@ -60,6 +60,9 @@ lancer Jest automatiquement :
 ./scripts/setup-tests.sh
 ```
 
+Les tests couvrent aussi les fonctions serverless présentes dans `netlify/functions` (`inpn-proxy.js`, `api-proxy.js`, ...).
+Une fois les dépendances installées, exécutez simplement `npm test` depuis la racine pour lancer l'ensemble de la suite.
+
 ## Déploiement
 
 Poussez le dépôt sur GitHub puis créez un site sur Netlify. Le fichier `netlify.toml` publie la racine du projet et active les fonctions sous `/.netlify/functions/`.
