@@ -33,8 +33,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const addressGroup = document.querySelector('.address-group');
 
     const updateSecondaryNav = () => {
-        if (navContainer && mainTabs) {
-            navContainer.style.top = mainTabs.offsetHeight + 'px';
+        if (mainTabs) {
+            const offset = mainTabs.offsetHeight;
+            document.documentElement.style.setProperty('--section-nav-top', offset + 'px');
         }
     };
 
