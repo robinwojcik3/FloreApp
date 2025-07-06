@@ -1,3 +1,6 @@
+let mapInstance;
+let searchAreaCircle;
+
 document.addEventListener('DOMContentLoaded', () => {
     try {
         // --- Vérification des dépendances ---
@@ -9,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- 1. INITIALISATION ET CONSTANTES ---
         const map = L.map('map').setView([46.6, 2.2], 6);
+        mapInstance = map;
 
         const openTopoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
             attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, SRTM | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
@@ -180,6 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     weight: 2,
                     fill: false
                 }).addTo(mainLayerGroup);
+                searchAreaCircle = searchCircle;
 
                 const userIcon = createStarIcon('blue');
                 L.marker([coords.latitude, coords.longitude], { icon: userIcon })
@@ -303,3 +308,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+window.focusSearchArea = () => {
+    if (mapInstance) {
+        mapInstance.invalidateSize();
+        if (searchAreaCircle) {
+            mapInstance.fitBounds(searchAreaCircle.getBounds());
+        }
+    }
+};

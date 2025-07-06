@@ -4,6 +4,12 @@ function showTab(name) {
     document.getElementById('loc-content').style.display = isCarac ? 'none' : 'block';
     document.getElementById('tab-carac').classList.toggle('active', isCarac);
     document.getElementById('tab-loc').classList.toggle('active', !isCarac);
+    if (!isCarac) {
+        const frame = document.getElementById('map-frame');
+        if (frame && frame.contentWindow && typeof frame.contentWindow.focusSearchArea === 'function') {
+            frame.contentWindow.focusSearchArea();
+        }
+    }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
