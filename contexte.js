@@ -4,11 +4,11 @@
       ================================================================ */
 
 // Variables globales
-let map = null; // Carte pour la sélection du point
-let envMap = null; // Carte pour l'affichage des résultats
+let envMap = null; // Carte interactive principale
+let map = null; // ancien placeholder pour compatibilité
+let marker = null;
 let layerControl = null; // Contrôleur de couches pour la carte de résultats
 let envMarker = null; // Marqueur du point analysé
-let marker = null;
 let selectedLat = null;
 let selectedLon = null;
 
@@ -40,6 +40,81 @@ function loadAltitudeData() {
 
 const GOOGLE_MAPS_LONG_PRESS_MS = 2000;
 const MAP_LONG_PRESS_MS = 3000; // delay for selecting a point on the map
+
+function initializeEnvMap() {
+    const defaultLat = 45.188529;
+    const defaultLon = 5.724524;
+    envMap = L.map('map', { preferCanvas: true }).setView([defaultLat, defaultLon], 13);
+    const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)',
+        maxZoom: 17,
+        crossOrigin: true
+    }).addTo(envMap);
+    topoLayer.on('tileerror', () => {
+        if (envMap.hasLayer(topoLayer)) {
+            envMap.removeLayer(topoLayer);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors',
+                maxZoom: 19
+            }).addTo(envMap);
+        }
+    });
+    enableChoiceInteraction(envMap);
+}
+
+function enableChoiceInteraction(targetMap) {
+    let pressTimer;
+    const showPopup = (latlng) => showActionPopup(latlng);
+    const onContextMenu = (e) => { e.originalEvent.preventDefault(); showPopup(e.latlng); };
+    const onDown = (e) => {
+        if (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches.length > 1) return;
+        pressTimer = setTimeout(() => showPopup(e.latlng), MAP_LONG_PRESS_MS);
+    };
+    const cancel = () => clearTimeout(pressTimer);
+    targetMap.on('contextmenu', onContextMenu);
+    targetMap.on('mousedown', onDown);
+    targetMap.on('mouseup', cancel);
+    targetMap.on('mousemove', cancel);
+    targetMap.on('touchstart', onDown);
+    targetMap.on('touchend', cancel);
+    targetMap.on('touchmove', cancel);
+    targetMap.on('dragstart', cancel);
+    targetMap.on('move', cancel);
+    targetMap.on('zoomstart', cancel);
+}
+
+function showActionPopup(latlng) {
+    const container = L.DomUtil.create('div', 'popup-button-container');
+    const zBtn = L.DomUtil.create('button', 'action-button', container);
+    zBtn.textContent = 'Zonage';
+    const rBtn = L.DomUtil.create('button', 'action-button', container);
+    rBtn.textContent = 'Ressources';
+    const gBtn = L.DomUtil.create('button', 'action-button', container);
+    gBtn.textContent = 'Google Maps';
+    L.DomEvent.on(zBtn, 'click', () => { envMap.closePopup(); runZonage(latlng); });
+    L.DomEvent.on(rBtn, 'click', () => { envMap.closePopup(); runResources(latlng); });
+    L.DomEvent.on(gBtn, 'click', () => { window.open(`https://www.google.com/maps?q=${latlng.lat},${latlng.lng}`, '_blank'); });
+    L.DomEvent.disableClickPropagation(container);
+    L.popup().setLatLng(latlng).setContent(container).openOn(envMap);
+}
+
+function runZonage(latlng) {
+    selectedLat = latlng.lat;
+    selectedLon = latlng.lng;
+    updateAltitudeDisplay(selectedLat, selectedLon);
+    displayInteractiveEnvMap();
+}
+
+function runResources(latlng) {
+    selectedLat = latlng.lat;
+    selectedLon = latlng.lng;
+    updateAltitudeDisplay(selectedLat, selectedLon);
+    document.getElementById('layer-controls').style.display = 'none';
+    document.getElementById('measure-distance').style.display = 'none';
+    const grid = document.getElementById('results-grid');
+    grid.style.display = 'grid';
+    displayResources();
+}
 
 // Configuration des services externes (liens)
 const SERVICES = {
@@ -192,28 +267,8 @@ function updateAltitudeDisplay(lat, lon) {
 
 // Initialisation au chargement de la page
 document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('use-geolocation').addEventListener('click', useGeolocation);
-        document.getElementById('choose-on-map').addEventListener('click', toggleMap);
-        document.getElementById('validate-location').addEventListener('click', validateLocation);
-        document.getElementById('search-address').addEventListener('click', searchAddress);
-        document.getElementById('address-input').addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') searchAddress();
-        });
-        document.getElementById('copy-coords').addEventListener('click', copyCoords);
-        document.getElementById('open-gmaps').addEventListener('click', openInGmaps);
-        document.getElementById('reset-selection').addEventListener('click', resetSelection);
+        initializeEnvMap();
         document.getElementById('measure-distance').addEventListener('click', toggleMeasure);
-        document.querySelectorAll('.subtab').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.subtab').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.subtab-content').forEach(c => c.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById(btn.dataset.target).classList.add('active');
-            });
-        });
-        document.getElementById('run-analysis').addEventListener('click', runAnalysis);
-        initializeMap();
-        toggleMap();
 });
 
 // Fonction pour utiliser la géolocalisation
@@ -393,7 +448,7 @@ function showResults() {
     document.getElementById('run-analysis').style.display = 'block';
 
     document.getElementById('results-grid').innerHTML = '';
-    document.getElementById('env-map').style.display = 'none';
+    document.getElementById('map').style.display = 'none';
     document.getElementById('measure-distance').style.display = 'none';
 
     resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -429,7 +484,7 @@ function runAnalysis() {
             displayInteractiveEnvMap();
             zoningLoaded = true;
         } else {
-            document.getElementById('env-map').style.display = 'block';
+            document.getElementById('map').style.display = 'block';
             document.getElementById('measure-distance').style.display = 'inline-block';
         }
     } else if (target === 'resources-tab') {
@@ -491,9 +546,10 @@ function enableGoogleMapsLongPress(targetMap) {
  * récupérées depuis l'API Carto de l'IGN.
  */
 async function displayInteractiveEnvMap() {
-    const mapDiv = document.getElementById('env-map');
+    const mapDiv = document.getElementById('map');
+    document.getElementById('results-grid').style.display = 'none';
     mapDiv.style.display = 'block';
-    document.getElementById('layer-controls').style.display = 'none'; // On n'utilise plus les contrôles manuels
+    document.getElementById('layer-controls').style.display = 'block';
     document.getElementById('measure-distance').style.display = 'inline-block';
 
     // Vérifie si la localisation a changé de manière significative
@@ -508,7 +564,7 @@ async function displayInteractiveEnvMap() {
 
     // Initialisation ou réinitialisation de la carte
     if (!envMap) {
-        envMap = L.map('env-map', { preferCanvas: true }).setView([selectedLat, selectedLon], 11);
+        envMap = L.map('map', { preferCanvas: true }).setView([selectedLat, selectedLon], 11);
         const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)',
             maxZoom: 17,
@@ -523,7 +579,6 @@ async function displayInteractiveEnvMap() {
                 }).addTo(envMap);
             }
         });
-        enableGoogleMapsLongPress(envMap);
     } else {
         envMap.setView([selectedLat, selectedLon], 11);
         if (layerControl) envMap.removeControl(layerControl); // Supprime l'ancien contrôle de couches
@@ -727,17 +782,11 @@ function resetSelection() {
     lastCacheCoords = null;
     zoningLoaded = false;
     resourcesLoaded = false;
-    if (marker) { map.removeLayer(marker); marker = null; }
+    if (envMarker) { envMap.removeLayer(envMarker); envMarker = null; }
     if (envMap) { envMap.remove(); envMap = null; }
     envMarker = null;
-    document.getElementById('coordinates-display').style.display = 'none';
-    document.getElementById('selected-coords').textContent = '--';
-    document.getElementById('validate-location').style.display = 'none';
-    document.getElementById('results-section').style.display = 'none';
-    document.getElementById('env-map').style.display = 'none';
-    document.getElementById('map-container').style.display = 'none';
-    document.getElementById('choose-on-map').textContent = '🗺️ Ouvrir la carte';
-    document.getElementById('run-analysis').style.display = 'none';
+    document.getElementById('results-grid').style.display = 'none';
+    document.getElementById('map').style.display = 'block';
     document.getElementById('measure-distance').style.display = 'none';
     const alt = document.getElementById('altitude-info');
     if (alt) alt.textContent = '';
