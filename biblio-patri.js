@@ -18,6 +18,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     const statusDiv = document.getElementById('status');
     const resultsContainer = document.getElementById('results');
     const mapContainer = document.getElementById('map');
+    const pageNav = document.getElementById('page-nav');
+    const gotoMapBtn = document.getElementById('goto-map-btn');
+    const gotoTableBtn = document.getElementById('goto-table-btn');
     const addressInput = document.getElementById('address-input');
     const searchAddressBtn = document.getElementById('search-address-btn');
     const useGeolocationBtn = document.getElementById('use-geolocation-btn');
@@ -26,6 +29,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     const toggleLabelsBtn = document.getElementById('toggle-labels-btn');
     const downloadShapefileBtn = document.getElementById('download-shapefile-btn');
     const downloadContainer = document.getElementById('download-container');
+    const addressGroup = document.querySelector('.search-group.address-group');
+
+    const showNavigation = () => {
+        if (pageNav) pageNav.style.display = 'flex';
+        if (addressGroup) addressGroup.style.display = 'none';
+    };
 
     let trackingMap = null;
     let trackingButton = null;
@@ -537,6 +546,7 @@ const initializeSelectionMap = (coords) => {
 
     const runAnalysis = async (params) => {
         try {
+            showNavigation();
             lastAnalysisCoords = { latitude: params.latitude, longitude: params.longitude };
             resultsContainer.innerHTML = '';
             mapContainer.style.display = 'none';
@@ -765,6 +775,7 @@ const initializeSelectionMap = (coords) => {
 
       const loadObservationsAt = async (params) => {
           try {
+              showNavigation();
               if (!map) initializeSelectionMap(params);
               mapContainer.style.display = 'block';
               if (searchAreaLayer) {
@@ -833,5 +844,11 @@ const initializeSelectionMap = (coords) => {
     toggleTrackingBtn.addEventListener('click', () => toggleLocationTracking(map, toggleTrackingBtn));
     if (toggleLabelsBtn) {
         toggleLabelsBtn.addEventListener('click', toggleAnalysisLabels);
+    }
+    if (gotoMapBtn) {
+        gotoMapBtn.addEventListener('click', () => mapContainer.scrollIntoView({ behavior: 'smooth' }));
+    }
+    if (gotoTableBtn) {
+        gotoTableBtn.addEventListener('click', () => resultsContainer.scrollIntoView({ behavior: 'smooth' }));
     }
 });
