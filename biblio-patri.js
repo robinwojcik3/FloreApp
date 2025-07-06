@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let trackingMap = null;
     let trackingButton = null;
     let analysisLabelsVisible = true;
+    let lastAnalysisCoords = null;
 
     const stopLocationTracking = () => {
         if (trackingWatchId !== null) {
@@ -535,6 +536,7 @@ const initializeSelectionMap = (coords) => {
 
     const runAnalysis = async (params) => {
         try {
+            lastAnalysisCoords = { latitude: params.latitude, longitude: params.longitude };
             resultsContainer.innerHTML = '';
             mapContainer.style.display = 'none';
             initializeMap(params);
@@ -731,11 +733,27 @@ const initializeSelectionMap = (coords) => {
         statusDiv.innerHTML = `${floraOccs.length} observation(s) de flore trouvée(s).`;
     };
 
-    const triggerShapefileDownload = () => {
+    const triggerShapefileDownload = async () => {
         if (!currentShapefileData) return;
         try {
+            let fileName = 'patrimonial_data';
+            if (lastAnalysisCoords) {
+                try {
+                    const url = `https://geo.api.gouv.fr/communes?lat=${lastAnalysisCoords.latitude}&lon=${lastAnalysisCoords.longitude}&fields=nom,departement`;
+                    const resp = await fetch(url);
+                    if (resp.ok) {
+                        const data = await resp.json();
+                        if (data && data[0]) {
+                            const nom = data[0].nom;
+                            const dep = data[0].departement.code;
+                            const dateStr = new Date().toISOString().split('T')[0];
+                            fileName = `${nom} (${dep}) - ${dateStr}`;
+                        }
+                    }
+                } catch (e) { /* ignore */ }
+            }
             if (typeof downloadShapefile === 'function') {
-                downloadShapefile(currentShapefileData, LAMBERT93_WKT);
+                downloadShapefile(currentShapefileData, LAMBERT93_WKT, fileName);
             }
         } catch (e) {
             if (typeof showNotification === 'function') {
