@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
         L.DomEvent.on(obsBtn, 'click', () => {
             map.closePopup();
-            loadObservationsAt({ latitude: latlng.lat, longitude: latlng.lng, ...extra });
+            loadObservationsAt({ latitude: latlng.lat, longitude: latlng.lng, radiusKm: OBS_RADIUS_KM, ...extra });
         });
         L.DomEvent.disableClickPropagation(container);
         L.popup().setLatLng(latlng).setContent(container).openOn(map);
@@ -293,7 +293,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-const initializeSelectionMap = (coords) => {
+const initializeSelectionMap = (coords, radiusKm = OBS_RADIUS_KM) => {
         stopLocationTracking();
         const topoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
             attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)'
@@ -318,6 +318,16 @@ const initializeSelectionMap = (coords) => {
         } else {
             map.setView([coords.latitude, coords.longitude], map.getZoom() || 12);
         }
+        if (searchAreaLayer) {
+            map.removeLayer(searchAreaLayer);
+        }
+        searchAreaLayer = L.circle([coords.latitude, coords.longitude], {
+            radius: radiusKm * 1000,
+            color: '#c62828',
+            weight: 2,
+            fillOpacity: 0.1,
+            interactive: false
+        }).addTo(map);
 };
 
     const polygonToWkt = (latlngs) => {
@@ -633,7 +643,7 @@ const initializeSelectionMap = (coords) => {
             const data = await resp.json();
             if (data.length === 0) throw new Error("Adresse non trouvée.");
             const coords = { latitude: parseFloat(data[0].lat), longitude: parseFloat(data[0].lon) };
-            initializeSelectionMap(coords);
+            initializeSelectionMap(coords, OBS_RADIUS_KM);
             showChoicePopup(L.latLng(coords.latitude, coords.longitude));
         } catch (error) { setStatus(`Erreur : ${error.message}`); }
     };
@@ -642,7 +652,7 @@ const initializeSelectionMap = (coords) => {
         try {
             setStatus("Récupération de votre position...", true);
             const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 }));
-            initializeSelectionMap(coords);
+            initializeSelectionMap(coords, OBS_RADIUS_KM);
             if (showPopup) {
                 showChoicePopup(L.latLng(coords.latitude, coords.longitude));
             }
@@ -661,7 +671,7 @@ const initializeSelectionMap = (coords) => {
                 center = { latitude: coords.latitude, longitude: coords.longitude };
             } catch (e) {}
         }
-        initializeSelectionMap(center);
+        initializeSelectionMap(center, OBS_RADIUS_KM);
         let pressTimer;
         const showPopup = (latlng) => showChoicePopup(latlng);
         const onContextMenu = (e) => {
@@ -697,7 +707,7 @@ const initializeSelectionMap = (coords) => {
                 center = { latitude: coords.latitude, longitude: coords.longitude };
             } catch (e) {}
         }
-        initializeSelectionMap(center);
+        initializeSelectionMap(center, OBS_RADIUS_KM);
         setStatus('Tracez un polygone pour définir la zone de recherche.', false);
         const drawer = new L.Draw.Polygon(map, { shapeOptions: { color: '#c62828' } });
         drawer.enable();
@@ -746,7 +756,7 @@ const initializeSelectionMap = (coords) => {
 
     const loadObservationsAt = async (params) => {
         try {
-            if (!map) initializeSelectionMap(params);
+            if (!map) initializeSelectionMap(params, params.radiusKm || OBS_RADIUS_KM);
             mapContainer.style.display = 'block';
             if (obsSearchCircle) { map.removeLayer(obsSearchCircle); obsSearchCircle = null; }
             if (obsSearchPolygon) { map.removeLayer(obsSearchPolygon); obsSearchPolygon = null; }
@@ -756,8 +766,9 @@ const initializeSelectionMap = (coords) => {
                 wkt = params.wkt;
                 map.fitBounds(obsSearchPolygon.getBounds());
             } else {
-                obsSearchCircle = L.circle([params.latitude, params.longitude], { radius: OBS_RADIUS_KM * 1000, color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(map);
-                wkt = 'POLYGON((' + Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return `${(params.longitude+OBS_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+OBS_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`;}).join(', ') + '))';
+                const radius = params.radiusKm || OBS_RADIUS_KM;
+                obsSearchCircle = L.circle([params.latitude, params.longitude], { radius: radius * 1000, color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(map);
+                wkt = 'POLYGON((' + Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return `${(params.longitude+radius/r*Math.cos(a)).toFixed(5)} ${(params.latitude+radius/111.132*Math.sin(a)).toFixed(5)}`;}).join(', ') + '))';
                 map.fitBounds(obsSearchCircle.getBounds());
             }
             statusDiv.textContent = 'Recherche des occurrences GBIF...';
