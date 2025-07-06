@@ -592,7 +592,10 @@ const initializeSelectionMap = (coords) => {
             }
             let allOccurrences = [];
             const maxPages = 20;
-            const limit = 1000;
+            // GBIF limite l'offset à 10​000 par requête.
+            // On réduit la taille des pages pour pouvoir
+            // paginer jusqu'à 20 pages sans dépassement.
+            const limit = 500;
             setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${maxPages})`, true);
             for (let page = 0; page < maxPages; page++) {
                 const offset = page * limit;
