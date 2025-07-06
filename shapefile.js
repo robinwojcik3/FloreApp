@@ -1,4 +1,4 @@
-window.downloadShapefile = function(featureCollection, prjString) {
+window.downloadShapefile = function(featureCollection, prjString, fileName = 'patrimonial_data') {
   const points = featureCollection.features.map(f => ({ x: f.geometry.coordinates[0], y: f.geometry.coordinates[1], props: f.properties }));
   if (points.length === 0) return;
 
@@ -188,7 +188,7 @@ window.downloadShapefile = function(featureCollection, prjString) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'patrimonial_data.zip';
+  a.download = fileName + '.zip';
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 100);
 }
