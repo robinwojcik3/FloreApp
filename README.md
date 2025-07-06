@@ -40,7 +40,13 @@ de lancer l'application.
 
 ## Lancement en local
 
-1. Servez le répertoire depuis un serveur HTTP (`npx serve` ou `python3 -m http.server`).
+1. Servez le répertoire depuis un serveur HTTP :
+
+```bash
+npx serve
+# ou
+python3 -m http.server
+```
 2. Ouvrez `http://localhost:PORT/index.html`.
 3. Pour les fonctions serverless, lancez :
 
