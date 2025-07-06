@@ -720,7 +720,12 @@ const initializeSelectionMap = (coords) => {
         floraOccs.forEach(o => {
             if (o.decimalLatitude && o.decimalLongitude && o.species) {
                 const m = L.marker([o.decimalLatitude, o.decimalLongitude]);
-                m.bindTooltip(`<i>${o.species}</i>`, { permanent: true, direction: 'right', offset: [8,0] });
+                const tooltip = `<i>${o.species}</i>`;
+                const eco = ecolOf(o.species);
+                const faLink = linkIcon(floreAlpesUrl(o.species), 'FloreAlpes.png', 'FloreAlpes');
+                const popup = `<div class="custom-popup"><b><i>${o.species}</i></b>${faLink}<br><small>${eco}</small></div>`;
+                m.bindTooltip(tooltip, { permanent: true, direction: 'right', offset: [8,0] })
+                 .bindPopup(popup);
                 observationsLayerGroup.addLayer(m);
             }
         });
