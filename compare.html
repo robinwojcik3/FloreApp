@@ -14,16 +14,16 @@
 <body>
     <nav class="tabs-container">
         <div class="tabs">
-            <button id="tab-carac" class="tab active" onclick="showTab('carac')">Caractéristiques</button>
-            <button id="tab-loc" class="tab" onclick="showTab('loc')">Localisation</button>
+            <button id="tab-loc" class="tab active" onclick="showTab('loc')">Localisation</button>
+            <button id="tab-carac" class="tab" onclick="showTab('carac')">Caractéristiques</button>
         </div>
     </nav>
     <div class="main-content">
-        <div id="carac-content" class="tab-content" style="display:block;">
-            <div id="comparison-results-container"></div>
-        </div>
-        <div id="loc-content" class="tab-content">
+        <div id="loc-content" class="tab-content" style="display:block;">
             <iframe id="map-frame" src="" style="width:100%;height:80vh;border:none;"></iframe>
+        </div>
+        <div id="carac-content" class="tab-content">
+            <div id="comparison-results-container"></div>
         </div>
     </div>
 </body>
