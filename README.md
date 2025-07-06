@@ -19,14 +19,15 @@ Plantouille Express est une application web progressive qui aide à l'identifica
 
 ## Installation
 
-Dans `netlify/functions`, installez les dépendances requises :
+Depuis la **racine du projet**, installez toutes les dépendances :
 
 ```bash
-npm init -y
-npm install jsdom node-fetch
+npm install
 ```
 
-Les fonctions `inpn-proxy.js` et `aura-images.js` utilisent ces modules.
+N'exécutez pas `npm init` dans `netlify/functions` : les fonctions
+`inpn-proxy.js` et `aura-images.js` utilisent les modules déclarés dans le
+`package.json` principal.
 
 ## Configuration
 
