@@ -4,11 +4,9 @@
       ================================================================ */
 
 // Variables globales
-let map = null; // Carte pour la sélection du point
-let envMap = null; // Carte pour l'affichage des résultats
-let layerControl = null; // Contrôleur de couches pour la carte de résultats
+let envMap = null; // Carte interactive unique
+let layerControl = null; // Contrôleur de couches pour la carte
 let envMarker = null; // Marqueur du point analysé
-let marker = null;
 let selectedLat = null;
 let selectedLon = null;
 
@@ -191,29 +189,9 @@ function updateAltitudeDisplay(lat, lon) {
 }
 
 // Initialisation au chargement de la page
-document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('use-geolocation').addEventListener('click', useGeolocation);
-        document.getElementById('choose-on-map').addEventListener('click', toggleMap);
-        document.getElementById('validate-location').addEventListener('click', validateLocation);
-        document.getElementById('search-address').addEventListener('click', searchAddress);
-        document.getElementById('address-input').addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') searchAddress();
-        });
-        document.getElementById('copy-coords').addEventListener('click', copyCoords);
-        document.getElementById('open-gmaps').addEventListener('click', openInGmaps);
-        document.getElementById('reset-selection').addEventListener('click', resetSelection);
-        document.getElementById('measure-distance').addEventListener('click', toggleMeasure);
-        document.querySelectorAll('.subtab').forEach(btn => {
-            btn.addEventListener('click', () => {
-                document.querySelectorAll('.subtab').forEach(b => b.classList.remove('active'));
-                document.querySelectorAll('.subtab-content').forEach(c => c.classList.remove('active'));
-                btn.classList.add('active');
-                document.getElementById(btn.dataset.target).classList.add('active');
-            });
-        });
-        document.getElementById('run-analysis').addEventListener('click', runAnalysis);
-        initializeMap();
-        toggleMap();
+document.addEventListener("DOMContentLoaded", () => {
+    initializeMap();
+    document.getElementById("measure-distance").addEventListener("click", toggleMeasure);
 });
 
 // Fonction pour utiliser la géolocalisation
@@ -291,50 +269,40 @@ function toggleMap() {
 
 // Initialisation de la carte de sélection Leaflet
 function initializeMap() {
-	const defaultLat = 45.188529;
-	const defaultLon = 5.724524;
-        map = L.map('map').setView([defaultLat, defaultLon], 13);
-        const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)',
-                maxZoom: 17,
-                crossOrigin: true
-        }).addTo(map);
-        topoLayer.on('tileerror', () => {
-                if (map.hasLayer(topoLayer)) {
-                        map.removeLayer(topoLayer);
-                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                                attribution: '© OpenStreetMap contributors',
-                                maxZoom: 19
-                        }).addTo(map);
-                }
-        });
-	
-	let pressTimer;
-	let isPressing = false;
-	
-	function selectPoint(e) {
-		const lat = e.latlng.lat;
-		const lon = e.latlng.lng;
-		if (marker) map.removeLayer(marker);
-		marker = L.marker([lat, lon]).addTo(map);
-		selectedLat = lat;
-		selectedLon = lon;
-		document.getElementById('coordinates-display').style.display = 'block';
-		document.getElementById('selected-coords').textContent = `${lat.toFixed(6)}°, ${lon.toFixed(6)}°`;
-		document.getElementById('validate-location').style.display = 'block';
-	}
-	
-        map.on('mousedown', (e) => { isPressing = true; pressTimer = setTimeout(() => { if (isPressing) selectPoint(e); }, MAP_LONG_PRESS_MS); });
-	map.on('mouseup', () => { isPressing = false; clearTimeout(pressTimer); });
-	map.on('mousemove', () => { if (isPressing) { isPressing = false; clearTimeout(pressTimer); }});
-        map.on('touchstart', (e) => {
-                if (e.originalEvent.touches && e.originalEvent.touches.length > 1) return;
-                isPressing = true;
-                pressTimer = setTimeout(() => { if (isPressing) selectPoint(e); }, MAP_LONG_PRESS_MS);
-        });
-	map.on('touchend', () => { isPressing = false; clearTimeout(pressTimer); });
-	map.on('touchmove', () => { if (isPressing) { isPressing = false; clearTimeout(pressTimer); }});
-	map.on('contextmenu', (e) => { e.originalEvent.preventDefault(); selectPoint(e); });
+    const defaultLat = 45.188529;
+    const defaultLon = 5.724524;
+    envMap = L.map("map", { preferCanvas: true }).setView([defaultLat, defaultLon], 13);
+    const topoLayer = L.tileLayer("https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)",
+        maxZoom: 17,
+        crossOrigin: true
+    }).addTo(envMap);
+    topoLayer.on("tileerror", () => {
+        if (envMap.hasLayer(topoLayer)) {
+            envMap.removeLayer(topoLayer);
+            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+                attribution: "© OpenStreetMap contributors",
+                maxZoom: 19
+            }).addTo(envMap);
+        }
+    });
+    enableGoogleMapsLongPress(envMap);
+    let pressTimer;
+    let isPressing = false;
+    function openChoice(e) {
+        showChoicePopup(e.latlng);
+    }
+    envMap.on("mousedown", (e) => { isPressing = true; pressTimer = setTimeout(() => { if (isPressing) openChoice(e); }, MAP_LONG_PRESS_MS); });
+    envMap.on("mouseup", () => { isPressing = false; clearTimeout(pressTimer); });
+    envMap.on("mousemove", () => { if (isPressing) { isPressing = false; clearTimeout(pressTimer); }});
+    envMap.on("touchstart", (e) => {
+        if (e.originalEvent.touches && e.originalEvent.touches.length > 1) return;
+        isPressing = true;
+        pressTimer = setTimeout(() => { if (isPressing) openChoice(e); }, MAP_LONG_PRESS_MS);
+    });
+    envMap.on("touchend", () => { isPressing = false; clearTimeout(pressTimer); });
+    envMap.on("touchmove", () => { if (isPressing) { isPressing = false; clearTimeout(pressTimer); }});
+    envMap.on("contextmenu", (e) => { e.originalEvent.preventDefault(); openChoice(e); });
 }
 
 // Fonction pour valider la localisation sélectionnée sur la carte
@@ -414,41 +382,59 @@ function displayResources() {
 }
 
 // Lance l'analyse en fonction de l'onglet actif
-function runAnalysis() {
+function runAnalysis(mode) {
     if (!selectedLat || !selectedLon) {
-        showNotification('Aucune localisation sélectionnée', 'error');
+        showNotification("Aucune localisation sélectionnée", "error");
         return;
     }
-
-    const active = document.querySelector('.subtab.active');
-    if (!active) return;
-    const target = active.dataset.target;
-
-    if (target === 'zoning-tab') {
-        if (!zoningLoaded) {
-            displayInteractiveEnvMap();
-            zoningLoaded = true;
-        } else {
-            document.getElementById('env-map').style.display = 'block';
-            document.getElementById('measure-distance').style.display = 'inline-block';
-        }
-    } else if (target === 'resources-tab') {
-        if (!resourcesLoaded) {
-            const loading = document.getElementById('loading');
-            loading.style.display = 'block';
-            loading.textContent = 'Préparation des liens...';
-            setTimeout(() => {
-                displayResources();
-                loading.style.display = 'none';
-            }, 200);
-            resourcesLoaded = true;
-        }
+    updateAltitudeDisplay(selectedLat, selectedLon);
+    if (mode === "zoning") {
+        document.getElementById("results-grid").innerHTML = "";
+        displayInteractiveEnvMap();
+        document.getElementById("measure-distance").style.display = "inline-block";
+    } else if (mode === "resources") {
+        const loading = document.getElementById("loading");
+        loading.style.display = "block";
+        loading.textContent = "Préparation des liens...";
+        if (layerControl) envMap.removeControl(layerControl);
+        envMap.eachLayer(l => { if (l instanceof L.GeoJSON) envMap.removeLayer(l); });
+        if (envMarker) envMap.removeLayer(envMarker);
+        envMarker = L.marker([selectedLat, selectedLon]).addTo(envMap);
+        document.getElementById("measure-distance").style.display = "none";
+        setTimeout(() => {
+            displayResources();
+            loading.style.display = "none";
+        }, 200);
     }
 }
 
 /**
  * Active un appui long pour ouvrir Google Maps sur la carte fournie.
  * @param {L.Map} targetMap
+
+function showChoicePopup(latlng) {
+    if (!envMap) return;
+    const container = L.DomUtil.create("div", "popup-button-container");
+    const zoneBtn = L.DomUtil.create("button", "action-button", container);
+    zoneBtn.textContent = "Zonage";
+    const resBtn = L.DomUtil.create("button", "action-button", container);
+    resBtn.textContent = "Ressources";
+    L.DomEvent.on(zoneBtn, "click", () => {
+        envMap.closePopup();
+        selectedLat = latlng.lat;
+        selectedLon = latlng.lng;
+        runAnalysis("zoning");
+    });
+    L.DomEvent.on(resBtn, "click", () => {
+        envMap.closePopup();
+        selectedLat = latlng.lat;
+        selectedLon = latlng.lng;
+        runAnalysis("resources");
+    });
+    L.DomEvent.disableClickPropagation(container);
+    L.popup().setLatLng(latlng).setContent(container).openOn(envMap);
+}
+
  */
 function enableGoogleMapsLongPress(targetMap) {
     let timer;
@@ -491,12 +477,8 @@ function enableGoogleMapsLongPress(targetMap) {
  * récupérées depuis l'API Carto de l'IGN.
  */
 async function displayInteractiveEnvMap() {
-    const mapDiv = document.getElementById('env-map');
-    mapDiv.style.display = 'block';
-    document.getElementById('layer-controls').style.display = 'none'; // On n'utilise plus les contrôles manuels
     document.getElementById('measure-distance').style.display = 'inline-block';
 
-    // Vérifie si la localisation a changé de manière significative
     const coordsChanged =
         !lastCacheCoords ||
         Math.abs(lastCacheCoords.lat - selectedLat) > 0.01 ||
@@ -506,40 +488,14 @@ async function displayInteractiveEnvMap() {
     }
     lastCacheCoords = { lat: selectedLat, lon: selectedLon };
 
-    // Initialisation ou réinitialisation de la carte
-    if (!envMap) {
-        envMap = L.map('env-map', { preferCanvas: true }).setView([selectedLat, selectedLon], 11);
-        const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)',
-            maxZoom: 17,
-            crossOrigin: true
-        }).addTo(envMap);
-        topoLayer.on('tileerror', () => {
-            if (envMap.hasLayer(topoLayer)) {
-                envMap.removeLayer(topoLayer);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors',
-                    maxZoom: 19
-                }).addTo(envMap);
-            }
-        });
-        enableGoogleMapsLongPress(envMap);
-    } else {
-        envMap.setView([selectedLat, selectedLon], 11);
-        if (layerControl) envMap.removeControl(layerControl); // Supprime l'ancien contrôle de couches
-        envMap.eachLayer(layer => { // Supprime les anciennes couches GeoJSON
-            if (layer instanceof L.GeoJSON) envMap.removeLayer(layer);
-        });
-    }
+    envMap.setView([selectedLat, selectedLon], 11);
+    if (layerControl) envMap.removeControl(layerControl);
+    envMap.eachLayer(layer => { if (layer instanceof L.GeoJSON) envMap.removeLayer(layer); });
 
-    // Ajoute un marqueur pour le point analysé
     if (envMarker) envMap.removeLayer(envMarker);
-    envMarker = L.marker([selectedLat, selectedLon]).addTo(envMap)
-      .bindPopup("Point d'analyse").openPopup();
+    envMarker = L.marker([selectedLat, selectedLon]).addTo(envMap).bindPopup('Point d\'analyse').openPopup();
 
-    // Initialise le nouveau contrôle de couches
-    const overlayMaps = {};
-    layerControl = L.control.layers(null, overlayMaps, { collapsed: false }).addTo(envMap);
+    layerControl = L.control.layers(null, {}, { collapsed: false }).addTo(envMap);
 
     const loading = document.getElementById('loading');
     const total = Object.keys(APICARTO_LAYERS).length;
