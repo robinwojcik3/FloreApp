@@ -828,6 +828,10 @@ const initializeSelectionMap = (coords) => {
             }
         });
         displayResults(currentResults.occurrences, currentResults.patrimonialMap, currentResults.wkt);
+        if (addZnieffBtn) {
+            addZnieffBtn.disabled = true;
+            addZnieffBtn.textContent = 'ZNIEFF ajoutées';
+        }
     };
 
       const loadObservationsAt = async (params) => {
