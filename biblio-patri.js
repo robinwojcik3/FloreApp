@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const scrollMapBtn = document.getElementById('scroll-map-btn');
     const scrollTableBtn = document.getElementById('scroll-table-btn');
     const addressGroup = document.querySelector('.address-group');
+    const mapControls = document.getElementById('map-controls');
 
     const updateSecondaryNav = () => {
         if (navContainer && mainTabs) {
@@ -53,7 +54,11 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (scrollMapBtn) {
         scrollMapBtn.addEventListener('click', () => {
-            mapContainer.scrollIntoView({ behavior: 'smooth' });
+            if (mapControls) {
+                mapControls.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                mapContainer.scrollIntoView({ behavior: 'smooth' });
+            }
             scrollMapBtn.classList.add('active');
             if (scrollTableBtn) scrollTableBtn.classList.remove('active');
         });
