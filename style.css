@@ -136,9 +136,26 @@ h1 {
     display: inline-block;
     animation: spin 1s linear infinite;
 }
+/* Animation d'un outil qui s'active pour un robot plus "vivant" */
+.robot-working .tool {
+    display: inline-block;
+    animation: dig 0.5s ease-in-out infinite alternate;
+}
+.robot-working .robot {
+    display: inline-block;
+    animation: bounce 1s ease-in-out infinite alternate;
+}
 
 @keyframes spin {
     to { transform: rotate(360deg); }
+}
+@keyframes dig {
+    from { transform: rotate(0deg) translateY(0); }
+    to { transform: rotate(-30deg) translateY(-4px); }
+}
+@keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-2px); }
 }
 
 #map {
