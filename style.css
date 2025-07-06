@@ -95,6 +95,21 @@ h1 {
     width: 100%;
 }
 
+.nav-buttons {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    position: sticky;
+    top: 3.5rem;
+    z-index: 90;
+    background: var(--card);
+    padding: 0.5rem 0;
+}
+.nav-buttons .action-button {
+    flex: 1;
+}
+
 
 
 #address-input {
