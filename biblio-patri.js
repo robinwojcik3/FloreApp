@@ -198,6 +198,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const RETRY_DELAY_MS = 3000;
     const FETCH_TIMEOUT_MS = 10000;
     const TRACHEOPHYTA_TAXON_KEY = 7707728; // GBIF taxonKey for vascular plants
+    const GBIF_MAX_PAGES = 20; // Safety limit for pagination
     const SPECIES_COLORS = ['#E6194B', '#3CB44B', '#FFE119', '#4363D8', '#F58231', '#911EB4', '#46F0F0', '#F032E6', '#BCF60C', '#FABEBE', '#800000', '#AA6E28', '#000075', '#A9A9A9'];
     const nonPatrimonialLabels = new Set(["Liste des espèces végétales sauvages pouvant faire l'objet d'une réglementation préfectorale dans les départements d'outre-mer : Article 1"]);
     const nonPatrimonialRedlistCodes = new Set(['LC', 'DD', 'NA', 'NE']);
@@ -398,7 +399,7 @@ const initializeSelectionMap = (coords) => {
             const color = SPECIES_COLORS[index % SPECIES_COLORS.length];
             let speciesOccs = [];
             let endOfRecords = false;
-            for (let page = 0; page < 10 && !endOfRecords; page++) {
+            for (let page = 0; page < GBIF_MAX_PAGES && !endOfRecords; page++) {
                 const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=1000&offset=${page*1000}&geometry=${encodeURIComponent(wkt)}&taxonKey=${taxonKey}`;
                 try {
                     const resp = await fetchWithRetry(gbifUrl);
@@ -591,7 +592,7 @@ const initializeSelectionMap = (coords) => {
                 wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
             }
             let allOccurrences = [];
-            const maxPages = 20;
+            const maxPages = GBIF_MAX_PAGES;
             const limit = 1000;
             setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${maxPages})`, true);
             for (let page = 0; page < maxPages; page++) {
