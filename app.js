@@ -464,20 +464,20 @@ window.handleSynthesisClick = async function(event, element, speciesName) {
     NOUVEAU : FONCTIONS POUR L'ANALYSE COMPARATIVE
     ================================================================ */
 async function getComparisonFromGemini(speciesData) {
-    const speciesDataString = speciesData.map(s => `Espèce: ${s.species}\nDonnées morphologiques (Physionomie): ${s.physio || 'Non renseignée'}\nDonnées écologiques: ${s.eco || 'Non renseignée'}`).join('\n\n');
-    
-    const promptTemplate = `En tant qu'expert botaniste, rédige une analyse comparative détaillée à partir des données ci-dessous. Mentionne systématiquement le nom latin de chaque espèce et insiste sur les critères morphologiques fiables et évidents permettant de les distinguer, ainsi que sur leur écologie.
+    const speciesDataString = speciesData.map(s => `Espèce: ${s.species}\nCritères physiologiques: ${s.crit || 'Non renseignée'}\nÉcologie: ${s.eco || 'Non renseignée'}\nPhysionomie: ${s.physio || 'Non renseignée'}`).join('\n\n');
+
+    const promptTemplate = `En tant qu'expert botaniste, tu vas comparer plusieurs espèces en te basant uniquement sur les informations ci-dessous issues des colonnes "Critères physiologiques", "Écologie" et "Physionomie".
 Données :
 ---
 ${speciesDataString}
 ---
-Structure ta réponse en trois parties sans texte introductif superflu.
+Structure ta réponse en trois parties.
 
-Commence par une phrase unique (1 à 2 lignes) soulignant le trait distinctif le plus facilement observable.
+Commence par une phrase d'introduction très courte (1 à 2 lignes) présentant l'intérêt de la comparaison.
 
-Ensuite, fournis un tableau en Markdown listant pour chaque espèce son nom français et son nom latin, les critères morphologiques discriminants (forme, taille, couleur, etc.) et les éléments écologiques majeurs (habitat, type de sol, altitude). Présente en priorité les critères les plus aisés à vérifier et n'utilise ni gras ni italique.
+Poursuis avec un tableau en Markdown dont chaque colonne porte uniquement le nom latin d'une espèce et dont chaque ligne décrit un organe ou un aspect comparé (feuilles, tiges, fleurs, fruits, écologie générale). Termine par une ligne "Caractéristiques marquantes" résumant les critères les plus discriminants. N'utilise ni gras ni italique.
 
-Termine par un paragraphe de synthèse d'environ cinq à six phrases, rédigé dans un style oral mais rigoureux, rappelant les points clés pour ne pas confondre les espèces. Ce paragraphe ne doit contenir aucun formatage Markdown ni liste, ni caractères tels que '*' ou '/'.`;
+Termine par un paragraphe de synthèse de cinq à six phrases, rédigé dans un style oral mais rigoureux, sans aucun formatage Markdown ni liste, ni caractères tels que '*' ou '/'.`;
 
     const requestBody = { 
         "contents": [{ "parts": [{ "text": promptTemplate }] }], 
@@ -570,7 +570,8 @@ async function handleComparisonClick() {
         return {
             species: latin,
             physio: decodeURIComponent(box.dataset.physio),
-            eco: decodeURIComponent(box.dataset.eco)
+            eco: decodeURIComponent(box.dataset.eco),
+            crit: decodeURIComponent(box.dataset.crit)
         };
     });
 
@@ -758,7 +759,8 @@ function buildTable(items){
                        data-species="${escapedSci}"
                        data-physio="${encodeURIComponent(phys)}"
                        data-eco="${encodeURIComponent(eco)}"
-                       data-pheno="${encodeURIComponent(pheno)}">
+                      data-crit="${encodeURIComponent(crit)}"
+                      data-pheno="${encodeURIComponent(pheno)}">
               </td>
             	 <td class="col-nom-latin" data-latin="${displaySci}">${displaySci}<br><span class="score">(${pct})</span></td>
             <td class="col-link">${floreAlpesLink}</td>

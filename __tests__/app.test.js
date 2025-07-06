@@ -73,7 +73,7 @@ describe('api helpers', () => {
       json: () => Promise.resolve({candidates:[{content:{parts:[{text:'cmp'}]}}]})
     });
     const ctx = loadApp({ fetch: fetchMock });
-    const txt = await ctx.getComparisonFromGemini([{species:'A',physio:'p',eco:'e'}]);
+    const txt = await ctx.getComparisonFromGemini([{species:'A',crit:'c',physio:'p',eco:'e'}]);
     expect(txt).toBe('cmp');
   });
 
