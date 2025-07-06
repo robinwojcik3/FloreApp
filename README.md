@@ -30,13 +30,16 @@ Les fonctions `inpn-proxy.js` et `aura-images.js` utilisent ces modules.
 
 ## Configuration
 
-Éditez `app.js` et renseignez vos clés d'API :
+Définissez vos clés d'API dans des variables d'environnement, par exemple dans
+un fichier `.env` chargé par Netlify Dev :
 
-```javascript
-const API_KEY       = 'votre-cle-plantnet';
-const GEMINI_API_KEY= 'votre-cle-gemini';
-const TTS_API_KEY   = 'votre-cle-tts';
+```bash
+PLANTNET_API_KEY=<votre-clé-plantnet>
+GEMINI_API_KEY=<votre-clé-gemini>
+TTS_API_KEY=<votre-clé-tts>
 ```
+
+La fonction `api-proxy.js` lira ces variables pour appeler les services externes.
 
 ## Lancement en local
 
