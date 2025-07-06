@@ -27,23 +27,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     const downloadShapefileBtn = document.getElementById('download-shapefile-btn');
     const downloadContainer = document.getElementById('download-container');
     const navContainer = document.getElementById('section-nav');
+    const mainTabs = document.querySelector('.tabs-container');
     const scrollMapBtn = document.getElementById('scroll-map-btn');
     const scrollTableBtn = document.getElementById('scroll-table-btn');
     const addressGroup = document.querySelector('.address-group');
 
+    const updateSecondaryNav = () => {
+        if (navContainer && mainTabs) {
+            navContainer.style.top = mainTabs.offsetHeight + 'px';
+        }
+    };
+
     const showNavigation = () => {
         if (navContainer) navContainer.style.display = 'flex';
         if (addressGroup) addressGroup.style.display = 'none';
+        updateSecondaryNav();
+        if (scrollMapBtn && scrollTableBtn) {
+            scrollMapBtn.classList.add('active');
+            scrollTableBtn.classList.remove('active');
+        }
     };
+
+    updateSecondaryNav();
+    window.addEventListener('resize', updateSecondaryNav);
 
     if (scrollMapBtn) {
         scrollMapBtn.addEventListener('click', () => {
             mapContainer.scrollIntoView({ behavior: 'smooth' });
+            scrollMapBtn.classList.add('active');
+            if (scrollTableBtn) scrollTableBtn.classList.remove('active');
         });
     }
     if (scrollTableBtn) {
         scrollTableBtn.addEventListener('click', () => {
             resultsContainer.scrollIntoView({ behavior: 'smooth' });
+            scrollTableBtn.classList.add('active');
+            if (scrollMapBtn) scrollMapBtn.classList.remove('active');
         });
     }
 
