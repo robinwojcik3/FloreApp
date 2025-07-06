@@ -45,7 +45,7 @@ async function loadComparisonResults() {
                 <div id="comparison-summary" style="margin-top:1rem;display:flex;align-items:flex-start;gap:0.5rem;">
                     <p id="comparison-summary-text" style="margin:0;">${summary}</p>
                     <a href="#" id="comparison-tts-btn" title="Écouter la synthèse" style="flex-shrink:0;">
-                        <img src="assets/Audio.png" alt="Écouter" class="logo-icon" style="height:32px;">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA4MDAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CiAgPHBvbHlnb24gcG9pbnRzPSIxMSA1IDYgOSAyIDkgMiAxNSA2IDE1IDExIDE5IDExIDUiIC8+CiAgPHBhdGggZD0iTTE1LjU0IDguNDZhNSA1IDAgMDEwIDcuMDciIC8+CiAgPHBhdGggZD0iTTE5LjA3IDQuOTNhOSA5IDAgMDEwIDE0LjE0IiAvPgo8L3N2Zz4K" alt="Écouter" class="logo-icon" style="height:32px;">
                     </a>
                 </div>`;
             document.getElementById('comparison-tts-btn').addEventListener('click', async (e) => {
@@ -62,7 +62,7 @@ async function loadComparisonResults() {
                 } else {
                     showInfoModal("Échec de la synthèse audio", "La conversion du texte en audio a échoué.");
                 }
-                btn.innerHTML = '<img src="assets/Audio.png" alt="Écouter" class="logo-icon" style="height:32px;">';
+                btn.innerHTML = '<img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA4MDAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CiAgPHBvbHlnb24gcG9pbnRzPSIxMSA1IDYgOSAyIDkgMiAxNSA2IDE1IDExIDE5IDExIDUiIC8+CiAgPHBhdGggZD0iTTE1LjU0IDguNDZhNSA1IDAgMDEwIDcuMDciIC8+CiAgPHBhdGggZD0iTTE5LjA3IDQuOTNhOSA5IDAgMDEwIDE0LjE0IiAvPgo8L3N2Zz4K" alt="Écouter" class="logo-icon" style="height:32px;">';
                 btn.style.pointerEvents = 'auto';
             });
         }
