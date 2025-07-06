@@ -398,8 +398,9 @@ const initializeSelectionMap = (coords) => {
             const color = SPECIES_COLORS[index % SPECIES_COLORS.length];
             let speciesOccs = [];
             let endOfRecords = false;
+            const limit = 300;
             for (let page = 0; page < 10 && !endOfRecords; page++) {
-                const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=1000&offset=${page*1000}&geometry=${encodeURIComponent(wkt)}&taxonKey=${taxonKey}`;
+                const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${page*limit}&geometry=${encodeURIComponent(wkt)}&taxonKey=${taxonKey}`;
                 try {
                     const resp = await fetchWithRetry(gbifUrl);
                     if (!resp.ok) break;
@@ -411,7 +412,7 @@ const initializeSelectionMap = (coords) => {
                         });
                         speciesOccs = speciesOccs.concat(pageData.results);
                     }
-                    endOfRecords = pageData.endOfRecords;
+                    endOfRecords = pageData.endOfRecords || (pageData.results?.length || 0) < limit;
                 } catch (e) { console.error("Erreur durant la cartographie détaillée pour :", speciesName, e); break; }
             }
             allOccurrencesWithContext = allOccurrencesWithContext.concat(speciesOccs);
@@ -592,7 +593,11 @@ const initializeSelectionMap = (coords) => {
             }
             let allOccurrences = [];
             const maxPages = 20;
-            const limit = 1000;
+            // GBIF occurrence search API supports a maximum page size of 300
+            // (requests with larger limits may be truncated or hit the 10k
+            // pagination window limit). Use 300 here to allow paging beyond
+            // page 10 without prematurely reaching endOfRecords.
+            const limit = 300;
             setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${maxPages})`, true);
             for (let page = 0; page < maxPages; page++) {
                 const offset = page * limit;
@@ -601,8 +606,12 @@ const initializeSelectionMap = (coords) => {
                 const gbifResp = await fetchWithRetry(gbifUrl);
                 if (!gbifResp.ok) throw new Error("L'API GBIF est indisponible.");
                 const pageData = await gbifResp.json();
-                if (pageData.results?.length > 0) { allOccurrences = allOccurrences.concat(pageData.results); }
-                if (pageData.endOfRecords) { break; }
+                if (pageData.results?.length > 0) {
+                    allOccurrences = allOccurrences.concat(pageData.results);
+                }
+                if (pageData.endOfRecords || (pageData.results?.length || 0) < limit) {
+                    break;
+                }
             }
             if (allOccurrences.length === 0) { throw new Error("Aucune occurrence de plante trouvée à proximité."); }
             setStatus("Étape 3/4: Analyse des données...", true);
