@@ -1239,7 +1239,7 @@ async function runStatusAnalysis() {
         if (admCode === departement.code || admCode === region.code) { ruleApplies = true; }
       }
       if (ruleApplies) {
-        if (nonPatrimonialLabels.has(r.label) || type.includes('déterminante znieff')) return;
+        if (nonPatrimonialLabels.has(r.label)) return;
         const isRedList = type.includes('liste rouge');
         if (isRedList && nonPatrimonialRedlistCodes.has(r.code)) return;
         const ruleKey = `${r.nom}|${r.type}|${r.adm}`;
