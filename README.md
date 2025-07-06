@@ -22,21 +22,20 @@ Plantouille Express est une application web progressive qui aide à l'identifica
 Dans `netlify/functions`, installez les dépendances requises :
 
 ```bash
-npm init -y
 npm install jsdom node-fetch
 ```
 
 Les fonctions `inpn-proxy.js` et `aura-images.js` utilisent ces modules.
 
+Définissez également les clés `PLANTNET_API_KEY`, `GEMINI_API_KEY` et `TTS_API_KEY`
+comme variables d'environnement. Vous pouvez les renseigner dans le tableau de
+bord Netlify ou les placer dans un fichier `.env` lors du développement local.
+
 ## Configuration
 
-Éditez `app.js` et renseignez vos clés d'API :
-
-```javascript
-const API_KEY       = 'votre-cle-plantnet';
-const GEMINI_API_KEY= 'votre-cle-gemini';
-const TTS_API_KEY   = 'votre-cle-tts';
-```
+Les fonctions Netlify lisent les clés `PLANTNET_API_KEY`, `GEMINI_API_KEY` et
+`TTS_API_KEY` depuis l'environnement. Assurez-vous qu'elles sont définies avant
+de lancer l'application.
 
 ## Lancement en local
 
