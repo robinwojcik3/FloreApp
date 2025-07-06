@@ -398,8 +398,10 @@ const initializeSelectionMap = (coords) => {
             const color = SPECIES_COLORS[index % SPECIES_COLORS.length];
             let speciesOccs = [];
             let endOfRecords = false;
-            for (let page = 0; page < 10 && !endOfRecords; page++) {
-                const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=1000&offset=${page*1000}&geometry=${encodeURIComponent(wkt)}&taxonKey=${taxonKey}`;
+            const limit = 300; // GBIF API max
+            for (let page = 0; page < 20 && !endOfRecords; page++) {
+                const offset = page * limit;
+                const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&taxonKey=${taxonKey}`;
                 try {
                     const resp = await fetchWithRetry(gbifUrl);
                     if (!resp.ok) break;
@@ -592,7 +594,7 @@ const initializeSelectionMap = (coords) => {
             }
             let allOccurrences = [];
             const maxPages = 20;
-            const limit = 1000;
+            const limit = 300; // GBIF API maximum
             setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${maxPages})`, true);
             for (let page = 0; page < maxPages; page++) {
                 const offset = page * limit;
