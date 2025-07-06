@@ -125,37 +125,41 @@ function runResourcesAt(latlng) {
 
 // Configuration des services externes (liens)
 const SERVICES = {
-	arcgis: {
-		name: "ArcGIS - Carte de la végétation",
-		description: "Visualisez la carte de végétation de la zone",
-		buildUrl: (lat, lon) => {
-			const { x, y } = latLonToWebMercator(lat, lon);
-			const buffer = 1000;
-			return `https://www.arcgis.com/apps/webappviewer/index.html?id=bece6e542e4c42e0ba9374529c7de44c&extent=${x-buffer}%2C${y-buffer}%2C${x+buffer}%2C${y+buffer}%2C102100`;
-		}
-	},
-	geoportail: {
-		name: "Géoportail - Carte des sols",
-		description: "Explorez la carte pédologique de la zone",
-		buildUrl: (lat, lon) => {
-			return `https://www.geoportail.gouv.fr/carte?c=${lon},${lat}&z=15&l0=ORTHOIMAGERY.ORTHOPHOTOS::GEOPORTAIL:OGC:WMTS(1)&l1=AGRICULTURE.CARTE.PEDOLOGIQUE::GEOPORTAIL:OGC:WMS(0.5)&permalink=yes`;
-		}
-	},
-	ign: {
-		name: "IGN Remonter le temps",
-		description: "Comparez l'évolution du paysage dans le temps",
-		buildUrl: (lat, lon) => {
-			return `https://remonterletemps.ign.fr/comparer?lon=${lon.toFixed(6)}&lat=${lat.toFixed(6)}&z=17&layer1=16&layer2=19&mode=split-h`;
-		}
-	},
-	inaturalist: {
-		name: "iNaturalist - Observations",
-		description: "Découvrez les observations naturalistes de la zone",
-		buildUrl: (lat, lon) => {
-			const radius = 5; // km
-			return `https://www.inaturalist.org/observations?lat=${lat.toFixed(8)}&lng=${lon.toFixed(8)}&radius=${radius}&subview=map&threatened&iconic_taxa=Plantae`;
-		}
-	}
+        arcgis: {
+                name: "ArcGIS - Carte de la végétation",
+                description: "Visualisez la carte de végétation de la zone",
+                icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+CiAgPHBvbHlsaW5lIHBvaW50cz0iMiA3IDkgNCAxNSA3IDIyIDQgMjIgMTcgMTUgMjAgOSAxNyAyIDIwIDIgNyIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgogIDxsaW5lIHgxPSI5IiB5MT0iNCIgeDI9IjkiIHkyPSIxNyIgLz4KICA8bGluZSB4MT0iMTUiIHkxPSI3IiB4Mj0iMTUiIHkyPSIyMCIgLz4KPC9zdmc+Cg==',
+                buildUrl: (lat, lon) => {
+                        const { x, y } = latLonToWebMercator(lat, lon);
+                        const buffer = 1000;
+                        return `https://www.arcgis.com/apps/webappviewer/index.html?id=bece6e542e4c42e0ba9374529c7de44c&extent=${x-buffer}%2C${y-buffer}%2C${x+buffer}%2C${y+buffer}%2C102100`;
+                }
+        },
+        geoportail: {
+                name: "Géoportail - Carte des sols",
+                description: "Explorez la carte pédologique de la zone",
+                icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+CiAgPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iOSIgLz4KICA8cGF0aCBkPSJNMyAxMmgxOCIgLz4KICA8cGF0aCBkPSJNMTIgM2E5IDkgMCAwIDAgMCAxOCIgLz4KICA8cGF0aCBkPSJNMTIgM2E5IDkgMCAwIDEgMCAxOCIgLz4KPC9zdmc+Cg==',
+                buildUrl: (lat, lon) => {
+                        return `https://www.geoportail.gouv.fr/carte?c=${lon},${lat}&z=15&l0=ORTHOIMAGERY.ORTHOPHOTOS::GEOPORTAIL:OGC:WMTS(1)&l1=AGRICULTURE.CARTE.PEDOLOGIQUE::GEOPORTAIL:OGC:WMS(0.5)&permalink=yes`;
+                }
+        },
+        ign: {
+                name: "IGN Remonter le temps",
+                description: "Comparez l'évolution du paysage dans le temps",
+                icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+CiAgPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iOSIgLz4KICA8cG9seWxpbmUgcG9pbnRzPSIxMiA3IDEyIDEyIDE1IDE1IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+Cjwvc3ZnPgo=',
+                buildUrl: (lat, lon) => {
+                        return `https://remonterletemps.ign.fr/comparer?lon=${lon.toFixed(6)}&lat=${lat.toFixed(6)}&z=17&layer1=16&layer2=19&mode=split-h`;
+                }
+        },
+        inaturalist: {
+                name: "iNaturalist - Observations",
+                description: "Découvrez les observations naturalistes de la zone",
+                icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+CiAgPHBhdGggZD0iTTEyIDJDNyAyIDQgMTIgNCAxMnMzIDEwIDggMTAgOC0xMCA4LTEwLTMtMTAtOC0xMHoiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+CiAgPGxpbmUgeDE9IjEyIiB5MT0iMiIgeDI9IjEyIiB5Mj0iMjIiIC8+Cjwvc3ZnPgo=',
+                buildUrl: (lat, lon) => {
+                        const radius = 5; // km
+                        return `https://www.inaturalist.org/observations?lat=${lat.toFixed(8)}&lng=${lon.toFixed(8)}&radius=${radius}&subview=map&threatened&iconic_taxa=Plantae`;
+                }
+        }
 };
 
 // NOUVEAU : Configuration des couches via l'API Carto de l'IGN
@@ -377,10 +381,20 @@ function displayResources() {
     Object.keys(SERVICES).forEach(serviceKey => {
         const service = SERVICES[serviceKey];
         const url = service.buildUrl(selectedLat, selectedLon);
-        const card = document.createElement('div');
-        card.className = 'result-card';
-        card.innerHTML = `<h3>${service.name}</h3><p>${service.description}</p><a href="${url}" target="_blank" rel="noopener noreferrer">Ouvrir dans un nouvel onglet →</a>`;
-        resultsGrid.appendChild(card);
+        const link = document.createElement('a');
+        link.href = url;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.className = 'resource-btn';
+        const img = document.createElement('img');
+        img.src = service.icon;
+        img.alt = '';
+        img.className = 'resource-icon';
+        const span = document.createElement('span');
+        span.textContent = service.name;
+        link.appendChild(img);
+        link.appendChild(span);
+        resultsGrid.appendChild(link);
     });
     resultsGrid.style.display = 'grid';
 }
