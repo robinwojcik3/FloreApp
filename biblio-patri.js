@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const drawPolygonBtn = document.getElementById('draw-polygon-btn');
     const toggleTrackingBtn = document.getElementById('toggle-tracking-btn');
     const toggleLabelsBtn = document.getElementById('toggle-labels-btn');
+    const includeZnieffBtn = document.getElementById('include-znieff-btn');
     const downloadShapefileBtn = document.getElementById('download-shapefile-btn');
     const downloadContainer = document.getElementById('download-container');
     const navContainer = document.getElementById('section-nav');
@@ -73,6 +74,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     let trackingButton = null;
     let analysisLabelsVisible = true;
     let lastAnalysisCoords = null;
+    let lastAnalysisWkt = null;
+    let includeZnieff = false;
 
     const stopLocationTracking = () => {
         if (trackingWatchId !== null) {
@@ -590,6 +593,7 @@ const initializeSelectionMap = (coords) => {
             if (!wkt) {
                 wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
             }
+            lastAnalysisWkt = wkt;
             let allOccurrences = [];
             const maxPages = 20;
             const limit = 1000;
@@ -608,6 +612,7 @@ const initializeSelectionMap = (coords) => {
             setStatus("Étape 3/4: Analyse des données...", true);
             const uniqueSpeciesNames = [...new Set(allOccurrences.map(o => o.species).filter(Boolean))];
             const relevantRules = new Map();
+            const znieffMap = new Map();
             const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${params.latitude}&lon=${params.longitude}&fields=departement,region`)).json())[0];
             for (const speciesName of uniqueSpeciesNames) {
                 const rulesForThisTaxon = rulesByTaxonIndex.get(speciesName);
@@ -627,7 +632,13 @@ const initializeSelectionMap = (coords) => {
                             if (adminCode === departement.code || adminCode === region.code) { ruleApplies = true; }
                         }
                         if (ruleApplies) {
-                            if (nonPatrimonialLabels.has(row.label) || type.includes('déterminante znieff')) { continue; }
+                            const isZnieff = type.includes('déterminante znieff');
+                            if (nonPatrimonialLabels.has(row.label) || (!includeZnieff && isZnieff)) { continue; }
+                            if (isZnieff) {
+                                if (!znieffMap.has(row.nom)) znieffMap.set(row.nom, []);
+                                znieffMap.get(row.nom).push(row.label);
+                                continue;
+                            }
                             const isRedList = type.includes('liste rouge');
                             if (isRedList && nonPatrimonialRedlistCodes.has(row.code)) { continue; }
                             const ruleKey = `${row.nom}|${row.type}|${row.adm}`;
@@ -661,7 +672,18 @@ const initializeSelectionMap = (coords) => {
                     await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
                 }
             }
-            const patrimonialMap = await analysisResp.json();
+            let patrimonialMap = await analysisResp.json();
+            if (includeZnieff) {
+                for (const [sp, statuses] of znieffMap.entries()) {
+                    if (patrimonialMap[sp]) {
+                        const arr = Array.isArray(patrimonialMap[sp]) ? patrimonialMap[sp] : [patrimonialMap[sp]];
+                        arr.push(...statuses);
+                        patrimonialMap[sp] = arr;
+                    } else {
+                        patrimonialMap[sp] = statuses.length > 1 ? statuses : statuses[0];
+                    }
+                }
+            }
             displayResults(allOccurrences, patrimonialMap, wkt);
         } catch (error) {
             console.error("Erreur durant l'analyse:", error);
@@ -877,5 +899,14 @@ const initializeSelectionMap = (coords) => {
     toggleTrackingBtn.addEventListener('click', () => toggleLocationTracking(map, toggleTrackingBtn));
     if (toggleLabelsBtn) {
         toggleLabelsBtn.addEventListener('click', toggleAnalysisLabels);
+    }
+    if (includeZnieffBtn) {
+        includeZnieffBtn.addEventListener('click', () => {
+            includeZnieff = true;
+            includeZnieffBtn.disabled = true;
+            if (lastAnalysisCoords) {
+                runAnalysis({ latitude: lastAnalysisCoords.latitude, longitude: lastAnalysisCoords.longitude, wkt: lastAnalysisWkt });
+            }
+        });
     }
 });
