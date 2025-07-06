@@ -260,6 +260,7 @@ async function fetchAltitude(lat, lon) {
 function updateAltitudeDisplay(lat, lon) {
     const el = document.getElementById('altitude-info');
     if (!el) return;
+    el.style.display = 'block';
     el.textContent = 'Altitude : ...';
     fetchAltitude(lat, lon).then(alt => {
         if (alt === null) {

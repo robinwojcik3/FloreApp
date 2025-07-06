@@ -70,6 +70,12 @@
       }
       #map { height: 60vh; width: 100%; }
       .map-fullwidth{margin-left:calc(50% - 50vw);margin-right:calc(50% - 50vw);width:100vw;}
+      .map-wrapper{position:relative;}
+      .altitude-banner{
+         position:absolute;top:10px;left:50%;transform:translateX(-50%);
+         background:var(--primary);color:#fff;padding:8px 16px;border-radius:20px;
+         font-size:1rem;font-weight:600;z-index:1000;pointer-events:none;
+      }
       
       /* Coordonnées sélectionnées */
       .coordinates-display {
@@ -151,8 +157,10 @@
 
       <div class="loading" id="loading"></div>
 
-      <div id="env-map" class="map-fullwidth" style="height:80vh;"></div>
-      <p id="altitude-info" style="text-align:center;margin:0.5rem 0;"></p>
+      <div class="map-wrapper">
+         <div id="altitude-info" class="altitude-banner" style="display:none;"></div>
+         <div id="env-map" class="map-fullwidth" style="height:80vh;"></div>
+      </div>
       <button id="measure-distance" class="small-button" style="display:none;margin-bottom:0.5rem;">Mesurer une distance</button>
       <div class="results-grid" id="results-grid" style="display:none;"></div>
    </div>
