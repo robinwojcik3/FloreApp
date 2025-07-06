@@ -8,6 +8,9 @@
   },
   "author": "Robin Wojcik",
   "license": "ISC",
+  "engines": {
+    "node": ">=21"
+  },
   "dependencies": {
     "node-fetch": "^2.6.7",
     "form-data": "^4.0.0"
