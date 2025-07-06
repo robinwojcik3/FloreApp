@@ -560,12 +560,19 @@ async function handleComparisonClick() {
     resultsContainer.innerHTML = '<i>Génération de la comparaison en cours...</i>';
     resultsContainer.style.display = 'block';
 
-    const checkedBoxes = document.querySelectorAll('.species-checkbox:checked');
-    const speciesData = Array.from(checkedBoxes).map(box => ({
-        species: box.dataset.species,
-        physio: decodeURIComponent(box.dataset.physio),
-        eco: decodeURIComponent(box.dataset.eco)
-    }));
+    const checkedBoxes = document.querySelectorAll('.species-checkbox:checked');
+    const speciesData = Array.from(checkedBoxes).map(box => {
+        const tr = box.closest('tr');
+        const latinCell = tr ? tr.querySelector('.col-nom-latin') : null;
+        const latin = latinCell
+            ? (latinCell.dataset.latin || latinCell.textContent.split('\n')[0]).trim()
+            : (box.dataset.species || '');
+        return {
+            species: latin,
+            physio: decodeURIComponent(box.dataset.physio),
+            eco: decodeURIComponent(box.dataset.eco)
+        };
+    });
 
     const cdCodes = speciesData.map(s => cdRef(s.species)).filter(Boolean);
 
