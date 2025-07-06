@@ -150,6 +150,14 @@ const physioOf = n => physionomie[norm(n)] || "—";
 const phenoOf  = n => phenologie[norm(n)] || "—";
 const slug = n => norm(n).replace(/ /g, "-");
 
+function sanitizeDescription(text, speciesName) {
+  if (!text) return '';
+  const allowed = new Set([norm(speciesName), norm(speciesName.split(' ')[0])]);
+  return text.replace(/\b[A-Z][A-Za-zÀ-ÖØ-öø-ÿ-]+(?:\s+[a-zà-öø-ÿ-]+){0,2}\b/g, m =>
+    allowed.has(norm(m)) ? m : ''
+  );
+}
+
 function parseCsv(text) {
   if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
   const rows = [];
@@ -464,7 +472,12 @@ window.handleSynthesisClick = async function(event, element, speciesName) {
     NOUVEAU : FONCTIONS POUR L'ANALYSE COMPARATIVE
     ================================================================ */
 async function getComparisonFromGemini(speciesData) {
-    const speciesDataString = speciesData.map(s => `Espèce: ${s.species}\nDonnées morphologiques (Physionomie): ${s.physio || 'Non renseignée'}\nDonnées écologiques: ${s.eco || 'Non renseignée'}`).join('\n\n');
+    const cleaned = speciesData.map(s => ({
+        species: s.species,
+        physio: sanitizeDescription(s.physio, s.species),
+        eco: sanitizeDescription(s.eco, s.species)
+    }));
+    const speciesDataString = cleaned.map(s => `Espèce: ${s.species}\nDonnées morphologiques (Physionomie): ${s.physio || 'Non renseignée'}\nDonnées écologiques: ${s.eco || 'Non renseignée'}`).join('\n\n');
     
     const promptTemplate = `En tant qu'expert botaniste, rédige une analyse comparative détaillée à partir des données ci-dessous. Mentionne systématiquement le nom latin de chaque espèce et insiste sur les critères morphologiques fiables et évidents permettant de les distinguer, ainsi que sur leur écologie.
 Données :
