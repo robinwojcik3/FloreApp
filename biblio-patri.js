@@ -492,6 +492,7 @@ const initializeSelectionMap = (coords) => {
 
     const displayResults = (occurrences, patrimonialMap, wkt) => {
         resultsContainer.innerHTML = '';
+        if (includeZnieffBtn) includeZnieffBtn.disabled = false;
         // Ne pas effacer les points précédents pour conserver l'historique
         if (Object.keys(patrimonialMap).length === 0) {
             setStatus(`Aucune occurrence d'espèce patrimoniale trouvée dans ce rayon de ${SEARCH_RADIUS_KM} km.`);
@@ -584,6 +585,8 @@ const initializeSelectionMap = (coords) => {
 
     const runAnalysis = async (params) => {
         try {
+            includeZnieff = false;
+            if (includeZnieffBtn) includeZnieffBtn.disabled = true;
             lastAnalysisCoords = { latitude: params.latitude, longitude: params.longitude };
             resultsContainer.innerHTML = '';
             mapContainer.style.display = 'none';
