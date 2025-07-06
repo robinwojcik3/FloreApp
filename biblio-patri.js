@@ -744,13 +744,17 @@ const initializeSelectionMap = (coords) => {
         }
     };
 
-    const loadObservationsAt = async (params) => {
-        try {
-            if (!map) initializeSelectionMap(params);
-            mapContainer.style.display = 'block';
-            if (obsSearchCircle) { map.removeLayer(obsSearchCircle); obsSearchCircle = null; }
-            if (obsSearchPolygon) { map.removeLayer(obsSearchPolygon); obsSearchPolygon = null; }
-            let wkt;
+      const loadObservationsAt = async (params) => {
+          try {
+              if (!map) initializeSelectionMap(params);
+              mapContainer.style.display = 'block';
+              if (searchAreaLayer) {
+                  map.removeLayer(searchAreaLayer);
+                  searchAreaLayer = null;
+              }
+              if (obsSearchCircle) { map.removeLayer(obsSearchCircle); obsSearchCircle = null; }
+              if (obsSearchPolygon) { map.removeLayer(obsSearchPolygon); obsSearchPolygon = null; }
+              let wkt;
             if (params.wkt) {
                 obsSearchPolygon = L.polygon(params.polygon, { color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(map);
                 wkt = params.wkt;
