@@ -757,15 +757,30 @@ const initializeSelectionMap = (coords) => {
                 map.fitBounds(obsSearchCircle.getBounds());
             }
             statusDiv.textContent = 'Recherche des occurrences GBIF...';
-            const url = `https://api.gbif.org/v1/occurrence/search?limit=300&geometry=${encodeURIComponent(wkt)}&taxonKey=${TRACHEOPHYTA_TAXON_KEY}`;
-            const resp = await fetch(url);
-            if (!resp.ok) throw new Error("L'API GBIF est indisponible.");
-            const data = await resp.json();
-            if (!data.results || data.results.length === 0) {
+
+            const limit = 300;
+            let offset = 0;
+            let endOfRecords = false;
+            let allResults = [];
+
+            while (!endOfRecords) {
+                const url = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&taxonKey=${TRACHEOPHYTA_TAXON_KEY}`;
+                const resp = await fetchWithRetry(url);
+                if (!resp.ok) throw new Error("L'API GBIF est indisponible.");
+                const data = await resp.json();
+                if (data.results?.length > 0) {
+                    allResults = allResults.concat(data.results);
+                }
+                endOfRecords = data.endOfRecords || (data.results?.length < limit);
+                offset += limit;
+            }
+
+            if (allResults.length === 0) {
                 statusDiv.textContent = 'Aucune observation trouvée.';
                 return;
             }
-            displayObservations(data.results);
+
+            displayObservations(allResults);
             if (!map.hasLayer(observationsLayerGroup)) {
                 observationsLayerGroup.addTo(map);
             }
