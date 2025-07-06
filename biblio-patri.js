@@ -627,7 +627,7 @@ const initializeSelectionMap = (coords) => {
                             if (adminCode === departement.code || adminCode === region.code) { ruleApplies = true; }
                         }
                         if (ruleApplies) {
-                            if (nonPatrimonialLabels.has(row.label) || type.includes('déterminante znieff')) { continue; }
+                            if (nonPatrimonialLabels.has(row.label)) { continue; }
                             const isRedList = type.includes('liste rouge');
                             if (isRedList && nonPatrimonialRedlistCodes.has(row.code)) { continue; }
                             const ruleKey = `${row.nom}|${row.type}|${row.adm}`;
