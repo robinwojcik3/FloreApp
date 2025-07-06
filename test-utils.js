@@ -78,4 +78,29 @@ function mockFetch(html) {
   });
 }
 
-module.exports = { loadApp, loadHandler, loadAuraHandler, loadGbifHandler, mockFetch };
+function loadApiProxyHandler(mockFetch, env = {}, FormDataCtor = class { getHeaders(){return {};}; }) {
+  const code = fs.readFileSync('netlify/functions/api-proxy.js', 'utf-8');
+  const patched = code
+    .replace("const fetch = require('node-fetch');", 'const fetch = global.__fetch;')
+    .replace("const FormData = require('form-data');", 'const FormData = global.__FormData;');
+  const context = { require, console, exports: {}, __fetch: mockFetch, __FormData: FormDataCtor, process: { env } };
+  context.global = context;
+  vm.createContext(context);
+  vm.runInContext(patched, context);
+  return context.exports.handler;
+}
+
+function loadAnalyzeHandler(mockFetch, env = {}) {
+  const code = fs.readFileSync('netlify/functions/analyze-patrimonial-status.js', 'utf-8');
+  const patched = code.replace(
+    /const fetch = \(\.\.\.args\) => import\('node-fetch'\)\.then\(\(\{default: f\}\) => f\(\.\.\.args\)\);/,
+    'const fetch = (...args) => global.__fetch(...args);'
+  );
+  const context = { require, console, exports: {}, __fetch: mockFetch, process: { env } };
+  context.global = context;
+  vm.createContext(context);
+  vm.runInContext(patched, context);
+  return context.exports.handler;
+}
+
+module.exports = { loadApp, loadHandler, loadAuraHandler, loadGbifHandler, loadApiProxyHandler, loadAnalyzeHandler, mockFetch };
