@@ -13,9 +13,10 @@ Plantouille Express est une application web progressive qui aide à l'identifica
 
 ## Prérequis
 
- - **Node.js 20** et **npm**
+- **Node.js 20** et **npm**
 - un navigateur récent prenant en charge les service workers
 - facultatif : **Netlify CLI** pour tester les fonctions serverless en local
+- aucun module Python n'est requis ; le fichier `requirements.txt` a donc été supprimé
 
 ## Installation
 
