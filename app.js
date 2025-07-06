@@ -544,21 +544,11 @@ function markdownTableToHtml(md) {
 }
 
 async function handleComparisonClick() {
-    const compareBtn = document.getElementById('compare-btn');
-    if (!compareBtn) return;
-    
-    compareBtn.disabled = true;
-    compareBtn.textContent = 'Analyse en cours...';
+    const compareBtn = document.getElementById('compare-btn');
+    if (!compareBtn) return;
 
-    const resultsContainer = document.getElementById('comparison-results-container');
-    if (!resultsContainer) {
-        console.error("Le conteneur de résultats (#comparison-results-container) est introuvable.");
-        compareBtn.disabled = false;
-        compareBtn.textContent = 'Comparer les espèces';
-        return;
-    }
-    resultsContainer.innerHTML = '<i>Génération de la comparaison en cours...</i>';
-    resultsContainer.style.display = 'block';
+    compareBtn.disabled = true;
+    compareBtn.textContent = 'Analyse en cours...';
 
     const checkedBoxes = document.querySelectorAll('.species-checkbox:checked');
     const speciesData = Array.from(checkedBoxes).map(box => {
@@ -574,60 +564,18 @@ async function handleComparisonClick() {
         };
     });
 
-    const cdCodes = speciesData.map(s => cdRef(s.species)).filter(Boolean);
+    if (!speciesData.length) {
+        compareBtn.disabled = false;
+        compareBtn.textContent = 'Comparer les espèces';
+        return;
+    }
 
-    const comparisonText = await getComparisonFromGemini(speciesData);
-    const { intro, tableMarkdown, summary } = parseComparisonText(comparisonText);
-    const tableHtml = markdownTableToHtml(tableMarkdown);
+    localStorage.setItem('comparisonData', JSON.stringify(speciesData));
+    const speciesNames = speciesData.map(s => s.species).join(',');
+    window.open(`compare.html?species=${encodeURIComponent(speciesNames)}`, '_blank');
 
-    resultsContainer.style.cssText = `
-        margin-top: 2rem;
-        padding: 1.5rem;
-        background: var(--card, #ffffff);
-        border: 1px solid var(--border, #e0e0e0);
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0,0,0,.05);
-    `;
-    resultsContainer.innerHTML = `
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 1rem;">
-            <h2 style="margin:0; color:var(--primary, #388e3c);">Analyse Comparative des Espèces</h2>
-        </div>
-        <hr style="border: none; border-top: 1px solid var(--border, #e0e0e0); margin: 1rem 0;">
-        <div id="comparison-table-content"><p>${intro}</p>${tableHtml}</div>
-        <div id="comparison-summary" style="margin-top:1rem; display:flex; align-items:flex-start; gap:0.5rem;">
-            <p id="comparison-summary-text" style="margin:0;">${summary}</p>
-            <a href="#" id="comparison-tts-btn" title="Écouter la synthèse" style="flex-shrink:0;">
-                <img src="assets/Audio.png" alt="Écouter" class="logo-icon" style="height: 32px;">
-            </a>
-        </div>
-    `;
-
-    document.getElementById('comparison-tts-btn').addEventListener('click', async (e) => {
-        e.preventDefault();
-        const btn = e.currentTarget;
-        const textElement = document.getElementById('comparison-summary-text');
-        if (!textElement) return;
-
-        const textToSynthesize = textElement.innerText;
-        
-        btn.innerHTML = '<i>...</i>';
-        btn.style.pointerEvents = 'none';
-
-        const audioData = await synthesizeSpeech(textToSynthesize);
-        if (audioData) {
-            playAudioFromBase64(audioData);
-        } else {
-            showInfoModal("Échec de la synthèse audio", "La conversion du texte en audio a échoué.");
-        }
-
-        btn.innerHTML = '<img src="assets/Audio.png" alt="Écouter" class="logo-icon" style="height: 32px;">';
-        btn.style.pointerEvents = 'auto';
-    });
-
-    resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-    compareBtn.disabled = false;
-    compareBtn.textContent = 'Comparer les espèces';
+    compareBtn.disabled = false;
+    compareBtn.textContent = 'Comparer les espèces';
 }
 
 
@@ -803,67 +751,25 @@ function buildTable(items){
       compareBtn.style.marginRight = '0.5rem';
       compareBtn.style.width = 'auto';
 
-      const locationBtn = document.createElement('button');
-      locationBtn.id = 'location-btn';
-      locationBtn.textContent = 'Carte de localisation';
-      locationBtn.className = 'action-button';
-      locationBtn.style.display = 'none';
-      locationBtn.style.padding = '0.8rem 1.5rem';
-      locationBtn.style.width = 'auto';
-      locationBtn.style.backgroundColor = '#0277BD';
+      footer.appendChild(compareBtn);
 
-      footer.appendChild(compareBtn);
-      footer.appendChild(locationBtn);
+      compareBtn.addEventListener('click', handleComparisonClick);
+  }
 
-      compareBtn.addEventListener('click', handleComparisonClick);
-      
-      locationBtn.addEventListener('click', () => {
-          const checkedBoxes = document.querySelectorAll('.species-checkbox:checked');
-          let speciesNames = Array.from(checkedBoxes).map(box => {
-              const latinCell = box.closest('tr')?.querySelector('.col-nom-latin');
-              if (latinCell) {
-                  return (latinCell.dataset.latin || latinCell.textContent.split('\n')[0]).trim();
-              }
-              return box.dataset.species || '';
-          }).filter(Boolean).join(',');
-
-          if (!speciesNames) {
-              const allBoxes = document.querySelectorAll('.species-checkbox');
-              if (allBoxes.length === 1) {
-                  const latinCell = allBoxes[0].closest('tr')?.querySelector('.col-nom-latin');
-                  if (latinCell) {
-                      speciesNames = (latinCell.dataset.latin || latinCell.textContent.split('\n')[0]).trim();
-                  } else {
-                      speciesNames = allBoxes[0].dataset.species || '';
-                  }
-              }
-          }
-
-          if (speciesNames) {
-              const mapUrl = `carte_interactive/map_view.html?species=${encodeURIComponent(speciesNames)}`;
-              window.open(mapUrl, '_blank');
-          }
-      });
-  }
-
-  const updateCompareVisibility = () => {
-      const checkedCount = wrap.querySelectorAll('.species-checkbox:checked').length;
-      const compareBtn = document.getElementById('compare-btn');
-      const locationBtn = document.getElementById('location-btn');
-      const toggleBtn = document.getElementById('toggle-select-btn');
-      if(compareBtn) {
-        compareBtn.style.display = (checkedCount >= 2) ? 'inline-block' : 'none';
-      }
-      if(locationBtn) {
+  const updateCompareVisibility = () => {
+      const checkedCount = wrap.querySelectorAll('.species-checkbox:checked').length;
+      const compareBtn = document.getElementById('compare-btn');
+      const toggleBtn = document.getElementById('toggle-select-btn');
+      if(compareBtn) {
         const total = wrap.querySelectorAll('.species-checkbox').length;
         const showBtn = checkedCount >= 1 || total === 1;
-        locationBtn.style.display = showBtn ? 'inline-block' : 'none';
+        compareBtn.style.display = showBtn ? 'inline-block' : 'none';
       }
-      if(toggleBtn) {
-        const total = wrap.querySelectorAll('.species-checkbox').length;
-        const allChecked = checkedCount === total && total > 0;
-        toggleBtn.textContent = allChecked ? 'Tout désélectionner' : 'Tout sélectionner';
-      }
+      if(toggleBtn) {
+        const total = wrap.querySelectorAll('.species-checkbox').length;
+        const allChecked = checkedCount === total && total > 0;
+        toggleBtn.textContent = allChecked ? 'Tout désélectionner' : 'Tout sélectionner';
+      }
   };
 
   updateCompareVisibility();
