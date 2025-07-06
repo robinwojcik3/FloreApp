@@ -725,7 +725,7 @@ function buildTable(items){
           	 	 </td>
           	 	 <td class="col-link">${linkIcon(cd && aura(cd), "Biodiv'AURA.png", "Biodiv'AURA")}</td>
           	 	 <td class="col-link">${linkIcon(infoFlora(sci), "Info Flora.png", "Info Flora")}</td>
-                <td class="col-link"><a href="#" onclick="handleSynthesisClick(event, this, '${escapedSci}')"><img src="assets/Audio.png" alt="Audio" class="logo-icon"></a></td>
+                <td class="col-link"><a href="#" onclick="handleSynthesisClick(event, this, '${escapedSci}')"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA4MDAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CiAgPHBvbHlnb24gcG9pbnRzPSIxMSA1IDYgOSAyIDkgMiAxNSA2IDE1IDExIDE5IDExIDUiIC8+CiAgPHBhdGggZD0iTTE1LjU0IDguNDZhNSA1IDAgMDEwIDcuMDciIC8+CiAgPHBhdGggZD0iTTE5LjA3IDQuOTNhOSA5IDAgMDEwIDE0LjE0IiAvPgo8L3N2Zz4K" alt="Audio" class="logo-icon"></a></td>
           	 	 <td class="col-link">${linkIcon(pfaf(sci), "PFAF.png", "PFAF")}</td>
          <td class="col-link">${regalVegetalLink}</td>
             <td class="col-link">${floreMedLink}</td>
