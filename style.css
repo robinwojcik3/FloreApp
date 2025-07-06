@@ -254,15 +254,43 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     gap: 0.5rem;
 }
 
-/* Navigation pour accéder rapidement à la carte ou au tableau */
+/* Barre d'onglets secondaire (Carte/Tableau) */
 .section-nav {
     display: none;
     position: sticky;
     top: 0;
     z-index: 90;
     background: var(--card);
-    padding: 0.5rem;
+    border-bottom: 2px solid var(--border);
     display: flex;
     justify-content: center;
-    gap: 0.5rem;
+}
+
+.nav-tab {
+    flex: 1;
+    padding: 0.8rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: var(--text);
+    transition: background 0.3s;
+    position: relative;
+}
+.nav-tab:hover {
+    background: rgba(56, 142, 60, 0.1);
+}
+.nav-tab.active {
+    color: var(--primary);
+    font-weight: 600;
+}
+.nav-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: var(--primary);
 }
