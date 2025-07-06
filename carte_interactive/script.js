@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const searchSingleSpecies = async (speciesName, wktPolygon, color) => {
             try {
-                const matchUrl = `https://api.gbif.org/v1/species/match?name=${encodeURIComponent(speciesName)}`;
+                const matchUrl = `/api/gbif?endpoint=match&name=${encodeURIComponent(speciesName)}`;
                 const matchResponse = await fetch(matchUrl);
                 if (!matchResponse.ok) throw new Error(`Erreur de validation du nom d'espèce (HTTP ${matchResponse.status})`);
                 const matchData = await matchResponse.json();
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const pageSize = 300; 
 
                 while (keepFetching && allResults.length < maxOccurrences) {
-                    const occurrenceUrl = `https://api.gbif.org/v1/occurrence/search?taxonKey=${matchData.usageKey}&geometry=${encodeURIComponent(wktPolygon)}&limit=${pageSize}&offset=${offset}`;
+                    const occurrenceUrl = `/api/gbif?endpoint=search&taxonKey=${matchData.usageKey}&geometry=${encodeURIComponent(wktPolygon)}&limit=${pageSize}&offset=${offset}`;
                     const occResponse = await fetch(occurrenceUrl);
                     
                     if (!occResponse.ok) {
