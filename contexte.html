@@ -96,15 +96,14 @@
       
       /* Résultats */
       .results-section { display: none; margin-top: 2rem; }
-      .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-top: 1rem; }
-      .result-card {
-         background: var(--card); border-radius: 8px; padding: 1rem;
-         box-shadow: 0 2px 6px rgba(0,0,0,0.1); transition: transform .2s;
+      .results-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 0.75rem; margin-top: 1rem; }
+      .resource-btn {
+         background: var(--card); border: none; border-radius: 8px; padding: 0.8rem;
+         display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+         box-shadow: 0 2px 6px rgba(0,0,0,0.1); cursor: pointer; transition: transform .2s;
       }
-      .result-card:hover{ transform: scale(1.02); }
-      .result-card h3 { color: var(--primary); margin: 0 0 0.5rem; font-size: 1.1rem; }
-      .result-card a { display: inline-block; margin-top: 0.5rem; color: var(--primary); text-decoration: none; }
-      .result-card a:hover { text-decoration: underline; }
+      .resource-btn:hover { transform: scale(1.05); }
+      .resource-icon { width: 40px; height: 40px; }
 
       /* Sous-onglets des résultats */
       .subtabs { display:flex; gap:.5rem; margin-bottom:1rem; }

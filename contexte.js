@@ -125,37 +125,41 @@ function runResourcesAt(latlng) {
 
 // Configuration des services externes (liens)
 const SERVICES = {
-	arcgis: {
-		name: "ArcGIS - Carte de la végétation",
-		description: "Visualisez la carte de végétation de la zone",
-		buildUrl: (lat, lon) => {
-			const { x, y } = latLonToWebMercator(lat, lon);
-			const buffer = 1000;
-			return `https://www.arcgis.com/apps/webappviewer/index.html?id=bece6e542e4c42e0ba9374529c7de44c&extent=${x-buffer}%2C${y-buffer}%2C${x+buffer}%2C${y+buffer}%2C102100`;
-		}
-	},
-	geoportail: {
-		name: "Géoportail - Carte des sols",
-		description: "Explorez la carte pédologique de la zone",
-		buildUrl: (lat, lon) => {
-			return `https://www.geoportail.gouv.fr/carte?c=${lon},${lat}&z=15&l0=ORTHOIMAGERY.ORTHOPHOTOS::GEOPORTAIL:OGC:WMTS(1)&l1=AGRICULTURE.CARTE.PEDOLOGIQUE::GEOPORTAIL:OGC:WMS(0.5)&permalink=yes`;
-		}
-	},
-	ign: {
-		name: "IGN Remonter le temps",
-		description: "Comparez l'évolution du paysage dans le temps",
-		buildUrl: (lat, lon) => {
-			return `https://remonterletemps.ign.fr/comparer?lon=${lon.toFixed(6)}&lat=${lat.toFixed(6)}&z=17&layer1=16&layer2=19&mode=split-h`;
-		}
-	},
-	inaturalist: {
-		name: "iNaturalist - Observations",
-		description: "Découvrez les observations naturalistes de la zone",
-		buildUrl: (lat, lon) => {
-			const radius = 5; // km
-			return `https://www.inaturalist.org/observations?lat=${lat.toFixed(8)}&lng=${lon.toFixed(8)}&radius=${radius}&subview=map&threatened&iconic_taxa=Plantae`;
-		}
-	}
+    arcgis: {
+        name: "ArcGIS - Carte de la végétation",
+        description: "Visualisez la carte de végétation de la zone",
+        icon: "ArcGIS.svg",
+        buildUrl: (lat, lon) => {
+            const { x, y } = latLonToWebMercator(lat, lon);
+            const buffer = 1000;
+            return `https://www.arcgis.com/apps/webappviewer/index.html?id=bece6e542e4c42e0ba9374529c7de44c&extent=${x-buffer}%2C${y-buffer}%2C${x+buffer}%2C${y+buffer}%2C102100`;
+        }
+    },
+    geoportail: {
+        name: "Géoportail - Carte des sols",
+        description: "Explorez la carte pédologique de la zone",
+        icon: "Geoportail.svg",
+        buildUrl: (lat, lon) => {
+            return `https://www.geoportail.gouv.fr/carte?c=${lon},${lat}&z=15&l0=ORTHOIMAGERY.ORTHOPHOTOS::GEOPORTAIL:OGC:WMTS(1)&l1=AGRICULTURE.CARTE.PEDOLOGIQUE::GEOPORTAIL:OGC:WMS(0.5)&permalink=yes`;
+        }
+    },
+    ign: {
+        name: "IGN Remonter le temps",
+        description: "Comparez l'évolution du paysage dans le temps",
+        icon: "IGN.svg",
+        buildUrl: (lat, lon) => {
+            return `https://remonterletemps.ign.fr/comparer?lon=${lon.toFixed(6)}&lat=${lat.toFixed(6)}&z=17&layer1=16&layer2=19&mode=split-h`;
+        }
+    },
+    inaturalist: {
+        name: "iNaturalist - Observations",
+        description: "Découvrez les observations naturalistes de la zone",
+        icon: "iNaturalist.svg",
+        buildUrl: (lat, lon) => {
+            const radius = 5; // km
+            return `https://www.inaturalist.org/observations?lat=${lat.toFixed(8)}&lng=${lon.toFixed(8)}&radius=${radius}&subview=map&threatened&iconic_taxa=Plantae`;
+        }
+    }
 };
 
 // NOUVEAU : Configuration des couches via l'API Carto de l'IGN
@@ -377,10 +381,11 @@ function displayResources() {
     Object.keys(SERVICES).forEach(serviceKey => {
         const service = SERVICES[serviceKey];
         const url = service.buildUrl(selectedLat, selectedLon);
-        const card = document.createElement('div');
-        card.className = 'result-card';
-        card.innerHTML = `<h3>${service.name}</h3><p>${service.description}</p><a href="${url}" target="_blank" rel="noopener noreferrer">Ouvrir dans un nouvel onglet →</a>`;
-        resultsGrid.appendChild(card);
+        const btn = document.createElement('button');
+        btn.className = 'resource-btn';
+        btn.innerHTML = `<img src="assets/${service.icon}" class="resource-icon" alt=""> <span>${service.name}</span>`;
+        btn.addEventListener('click', () => window.open(url, '_blank'));
+        resultsGrid.appendChild(btn);
     });
     resultsGrid.style.display = 'grid';
 }
