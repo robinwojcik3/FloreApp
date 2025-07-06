@@ -253,3 +253,16 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     display: flex;
     gap: 0.5rem;
 }
+
+/* Navigation pour accéder rapidement à la carte ou au tableau */
+.section-nav {
+    display: none;
+    position: sticky;
+    top: 0;
+    z-index: 90;
+    background: var(--card);
+    padding: 0.5rem;
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+}
