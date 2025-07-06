@@ -475,7 +475,7 @@ Structure ta réponse en trois parties sans texte introductif superflu.
 
 Commence par une phrase unique (1 à 2 lignes) soulignant le trait distinctif le plus facilement observable.
 
-Ensuite, fournis un tableau en Markdown où chaque espèce (nom latin seulement) constitue une colonne. Les lignes correspondent aux organes comparés et incluent une première ligne indiquant la nature de la caractéristique observée. Remplis les cellules uniquement à partir des informations contenues dans les colonnes "Critères physiologiques", "Écologie" et "Physionomie". N'utilise ni gras ni italique.
+Ensuite, rédige un tableau en Markdown où chaque espèce (nom latin seulement) constitue une colonne. Organise environ 80 % des lignes autour des organes végétatifs et reproducteurs : racine, tige, feuille, fleur, fruit et autres structures utiles. Chaque cellule contient une phrase courte et précise employant un vocabulaire botanique rigoureux. Termine le tableau par une ligne résumant brièvement les caractéristiques écologiques générales.
 
 Termine par un paragraphe de synthèse d'environ cinq à six phrases, rédigé dans un style oral mais rigoureux, rappelant les points clés pour ne pas confondre les espèces. Ce paragraphe ne doit contenir aucun formatage Markdown ni liste, ni caractères tels que '*' ou '/'.`;
 
