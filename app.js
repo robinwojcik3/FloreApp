@@ -735,24 +735,23 @@ function buildTable(items){
 
   const headerHtml = `<tr><th class="col-checkbox"><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Phénologie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Fiche synthèse</th><th>PFAF</th><th>Régal Végétal</th><th>Flore Méd</th><th>INPN statut</th></tr>`;
 
-  wrap.innerHTML = `<button id="status-analysis-btn" class="action-button" style="margin-bottom:1rem;">Analyse statuts</button><div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-footer" style="padding-top: 1rem; text-align: center;"></div><div id="comparison-results-container" style="display:none;"></div>`;
+  let similarArea = document.getElementById('similar-btn-area');
+  if (!similarArea) {
+      similarArea = document.createElement('div');
+      similarArea.id = 'similar-btn-area';
+  }
+  wrap.innerHTML = `<div id="action-bar" style="margin-bottom:1rem;text-align:center;">
+      <button id="status-analysis-btn" class="action-button">Analyse statuts</button>
+      <button id="compare-btn" class="action-button" style="display:none;padding:0.8rem 1.5rem;margin-left:0.5rem;width:auto;">Comparer les espèces</button>
+  </div><div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-results-container" style="display:none;"></div>`;
   enableDragScroll(wrap);
+  const actionBar = document.getElementById('action-bar');
   const statusBtn = document.getElementById('status-analysis-btn');
   if (statusBtn) statusBtn.addEventListener('click', runStatusAnalysis);
+  if (actionBar && similarArea) actionBar.appendChild(similarArea);
 
-  const footer = document.getElementById('comparison-footer');
-  if (footer) {
-      const compareBtn = document.createElement('button');
-      compareBtn.id = 'compare-btn';
-      compareBtn.textContent = 'Comparer les espèces';
-      compareBtn.className = 'action-button';
-      compareBtn.style.display = 'none';
-      compareBtn.style.padding = '0.8rem 1.5rem';
-      compareBtn.style.marginRight = '0.5rem';
-      compareBtn.style.width = 'auto';
-
-      footer.appendChild(compareBtn);
-
+  const compareBtn = document.getElementById('compare-btn');
+  if (compareBtn) {
       compareBtn.addEventListener('click', handleComparisonClick);
   }
 
@@ -900,12 +899,17 @@ function buildCards(items){
 function showSimilarSpeciesButton(speciesName) {
   const area = document.getElementById('similar-btn-area');
   if (!area) return;
-  area.innerHTML = '';
-  const btn = document.createElement('button');
-  btn.id = 'similar-btn';
-  btn.textContent = 'Montrer des espèces similaires (Rhône-Alpes/PACA)';
-  btn.className = 'action-button';
-  area.appendChild(btn);
+  area.innerHTML = '';
+  area.style.display = 'inline-block';
+  area.style.marginLeft = '0.5rem';
+  const btn = document.createElement('button');
+  btn.id = 'similar-btn';
+  btn.textContent = 'Montrer des espèces similaires (Rhône-Alpes/PACA)';
+  btn.className = 'action-button';
+  btn.style.display = 'inline-block';
+  btn.style.width = 'auto';
+  btn.style.padding = '0.8rem 1.5rem';
+  area.appendChild(btn);
   btn.addEventListener('click', async () => {
     btn.disabled = true;
     btn.textContent = 'Recherche...';
