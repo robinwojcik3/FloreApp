@@ -22,9 +22,16 @@ document.addEventListener('DOMContentLoaded', () => {
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
         });
 
+        const cvpLayer = L.tileLayer('/tiles/{z}/{x}/{y}.png', {
+            attribution: '&copy; CNRS–ECOLAB, BDGveg_FR',
+            minZoom: 3,
+            maxZoom: 10
+        });
+
         const baseLayers = {
             'OpenTopoMap': openTopoLayer,
-            'Satellite': satelliteLayer
+            'Satellite': satelliteLayer,
+            'Végétation potentielle': cvpLayer
         };
 
         openTopoLayer.addTo(map);

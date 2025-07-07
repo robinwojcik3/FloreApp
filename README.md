@@ -76,3 +76,12 @@ Poussez le dépôt sur GitHub puis créez un site sur Netlify. Le fichier `netli
 - recherche par trigramme et suggestions via TaxRef Match
 - comparaison d'espèces et synthèse vocale optionnelle
 
+
+## Intégration de la Carte de la Végétation Potentielle (CVP)
+
+La CVP n'est pas distribuée librement. Achetez les données auprès d'ECOLAB (carteveget@obs-mip.fr) puis générez vos propres tuiles. Le script `scripts/generate-cvp-tiles.sh` illustre la conversion d'un GeoPackage en tuiles raster via `gdalwarp` et `gdal2tiles.py`.
+
+Placez les tuiles obtenues dans `public/tiles/` pour qu'elles soient servies par Netlify. La page `carte_interactive/map_view.html` affichera alors une couche supplémentaire "Végétation potentielle".
+
+Merci de mentionner « © CNRS–ECOLAB, BDGveg_FR » et de solliciter ECOLAB pour tout usage commercial.
+
