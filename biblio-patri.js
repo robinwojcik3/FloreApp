@@ -291,7 +291,7 @@ let rulesByTaxonIndex = new Map();
         const topoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
             attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)'
         });
-    
+
         const satelliteMap = L.tileLayer(
             'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
             {
@@ -299,6 +299,18 @@ let rulesByTaxonIndex = new Map();
                     'Tiles © Esri — Source: Esri, Earthstar Geographics, and the GIS User Community',
                 maxZoom: 19,
                 crossOrigin: true
+            }
+        );
+
+        // Fond de carte de la végétation potentielle (flux WMS)
+        const vegMap = L.tileLayer.wms(
+            'https://geoservices.obs-mip.fr/geoserver/vegetation/wms',
+            {
+                layers: 'vegetation_potentielle',
+                format: 'image/png',
+                version: '1.3.0',
+                attribution: '© Observatoire Midi-Pyrénées',
+                transparent: false
             }
         );
     
@@ -317,7 +329,8 @@ let rulesByTaxonIndex = new Map();
         // 3. Définition des objets pour le contrôle des couches
         const baseMaps = {
             "Topographique": topoMap,
-            "Satellite": satelliteMap
+            "Satellite": satelliteMap,
+            "Végétation potentielle": vegMap
         };
 
         const overlayMaps = {
@@ -354,12 +367,22 @@ const initializeSelectionMap = (coords) => {
                 crossOrigin: true
             }
         );
+        const vegMap = L.tileLayer.wms(
+            'https://geoservices.obs-mip.fr/geoserver/vegetation/wms',
+            {
+                layers: 'vegetation_potentielle',
+                format: 'image/png',
+                version: '1.3.0',
+                attribution: '© Observatoire Midi-Pyrénées',
+                transparent: false
+            }
+        );
         mapContainer.style.display = 'block';
         if (!map) {
             map = L.map(mapContainer, { center: [coords.latitude, coords.longitude], zoom: 12, layers: [topoMap] });
             if (!layersControl) {
                 layersControl = L.control.layers(
-                    { "Topographique": topoMap, "Satellite": satelliteMap },
+                    { "Topographique": topoMap, "Satellite": satelliteMap, "Végétation potentielle": vegMap },
                     { "Espèces Patrimoniales": patrimonialLayerGroup, "Observations GBIF": observationsLayerGroup }
                 ).addTo(map);
             }
