@@ -162,6 +162,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     let allPatrimonialLocations = null;
     let allPatrimonialSpecies = [];
     let selectedSpecies = new Set();
+    let znieffOnlySpecies = new Set();
+    let znieffFilterActive = false;
     let rulesByTaxonIndex = new Map();
     let trackingWatchId = null;
     let trackingMarker = null;
@@ -492,6 +494,7 @@ const initializeSelectionMap = (coords) => {
 
     const displayResults = (occurrences, patrimonialMap, wkt) => {
         resultsContainer.innerHTML = '';
+        znieffFilterActive = false;
         // Ne pas effacer les points précédents pour conserver l'historique
         if (Object.keys(patrimonialMap).length === 0) {
             setStatus(`Aucune occurrence d'espèce patrimoniale trouvée dans ce rayon de ${SEARCH_RADIUS_KM} km.`);
@@ -500,16 +503,20 @@ const initializeSelectionMap = (coords) => {
         setStatus(`${Object.keys(patrimonialMap).length} espèce(s) patrimoniale(s) trouvée(s). Lancement de l'étape 4/4 : cartographie détaillée...`);
 
         const allSpeciesList = Object.keys(patrimonialMap).sort();
+        znieffOnlySpecies = new Set();
         const tableBody = document.createElement('tbody');
         allSpeciesList.forEach((speciesName, index) => {
             const color = SPECIES_COLORS[index % SPECIES_COLORS.length];
             const row = tableBody.insertRow();
             row.dataset.species = speciesName;
+            const statuses = Array.isArray(patrimonialMap[speciesName]) ? patrimonialMap[speciesName] : [patrimonialMap[speciesName]];
+            const isZnieffOnly = statuses.length === 1 && /znieff/i.test(statuses[0]);
+            if (isZnieffOnly) znieffOnlySpecies.add(speciesName);
             const statusCellContent = Array.isArray(patrimonialMap[speciesName])
                 ? '<ul>' + patrimonialMap[speciesName].map(s => `<li>${s}</li>`).join('') + '</ul>'
                 : patrimonialMap[speciesName];
             const faLink = linkIcon(floreAlpesUrl(speciesName), 'FloreAlpes.png', 'FloreAlpes', 'small-logo');
-            row.innerHTML = `<td><input type="checkbox" class="species-toggle" data-species="${speciesName}" checked></td><td><span class="legend-color" style="background-color:${color};"></span><i>${speciesName}</i> ${faLink}</td><td>${statusCellContent}</td>`;
+            row.innerHTML = `<td><input type="checkbox" class="species-toggle" data-species="${speciesName}" data-znieff-only="${isZnieffOnly}" checked></td><td><span class="legend-color" style="background-color:${color};"></span><i>${speciesName}</i> ${faLink}</td><td>${statusCellContent}</td>`;
         });
 
         const selectAllBtn = document.createElement('button');
@@ -517,6 +524,13 @@ const initializeSelectionMap = (coords) => {
         selectAllBtn.className = 'action-button';
         selectAllBtn.textContent = 'Tout désélectionner';
         resultsContainer.appendChild(selectAllBtn);
+
+        const znieffBtn = document.createElement('button');
+        znieffBtn.id = 'toggle-znieff-btn';
+        znieffBtn.className = 'action-button';
+        znieffBtn.style.marginLeft = '0.5rem';
+        znieffBtn.textContent = 'Masquer ZNIEFF seules';
+        resultsContainer.appendChild(znieffBtn);
 
         const detailsBtn = document.createElement('button');
         detailsBtn.id = 'show-details-btn';
@@ -567,6 +581,20 @@ const initializeSelectionMap = (coords) => {
             renderPatrimonialLocations();
         });
 
+        znieffBtn.addEventListener('click', () => {
+            znieffFilterActive = !znieffFilterActive;
+            znieffBtn.textContent = znieffFilterActive ? 'Afficher ZNIEFF seules' : 'Masquer ZNIEFF seules';
+            table.querySelectorAll('.species-toggle').forEach(cb => {
+                if (cb.dataset.znieffOnly === 'true') {
+                    cb.checked = !znieffFilterActive;
+                    const sp = cb.dataset.species;
+                    if (znieffFilterActive) selectedSpecies.delete(sp); else selectedSpecies.add(sp);
+                }
+            });
+            updateSelectAllButton();
+            renderPatrimonialLocations();
+        });
+
         detailsBtn.addEventListener('click', () => {
             // Use the pre‑computed list from the analysis; fall back to the
             // global array if it has been populated later on.
@@ -578,6 +606,9 @@ const initializeSelectionMap = (coords) => {
         });
 
         selectedSpecies = new Set(Object.keys(patrimonialMap));
+        if (znieffFilterActive) {
+            znieffOnlySpecies.forEach(sp => selectedSpecies.delete(sp));
+        }
         updateSelectAllButton();
         fetchAndDisplayAllPatrimonialOccurrences(patrimonialMap, wkt, occurrences);
     };
