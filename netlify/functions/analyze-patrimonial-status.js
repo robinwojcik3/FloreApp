@@ -1,5 +1,5 @@
 // /netlify/functions/analyze-patrimonial-status.js
-const fetch = (...args) => import('node-fetch').then(({default: f}) => f(...args));
+const fetch = require('./utils/fetch');
 
 // La clé API reste le seul secret côté serveur.
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
