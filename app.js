@@ -248,33 +248,33 @@ function savePhotoLocally(blob, name) {
 }
 
 function resizeImageToDataURL(file, maxDim = 1600) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = e => {
-      const img = new Image();
-      img.onload = () => {
-        let { width, height } = img;
-        if (width > maxDim || height > maxDim) {
-          if (width > height) {
-            height = Math.round(height * maxDim / width);
-            width = maxDim;
-          } else {
-            width = Math.round(width * maxDim / height);
-            height = maxDim;
-          }
-        }
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', 0.85));
-      };
-      img.onerror = () => reject(new Error('Image load error'));
-      img.src = e.target.result;
-    };
-    reader.onerror = () => reject(new Error('File read error'));
-    reader.readAsDataURL(file);
-  });
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      let { width, height } = img;
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = Math.round(height * maxDim / width);
+          width = maxDim;
+        } else {
+          width = Math.round(width * maxDim / height);
+          height = maxDim;
+        }
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL('image/jpeg', 0.85));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error('Image load error'));
+    };
+    img.src = url;
+  });
 }
 
 async function apiFetch(target, payload) {
@@ -808,58 +808,57 @@ function buildTable(items){
       }
   });
 
-  const handleWrapClick = (e) => {
-      const popupTrigger = e.target.closest('.text-popup-trigger');
-      if (popupTrigger) {
-          const overlay = document.getElementById('popup-overlay');
-          const content = document.getElementById('popup-content');
-          if (overlay && content) {
-              const title = popupTrigger.dataset.title || '';
-              let fullText = decodeURIComponent(popupTrigger.dataset.fulltext || '');
-              const latinCell = popupTrigger.closest('tr')?.querySelector('.col-nom-latin');
-              const latin = latinCell ? (latinCell.dataset.latin || '').trim() : '';
-              if (latin) {
-                  const re = new RegExp(latin.replace(/[.*+?^${}()|[\]\\]/g, '\\amp;'), 'gi');
-                  fullText = fullText.replace(re, '').trim();
-              }
-              content.innerHTML = `<h3 style="margin-top:0">${title}</h3><p>${fullText}</p>`;
-              overlay.style.display = 'flex';
-          }
-          return;
-      }
 
-      const nameCell = e.target.closest('.col-nom-latin');
-      if (nameCell) {
-        const latin = (nameCell.dataset.latin || '').trim();
-        const text = latin || nameCell.innerText.replace(/\s*\(.*/, '').replace(/\s+/g, ' ').trim();
-        const copy = (t) => {
-            if (navigator.clipboard && navigator.clipboard.writeText) {
-                navigator.clipboard.writeText(t).then(() => {
-                    showNotification('Nom latin copié', 'success');
-                }).catch(() => showNotification('Échec de la copie', 'error'));
-            } else {
-                const ta = document.createElement('textarea');
-                ta.value = t;
-                ta.style.position = 'fixed';
-                ta.style.opacity = '0';
-                document.body.appendChild(ta);
-                ta.focus();
-                ta.select();
-                try {
-                    document.execCommand('copy');
-                    showNotification('Nom latin copié', 'success');
-                } catch(err) {
-                    showNotification('Échec de la copie', 'error');
-                }
-                document.body.removeChild(ta);
-            }
-        };
-        copy(text);
-        return;
-      }
+  const showPopup = (trigger) => {
+      const overlay = document.getElementById('popup-overlay');
+      const content = document.getElementById('popup-content');
+      if (!overlay || !content) return;
+      const title = trigger.dataset.title || '';
+      let fullText = decodeURIComponent(trigger.dataset.fulltext || '');
+      const latinCell = trigger.closest('tr')?.querySelector('.col-nom-latin');
+      const latin = latinCell ? (latinCell.dataset.latin || '').trim() : '';
+      if (latin) {
+          const re = new RegExp(latin.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&'), 'gi');
+          fullText = fullText.replace(re, '').trim();
+      }
+      content.innerHTML = `<h3 style="margin-top:0">${title}</h3><p>${fullText}</p>`;
+      overlay.style.display = 'flex';
+  };
 
-  };
+  const copyLatinName = (cell) => {
+      const latin = (cell.dataset.latin || '').trim();
+      const text = latin || cell.innerText.replace(/\s*\(.*/, '').replace(/\s+/g, ' ').trim();
+      const copy = (t) => {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(t)
+                .then(() => showNotification('Nom latin copié', 'success'))
+                .catch(() => showNotification('Échec de la copie', 'error'));
+          } else {
+              const ta = document.createElement('textarea');
+              ta.value = t;
+              ta.style.position = 'fixed';
+              ta.style.opacity = '0';
+              document.body.appendChild(ta);
+              ta.focus();
+              ta.select();
+              try {
+                  document.execCommand('copy');
+                  showNotification('Nom latin copié', 'success');
+              } catch(err) {
+                  showNotification('Échec de la copie', 'error');
+              }
+              document.body.removeChild(ta);
+          }
+      };
+      copy(text);
+  };
 
+  const handleWrapClick = (e) => {
+      const popupTrigger = e.target.closest('.text-popup-trigger');
+      if (popupTrigger) { showPopup(popupTrigger); return; }
+      const nameCell = e.target.closest('.col-nom-latin');
+      if (nameCell) { copyLatinName(nameCell); }
+  };
   const safeClick = e => {
       if (moved) { moved = false; return; }
       handleWrapClick(e);
