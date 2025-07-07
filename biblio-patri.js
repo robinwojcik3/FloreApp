@@ -299,6 +299,15 @@ document.addEventListener('DOMContentLoaded', async () => {
                 crossOrigin: true
             }
         );
+
+        const vegetationLayer = L.tileLayer.wms(
+            'https://cdn.obs-mip.fr/geoserver/vegetation/wms',
+            {
+                layers: 'vegetation_potentielle',
+                format: 'image/png',
+                attribution: '© Observatoire Midi-Pyrénées'
+            }
+        );
     
         // 2. Création de la carte (ou mise à jour si elle existe déjà)
         mapContainer.style.display = 'block';
@@ -315,7 +324,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // 3. Définition des objets pour le contrôle des couches
         const baseMaps = {
             "Topographique": topoMap,
-            "Satellite": satelliteMap
+            "Satellite": satelliteMap,
+            "Végétation potentielle": vegetationLayer
         };
 
         const overlayMaps = {
@@ -352,12 +362,21 @@ const initializeSelectionMap = (coords) => {
                 crossOrigin: true
             }
         );
+
+        const vegetationLayer = L.tileLayer.wms(
+            'https://cdn.obs-mip.fr/geoserver/vegetation/wms',
+            {
+                layers: 'vegetation_potentielle',
+                format: 'image/png',
+                attribution: '© Observatoire Midi-Pyrénées'
+            }
+        );
         mapContainer.style.display = 'block';
         if (!map) {
             map = L.map(mapContainer, { center: [coords.latitude, coords.longitude], zoom: 12, layers: [topoMap] });
             if (!layersControl) {
                 layersControl = L.control.layers(
-                    { "Topographique": topoMap, "Satellite": satelliteMap },
+                    { "Topographique": topoMap, "Satellite": satelliteMap, "Végétation potentielle": vegetationLayer },
                     { "Espèces Patrimoniales": patrimonialLayerGroup, "Observations GBIF": observationsLayerGroup }
                 ).addTo(map);
             }
