@@ -76,3 +76,32 @@ Poussez le dépôt sur GitHub puis créez un site sur Netlify. Le fichier `netli
 - recherche par trigramme et suggestions via TaxRef Match
 - comparaison d'espèces et synthèse vocale optionnelle
 
+## Intégration de la Carte de la Végétation Potentielle
+
+Cette application peut afficher la Carte de la Végétation Potentielle (CVP)
+de France fournie par le laboratoire **ECOLAB / OMP**. Les données n'étant
+pas libres, il faut les acquérir auprès du laboratoire
+(`carteveget@obs-mip.fr`). Le jeu reçu comprend des scans TIFF
+géoréférencés en EPSG:2154, un vecteur harmonisé 1 :1 000 000 et un guide
+d'utilisation. L'exploitation commerciale est interdite sans accord et la
+source "CNRS–ECOLAB, BDGveg_FR" doit toujours être citée.
+
+Une fois les fichiers obtenus :
+
+1. Reprojetez vers Web Mercator et générez vos tuiles.
+   - **Raster** : `gdalwarp` puis `gdal2tiles.py`.
+   - **Vecteur** : `tippecanoe` et `tile-join` si besoin.
+2. Hébergez le répertoire `/tiles` dans `public` (moins de 100 Mo sur
+   Netlify) ou sur un bucket externe.
+3. Branchez les tuiles dans Leaflet ou MapLibre :
+
+```js
+L.tileLayer('/tiles/{z}/{x}/{y}.png', {
+  attribution: '© CNRS–ECOLAB, BDGveg_FR',
+  minZoom: 3,
+  maxZoom: 10
+}).addTo(map);
+```
+
+Activez la compression (gzip ou brotli) pour limiter le poids des transferts.
+
