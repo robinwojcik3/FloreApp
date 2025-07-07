@@ -222,16 +222,16 @@ let rulesByTaxonIndex = new Map();
         const container = document.createElement('span');
         container.className = 'status-line';
 
+        const text = document.createElement('span');
+        text.textContent = message;
+        container.appendChild(text);
+
         if (showIcons) {
             const worker = document.createElement('span');
             worker.className = 'robot-working';
             worker.innerHTML = '<span class="robot">🤖</span><span class="gear">⚙️</span>';
             container.appendChild(worker);
         }
-
-        const text = document.createElement('span');
-        text.textContent = message;
-        container.appendChild(text);
 
         statusDiv.appendChild(container);
     };
@@ -923,7 +923,7 @@ const initializeSelectionMap = (coords) => {
                 wkt = 'POLYGON((' + Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return `${(params.longitude+OBS_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+OBS_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`;}).join(', ') + '))';
                 map.fitBounds(obsSearchCircle.getBounds());
             }
-            statusDiv.textContent = 'Recherche des occurrences GBIF...';
+            setStatus('Recherche des occurrences GBIF...', true);
 
             const limit = 300;
             let offset = 0;
@@ -943,7 +943,7 @@ const initializeSelectionMap = (coords) => {
             }
 
             if (allResults.length === 0) {
-                statusDiv.textContent = 'Aucune observation trouvée.';
+                setStatus('Aucune observation trouvée.');
                 return;
             }
 
@@ -956,7 +956,7 @@ const initializeSelectionMap = (coords) => {
                 obsLayerAddedToControl = true;
             }
         } catch(error) {
-            statusDiv.textContent = `Erreur : ${error.message}`;
+            setStatus(`Erreur : ${error.message}`);
         }
     };
 
