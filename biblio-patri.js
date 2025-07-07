@@ -132,12 +132,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         const container = L.DomUtil.create('div', 'popup-button-container');
         const patrBtn = L.DomUtil.create('button', 'action-button', container);
         patrBtn.textContent = 'Flore patrimoniale';
+        const patrZnieffBtn = L.DomUtil.create('button', 'action-button', container);
+        patrZnieffBtn.textContent = 'Flore Patri & ZNIEFF';
         const obsBtn = L.DomUtil.create('button', 'action-button', container);
         obsBtn.textContent = 'Flore commune';
         L.DomEvent.on(patrBtn, 'click', () => {
             map.closePopup();
             showNavigation();
-            runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra });
+            runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, excludeZnieffOnly: true, ...extra });
+        });
+        L.DomEvent.on(patrZnieffBtn, 'click', () => {
+            map.closePopup();
+            showNavigation();
+            runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, excludeZnieffOnly: false, ...extra });
         });
         L.DomEvent.on(obsBtn, 'click', () => {
             map.closePopup();
@@ -646,6 +653,7 @@ const initializeSelectionMap = (coords) => {
 
     const runAnalysis = async (params) => {
         try {
+            const { excludeZnieffOnly = false } = params;
             lastAnalysisCoords = { latitude: params.latitude, longitude: params.longitude };
             resultsContainer.innerHTML = '';
             mapContainer.style.display = 'none';
@@ -726,7 +734,15 @@ const initializeSelectionMap = (coords) => {
                     await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
                 }
             }
-            const patrimonialMap = await analysisResp.json();
+            let patrimonialMap = await analysisResp.json();
+            if (excludeZnieffOnly) {
+                for (const [sp, status] of Object.entries(patrimonialMap)) {
+                    const arr = Array.isArray(status) ? status : [status];
+                    if (arr.every(s => /ZNIEFF/i.test(s))) {
+                        delete patrimonialMap[sp];
+                    }
+                }
+            }
             displayResults(allOccurrences, patrimonialMap, wkt);
         } catch (error) {
             console.error("Erreur durant l'analyse:", error);
