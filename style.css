@@ -130,7 +130,7 @@ h1 {
     justify-content: center;
     font-size: 1.5rem;
     gap: 0.25rem;
-    margin-bottom: 0.25rem;
+    margin-right: 0.25rem;
 }
 .robot-working .gear {
     display: inline-block;
