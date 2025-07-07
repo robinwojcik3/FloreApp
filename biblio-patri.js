@@ -155,19 +155,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     let layersControl = null;
     let searchAreaLayer = null;
     let patrimonialLayerGroup = L.layerGroup();
-    let obsSearchPolygon = null;
-    let observationsLayerGroup = L.layerGroup();
-    let obsLayerAddedToControl = false;
-    let speciesColorMap = new Map();
-    let allPatrimonialLocations = null;
-    let allPatrimonialSpecies = [];
-    let selectedSpecies = new Set();
-    let rulesByTaxonIndex = new Map();
-    let trackingWatchId = null;
-    let trackingMarker = null;
-    let trackingActive = false;
-    let ecology = {};
-    let floreAlpesIndex = {};
+let obsSearchPolygon = null;
+let observationsLayerGroup = L.layerGroup();
+let obsLayerAddedToControl = false;
+let speciesColorMap = new Map();
+let allPatrimonialLocations = null;
+let allPatrimonialSpecies = [];
+let selectedSpecies = new Set();
+let rulesByTaxonIndex = new Map();
+let trackingWatchId = null;
+let trackingMarker = null;
+let trackingActive = false;
+let ecology = {};
+let floreAlpesIndex = {};
+let hideZnieffOnly = false;
+let znieffOnlySpecies = new Set();
 
     function norm(txt) {
         if (typeof txt !== 'string') return '';
@@ -191,6 +193,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             return `https://www.florealpes.com/${urlPart}`;
         }
         return null;
+    };
+
+    const isZnieffOnlyStatus = (statuses) => {
+        if (!Array.isArray(statuses) || statuses.length === 0) return false;
+        return statuses.every(s => /zni?eff/i.test(s) && /d[eé]terminant/i.test(s));
     };
     const SEARCH_RADIUS_KM = 2;
     const OBS_RADIUS_KM = 0.5;
@@ -450,7 +457,9 @@ const initializeSelectionMap = (coords) => {
         const features = [];
         let pointCount = 0;
         for (const location of allPatrimonialLocations.values()) {
-            const filtered = location.speciesList.filter(s => selectedSpecies.has(s.name));
+            const filtered = location.speciesList.filter(
+                s => selectedSpecies.has(s.name) && !(hideZnieffOnly && znieffOnlySpecies.has(s.name))
+            );
             if (filtered.length === 0) continue;
             pointCount++;
             const count = filtered.length;
@@ -500,6 +509,8 @@ const initializeSelectionMap = (coords) => {
         setStatus(`${Object.keys(patrimonialMap).length} espèce(s) patrimoniale(s) trouvée(s). Lancement de l'étape 4/4 : cartographie détaillée...`);
 
         const allSpeciesList = Object.keys(patrimonialMap).sort();
+        hideZnieffOnly = false;
+        znieffOnlySpecies = new Set(allSpeciesList.filter(sp => isZnieffOnlyStatus(patrimonialMap[sp])));
         const tableBody = document.createElement('tbody');
         allSpeciesList.forEach((speciesName, index) => {
             const color = SPECIES_COLORS[index % SPECIES_COLORS.length];
@@ -524,6 +535,13 @@ const initializeSelectionMap = (coords) => {
         detailsBtn.style.marginLeft = '0.5rem';
         detailsBtn.textContent = 'Ouvrir dans le tableau de synthèse';
         resultsContainer.appendChild(detailsBtn);
+
+        const toggleZnieffBtn = document.createElement('button');
+        toggleZnieffBtn.id = 'toggle-znieff-btn';
+        toggleZnieffBtn.className = 'action-button';
+        toggleZnieffBtn.style.marginLeft = '0.5rem';
+        toggleZnieffBtn.textContent = 'Masquer ZNIEFF seules';
+        resultsContainer.appendChild(toggleZnieffBtn);
 
         const table = document.createElement('table');
         table.innerHTML = `<thead><tr><th></th><th>Nom scientifique</th><th>Statut de patrimonialité</th></tr></thead>`;
@@ -575,6 +593,12 @@ const initializeSelectionMap = (coords) => {
                 sessionStorage.setItem('speciesQueryNames', JSON.stringify(names));
                 window.location.href = 'organ.html';
             }
+        });
+
+        toggleZnieffBtn.addEventListener('click', () => {
+            hideZnieffOnly = !hideZnieffOnly;
+            toggleZnieffBtn.textContent = hideZnieffOnly ? 'Afficher ZNIEFF seules' : 'Masquer ZNIEFF seules';
+            renderPatrimonialLocations();
         });
 
         selectedSpecies = new Set(Object.keys(patrimonialMap));
