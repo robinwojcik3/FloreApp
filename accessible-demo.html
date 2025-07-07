@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Exemple d'interface accessible</title>
+  <link rel="stylesheet" href="accessible-demo.css">
+</head>
+<body>
+  <a href="#contenu" class="skip-link">Aller au contenu</a>
+  <header class="container">
+    <h1>Interface Accessible</h1>
+  </header>
+  <nav class="container" aria-label="Navigation principale">
+    <ul>
+      <li><a href="#section1">Section 1</a></li>
+      <li><a href="#section2">Section 2</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+  <main id="contenu" class="container">
+    <section id="section1">
+      <h2>Images avec texte alternatif</h2>
+      <p>Voici une image dotée d'un attribut <code>alt</code> descriptif :</p>
+      <figure>
+        <img src="assets/Bandeau.jpg" alt="Bandeau floral" />
+        <figcaption>Bandeau d'exemple</figcaption>
+      </figure>
+    </section>
+
+    <section id="section2">
+      <h2>Navigation au clavier</h2>
+      <p>Les éléments interactifs reçoivent un style de focus visible.</p>
+      <button type="button">Bouton accessible</button>
+    </section>
+
+    <section id="contact">
+      <h2>Formulaire</h2>
+      <form>
+        <label for="nom">Nom</label>
+        <input type="text" id="nom" name="nom" />
+
+        <label for="message">Message</label>
+        <textarea id="message" name="message"></textarea>
+
+        <button type="submit">Envoyer</button>
+      </form>
+    </section>
+  </main>
+  <footer class="container">
+    <p>&copy; 2024 Mon site</p>
+  </footer>
+</body>
+</html>
