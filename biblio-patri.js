@@ -479,7 +479,7 @@ const initializeSelectionMap = (coords) => {
 
     const renderPatrimonialLocations = () => {
         if (!allPatrimonialLocations) return;
-        // Ne pas effacer les points précédents pour conserver l'historique
+        patrimonialLayerGroup.clearLayers();
         const features = [];
         let pointCount = 0;
         for (const location of allPatrimonialLocations.values()) {
