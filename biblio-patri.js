@@ -132,12 +132,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         const container = L.DomUtil.create('div', 'popup-button-container');
         const patrBtn = L.DomUtil.create('button', 'action-button', container);
         patrBtn.textContent = 'Flore patrimoniale';
+        const patrZnieffBtn = L.DomUtil.create('button', 'action-button', container);
+        patrZnieffBtn.textContent = 'Flore Patri \u0026 ZNIEFF';
         const obsBtn = L.DomUtil.create('button', 'action-button', container);
         obsBtn.textContent = 'Flore commune';
         L.DomEvent.on(patrBtn, 'click', () => {
             map.closePopup();
             showNavigation();
-            runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra });
+            runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, includeZnieff: false, ...extra });
+        });
+        L.DomEvent.on(patrZnieffBtn, 'click', () => {
+            map.closePopup();
+            showNavigation();
+            runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, includeZnieff: true, ...extra });
         });
         L.DomEvent.on(obsBtn, 'click', () => {
             map.closePopup();
@@ -727,7 +734,17 @@ const initializeSelectionMap = (coords) => {
                 }
             }
             const patrimonialMap = await analysisResp.json();
-            displayResults(allOccurrences, patrimonialMap, wkt);
+            let finalMap = patrimonialMap;
+            const includeZnieff = params.includeZnieff !== false;
+            if (!includeZnieff) {
+                finalMap = {};
+                for (const [sp, val] of Object.entries(patrimonialMap)) {
+                    const arr = Array.isArray(val) ? val : [val];
+                    const isZnieffOnly = arr.length === 1 && /Déterminante\s*ZNIEFF/i.test(arr[0]);
+                    if (!isZnieffOnly) finalMap[sp] = val;
+                }
+            }
+            displayResults(allOccurrences, finalMap, wkt);
         } catch (error) {
             console.error("Erreur durant l'analyse:", error);
             setStatus(`Erreur : ${error.message}`);
