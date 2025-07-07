@@ -8,7 +8,7 @@ Plantouille Express est une application web progressive qui aide à l'identifica
 - comparaison et suggestions d'espèces via Google Gemini
 - synthèse audio avec l'API Google Text‑to‑Speech
 - consultation hors ligne grâce au service worker
-- cartes patrimoniales et couches contextuelles (INPN, Biodiv'AURA, IGN)
+- cartes patrimoniales et couches contextuelles (INPN, Biodiv'AURA, IGN, végétation potentielle)
 - récupération de l'altitude via l'API Open‑Meteo
 
 ## Prérequis

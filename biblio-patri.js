@@ -289,12 +289,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         const topoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
             attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)'
         });
-    
+
         const satelliteMap = L.tileLayer(
             'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
             {
                 attribution:
                     'Tiles © Esri — Source: Esri, Earthstar Geographics, and the GIS User Community',
+                maxZoom: 19,
+                crossOrigin: true
+            }
+        );
+
+        // couche WMS de végétation potentielle
+        const vegetationMap = L.tileLayer.wms(
+            'https://cdn.obs-mip.fr/geoserver/vegetation/wms',
+            {
+                layers: 'carte_vegetation_potentielle',
+                format: 'image/png',
+                attribution: '© Observatoire Midi-Pyrénées',
+                transparent: false,
                 maxZoom: 19,
                 crossOrigin: true
             }
@@ -315,7 +328,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         // 3. Définition des objets pour le contrôle des couches
         const baseMaps = {
             "Topographique": topoMap,
-            "Satellite": satelliteMap
+            "Satellite": satelliteMap,
+            "Végétation potentielle": vegetationMap
         };
 
         const overlayMaps = {
@@ -352,12 +366,23 @@ const initializeSelectionMap = (coords) => {
                 crossOrigin: true
             }
         );
+        const vegetationMap = L.tileLayer.wms(
+            'https://cdn.obs-mip.fr/geoserver/vegetation/wms',
+            {
+                layers: 'carte_vegetation_potentielle',
+                format: 'image/png',
+                attribution: '© Observatoire Midi-Pyrénées',
+                transparent: false,
+                maxZoom: 19,
+                crossOrigin: true
+            }
+        );
         mapContainer.style.display = 'block';
         if (!map) {
             map = L.map(mapContainer, { center: [coords.latitude, coords.longitude], zoom: 12, layers: [topoMap] });
             if (!layersControl) {
                 layersControl = L.control.layers(
-                    { "Topographique": topoMap, "Satellite": satelliteMap },
+                    { "Topographique": topoMap, "Satellite": satelliteMap, "Végétation potentielle": vegetationMap },
                     { "Espèces Patrimoniales": patrimonialLayerGroup, "Observations GBIF": observationsLayerGroup }
                 ).addTo(map);
             }
