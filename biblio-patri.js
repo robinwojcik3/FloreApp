@@ -160,9 +160,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     let obsLayerAddedToControl = false;
     let speciesColorMap = new Map();
     let allPatrimonialLocations = null;
-    let allPatrimonialSpecies = [];
-    let selectedSpecies = new Set();
-    let rulesByTaxonIndex = new Map();
+let allPatrimonialSpecies = [];
+let selectedSpecies = new Set();
+let znieffOnlySpecies = new Set();
+let hideZnieffOnly = false;
+let rulesByTaxonIndex = new Map();
     let trackingWatchId = null;
     let trackingMarker = null;
     let trackingActive = false;
@@ -493,6 +495,7 @@ const initializeSelectionMap = (coords) => {
     const displayResults = (occurrences, patrimonialMap, wkt) => {
         resultsContainer.innerHTML = '';
         // Ne pas effacer les points précédents pour conserver l'historique
+        hideZnieffOnly = false;
         if (Object.keys(patrimonialMap).length === 0) {
             setStatus(`Aucune occurrence d'espèce patrimoniale trouvée dans ce rayon de ${SEARCH_RADIUS_KM} km.`);
             return;
@@ -500,6 +503,11 @@ const initializeSelectionMap = (coords) => {
         setStatus(`${Object.keys(patrimonialMap).length} espèce(s) patrimoniale(s) trouvée(s). Lancement de l'étape 4/4 : cartographie détaillée...`);
 
         const allSpeciesList = Object.keys(patrimonialMap).sort();
+        znieffOnlySpecies = new Set(allSpeciesList.filter(sp => {
+            const val = patrimonialMap[sp];
+            const arr = Array.isArray(val) ? val : [val];
+            return arr.length === 1 && /Déterminante\s*ZNIEFF/i.test(arr[0]);
+        }));
         const tableBody = document.createElement('tbody');
         allSpeciesList.forEach((speciesName, index) => {
             const color = SPECIES_COLORS[index % SPECIES_COLORS.length];
@@ -525,14 +533,25 @@ const initializeSelectionMap = (coords) => {
         detailsBtn.textContent = 'Ouvrir dans le tableau de synthèse';
         resultsContainer.appendChild(detailsBtn);
 
-        const table = document.createElement('table');
-        table.innerHTML = `<thead><tr><th></th><th>Nom scientifique</th><th>Statut de patrimonialité</th></tr></thead>`;
-        table.appendChild(tableBody);
-        resultsContainer.appendChild(table);
+        const toggleZnieffBtn = document.createElement('button');
+        toggleZnieffBtn.id = 'toggle-znieff-btn';
+        toggleZnieffBtn.className = 'action-button';
+        toggleZnieffBtn.style.marginLeft = '0.5rem';
+        toggleZnieffBtn.textContent = 'Masquer ZNIEFF seule';
+        resultsContainer.appendChild(toggleZnieffBtn);
 
         const updateSelectAllButton = () => {
             selectAllBtn.textContent = selectedSpecies.size === allPatrimonialSpecies.length ? 'Tout désélectionner' : 'Tout sélectionner';
         };
+
+        const updateZnieffToggleButton = () => {
+            toggleZnieffBtn.textContent = hideZnieffOnly ? 'Afficher ZNIEFF seule' : 'Masquer ZNIEFF seule';
+        };
+        updateZnieffToggleButton();
+        const table = document.createElement('table');
+        table.innerHTML = `<thead><tr><th></th><th>Nom scientifique</th><th>Statut de patrimonialité</th></tr></thead>`;
+        table.appendChild(tableBody);
+        resultsContainer.appendChild(table);
 
         table.querySelectorAll('.species-toggle').forEach(cb => {
             cb.addEventListener('change', () => {
@@ -564,6 +583,26 @@ const initializeSelectionMap = (coords) => {
                 cb.checked = selectedSpecies.has(cb.dataset.species);
             });
             updateSelectAllButton();
+            renderPatrimonialLocations();
+        });
+
+        toggleZnieffBtn.addEventListener('click', () => {
+            hideZnieffOnly = !hideZnieffOnly;
+            if (hideZnieffOnly) {
+                znieffOnlySpecies.forEach(sp => selectedSpecies.delete(sp));
+            } else {
+                znieffOnlySpecies.forEach(sp => selectedSpecies.add(sp));
+            }
+            table.querySelectorAll('.species-toggle').forEach(cb => {
+                const sp = cb.dataset.species;
+                if (znieffOnlySpecies.has(sp)) {
+                    cb.checked = !hideZnieffOnly;
+                } else {
+                    cb.checked = selectedSpecies.has(sp);
+                }
+            });
+            updateSelectAllButton();
+            updateZnieffToggleButton();
             renderPatrimonialLocations();
         });
 
