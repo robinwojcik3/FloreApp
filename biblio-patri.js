@@ -222,16 +222,16 @@ let rulesByTaxonIndex = new Map();
         const container = document.createElement('span');
         container.className = 'status-line';
 
+        const text = document.createElement('span');
+        text.textContent = message;
+        container.appendChild(text);
+
         if (showIcons) {
             const worker = document.createElement('span');
             worker.className = 'robot-working';
             worker.innerHTML = '<span class="robot">🤖</span><span class="gear">⚙️</span>';
             container.appendChild(worker);
         }
-
-        const text = document.createElement('span');
-        text.textContent = message;
-        container.appendChild(text);
 
         statusDiv.appendChild(container);
     };
