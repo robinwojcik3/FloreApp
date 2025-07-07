@@ -11,6 +11,16 @@ describe('utility functions', () => {
     expect(ctx.makeTrigram('Carex atrata subsp. nigra')).toBe('caratrsubspnig');
   });
 
+  test('makeTrigram handles varieties', () => {
+    const ctx = loadApp();
+    expect(ctx.makeTrigram('Abies alba var. beta')).toBe('abialbvarbet');
+  });
+
+  test('makeTrigram returns empty string with single word', () => {
+    const ctx = loadApp();
+    expect(ctx.makeTrigram('Abies')).toBe('');
+  });
+
   test('makeTimestampedName uses safe prefix', () => {
     const fixed = new Date('2024-01-02T03:04:00Z');
     const ctx = loadApp({ Date: class extends Date { constructor(){return fixed;} } });
@@ -25,6 +35,26 @@ describe('utility functions', () => {
     expect(rows).toEqual([
       ['name', 'value'],
       ['complex;field', 'multi\nline', 'with "quotes"']
+    ]);
+  });
+
+  test('parseCsv handles CRLF newlines', () => {
+    const ctx = loadApp();
+    const csv = 'a;b\r\n1;2\r\n3;4';
+    expect(ctx.parseCsv(csv)).toEqual([
+      ['a', 'b'],
+      ['1', '2'],
+      ['3', '4']
+    ]);
+  });
+
+  test('parseCsv handles carriage returns', () => {
+    const ctx = loadApp();
+    const csv = 'a;b\r1;2\r3;4';
+    expect(ctx.parseCsv(csv)).toEqual([
+      ['a', 'b'],
+      ['1', '2'],
+      ['3', '4']
     ]);
   });
 
@@ -75,6 +105,33 @@ describe('api helpers', () => {
     const ctx = loadApp({ fetch: fetchMock });
     const txt = await ctx.getComparisonFromGemini([{species:'A',physio:'p',eco:'e'}]);
     expect(txt).toBe('cmp');
+  });
+
+  test('getComparisonFromGemini handles block reason', async () => {
+    const fetchMock = jest.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({promptFeedback:{blockReason:'SAFETY'}})
+    });
+    const ctx = loadApp({ fetch: fetchMock });
+    const txt = await ctx.getComparisonFromGemini([{species:'A'}]);
+    expect(txt).toBe('Réponse bloquée par le modèle (SAFETY). Vérifiez le contenu du prompt.');
+  });
+
+  test('getComparisonFromGemini handles empty response', async () => {
+    const fetchMock = jest.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({})
+    });
+    const ctx = loadApp({ fetch: fetchMock });
+    const txt = await ctx.getComparisonFromGemini([{species:'A'}]);
+    expect(txt).toBe("Le modèle n'a pas pu générer de comparaison. La réponse était vide.");
+  });
+
+  test('getComparisonFromGemini catches errors', async () => {
+    const ctx = loadApp();
+    ctx.apiFetch = jest.fn().mockRejectedValue(new Error('oops'));
+    const txt = await ctx.getComparisonFromGemini([{species:'A'}]);
+    expect(txt).toBe('Erreur technique lors de la génération de la comparaison: oops');
   });
 
   test('getSimilarSpeciesFromGemini parses list', async () => {
