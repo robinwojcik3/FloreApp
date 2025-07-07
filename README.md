@@ -51,7 +51,6 @@ netlify dev
 
 ## Tests
 
-
 Le projet inclut une suite Jest. Pour faciliter l'exécution des tests sur
 toute plateforme, un script est fourni pour installer les dépendances et
 lancer Jest automatiquement :
@@ -66,6 +65,8 @@ Une fois les dépendances installées, exécutez simplement `npm test` depuis la
 ## Déploiement
 
 Poussez le dépôt sur GitHub puis créez un site sur Netlify. Le fichier `netlify.toml` publie la racine du projet et active les fonctions sous `/.netlify/functions/`.
+Avant chaque mise en ligne, exécutez `npm run update-sw-cache` afin de
+synchroniser le numéro de cache du service worker avec la version indiquée dans `package.json`.
 
 ## Fonctionnalités principales
 
@@ -75,4 +76,3 @@ Poussez le dépôt sur GitHub puis créez un site sur Netlify. Le fichier `netli
 - carte contextuelle avec couches IGN (réserves, zones humides, etc.)
 - recherche par trigramme et suggestions via TaxRef Match
 - comparaison d'espèces et synthèse vocale optionnelle
-

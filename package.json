@@ -6,7 +6,8 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "update-sw-cache": "node scripts/update-sw-cache.js"
   },
   "author": "Robin Wojcik",
   "license": "ISC",
