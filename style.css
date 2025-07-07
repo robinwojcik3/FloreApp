@@ -123,6 +123,13 @@ h1 {
     min-height: 24px;
 }
 
+/* Icons and text horizontally aligned for status messages */
+.status-line {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
 /* Animation d'un robot au travail pour patienter pendant l'analyse */
 .robot-working {
     display: inline-flex;
