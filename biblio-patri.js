@@ -322,13 +322,14 @@ let rulesByTaxonIndex = new Map();
 
         // Fond de carte de la végétation potentielle (flux WMS)
         const vegMap = L.tileLayer.wms(
-            'https://geoservices.obs-mip.fr/geoserver/vegetation/wms',
+            'https://geoserver.obs-mip.fr/geoserver/vegetation/wms',
             {
-                layers: 'vegetation_potentielle',
+                layers: 'vegetation:veg_potentiel',
                 format: 'image/png',
                 version: '1.3.0',
-                attribution: '© Observatoire Midi-Pyrénées',
-                transparent: false
+                attribution: 'CNRS-ECOLAB (BDGveg_FR)',
+                transparent: true,
+                crossOrigin: true
             }
         );
     
@@ -386,13 +387,14 @@ const initializeSelectionMap = (coords) => {
             }
         );
         const vegMap = L.tileLayer.wms(
-            'https://geoservices.obs-mip.fr/geoserver/vegetation/wms',
+            'https://geoserver.obs-mip.fr/geoserver/vegetation/wms',
             {
-                layers: 'vegetation_potentielle',
+                layers: 'vegetation:veg_potentiel',
                 format: 'image/png',
                 version: '1.3.0',
-                attribution: '© Observatoire Midi-Pyrénées',
-                transparent: false
+                attribution: 'CNRS-ECOLAB (BDGveg_FR)',
+                transparent: true,
+                crossOrigin: true
             }
         );
         mapContainer.style.display = 'block';
