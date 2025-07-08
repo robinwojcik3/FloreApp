@@ -5,6 +5,12 @@ const MAX_RESULTS = 5;
 const MAX_MULTI_IMAGES = 5;
 const PROXY_ENDPOINT = '/.netlify/functions/api-proxy';
 
+const icons = {
+  analysis: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>`,
+  compare: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg"><polyline points="10 3 3 12 10 21"></polyline><polyline points="14 3 21 12 14 21"></polyline></svg>`,
+  similar: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14 2 9.27l6.91-1L12 2z"></path></svg>`
+};
+
 /* ================================================================
     INITIALISATION ET GESTION DES DONNÉES
     ================================================================ */
@@ -548,7 +554,7 @@ async function handleComparisonClick() {
     if (!compareBtn) return;
 
     compareBtn.disabled = true;
-    compareBtn.textContent = 'Analyse en cours...';
+    compareBtn.innerHTML = `${icons.compare}Analyse en cours...`;
 
     const checkedBoxes = document.querySelectorAll('.species-checkbox:checked');
     const speciesData = Array.from(checkedBoxes).map(box => {
@@ -566,7 +572,7 @@ async function handleComparisonClick() {
 
     if (!speciesData.length) {
         compareBtn.disabled = false;
-        compareBtn.textContent = 'Comparer les espèces';
+        compareBtn.innerHTML = `${icons.compare}Comparer les espèces`;
         return;
     }
 
@@ -575,7 +581,7 @@ async function handleComparisonClick() {
     window.open(`compare.html?species=${encodeURIComponent(speciesNames)}`, '_blank');
 
     compareBtn.disabled = false;
-    compareBtn.textContent = 'Comparer les espèces';
+    compareBtn.innerHTML = `${icons.compare}Comparer les espèces`;
 }
 
 
@@ -740,18 +746,22 @@ function buildTable(items){
       similarArea = document.createElement('div');
       similarArea.id = 'similar-btn-area';
   }
-  wrap.innerHTML = `<div id="action-bar" style="margin-bottom:1rem;text-align:center;">
-      <button id="status-analysis-btn" class="action-button">Analyse statuts</button>
-      <button id="compare-btn" class="action-button" style="display:none;padding:0.8rem 1.5rem;margin-left:0.5rem;width:auto;">Comparer les espèces</button>
+  wrap.innerHTML = `<div id="action-bar">
+      <button id="status-analysis-btn" class="action-button"></button>
+      <button id="compare-btn" class="action-button" style="display:none;"></button>
   </div><div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-results-container" style="display:none;"></div>`;
   enableDragScroll(wrap);
   const actionBar = document.getElementById('action-bar');
   const statusBtn = document.getElementById('status-analysis-btn');
-  if (statusBtn) statusBtn.addEventListener('click', runStatusAnalysis);
+  if (statusBtn) {
+      statusBtn.innerHTML = `${icons.analysis}Analyse statuts`;
+      statusBtn.addEventListener('click', runStatusAnalysis);
+  }
   if (actionBar && similarArea) actionBar.appendChild(similarArea);
 
   const compareBtn = document.getElementById('compare-btn');
   if (compareBtn) {
+      compareBtn.innerHTML = `${icons.compare}Comparer les espèces`;
       compareBtn.addEventListener('click', handleComparisonClick);
   }
 
@@ -900,18 +910,15 @@ function showSimilarSpeciesButton(speciesName) {
   if (!area) return;
   area.innerHTML = '';
   area.style.display = 'inline-block';
-  area.style.marginLeft = '0.5rem';
   const btn = document.createElement('button');
   btn.id = 'similar-btn';
-  btn.textContent = 'Montrer des espèces similaires (Rhône-Alpes/PACA)';
   btn.className = 'action-button';
   btn.style.display = 'inline-block';
-  btn.style.width = 'auto';
-  btn.style.padding = '0.8rem 1.5rem';
+  btn.innerHTML = `${icons.similar}Montrer des espèces similaires (Rhône-Alpes/PACA)`;
   area.appendChild(btn);
-  btn.addEventListener('click', async () => {
-    btn.disabled = true;
-    btn.textContent = 'Recherche...';
+  btn.addEventListener('click', async () => {
+    btn.disabled = true;
+    btn.innerHTML = `${icons.similar}Recherche...`;
     const extras = await getSimilarSpeciesFromGemini(speciesName);
     btn.remove();
     if (extras.length) {
@@ -1188,7 +1195,7 @@ async function loadBDCData() {
 
 async function runStatusAnalysis() {
   const btn = document.getElementById('status-analysis-btn');
-  if (btn) { btn.disabled = true; btn.textContent = 'Analyse...'; }
+  if (btn) { btn.disabled = true; btn.innerHTML = `${icons.analysis}Analyse...`; }
   try {
     const coords = await new Promise((resolve, reject) => {
       if (!navigator.geolocation) {
@@ -1199,7 +1206,7 @@ async function runStatusAnalysis() {
     });
     userLocation = { latitude: coords.latitude, longitude: coords.longitude };
   } catch(err) {
-    if (btn) { btn.disabled = false; btn.textContent = 'Analyse statuts'; }
+    if (btn) { btn.disabled = false; btn.innerHTML = `${icons.analysis}Analyse statuts`; }
     return showNotification(`Erreur de géolocalisation : ${err.message}`, 'error');
   }
 
@@ -1209,13 +1216,13 @@ async function runStatusAnalysis() {
     const resp = await fetch(`https://geo.api.gouv.fr/communes?lat=${userLocation.latitude}&lon=${userLocation.longitude}&fields=departement,region`);
     ({ departement, region } = (await resp.json())[0]);
   } catch(e) {
-    if (btn) { btn.disabled = false; btn.textContent = 'Analyse statuts'; }
+    if (btn) { btn.disabled = false; btn.innerHTML = `${icons.analysis}Analyse statuts`; }
     console.error(e);
     return showNotification("Erreur récupération localisation administrative", 'error');
   }
 
   const table = document.querySelector('#results table');
-  if (!table) { if(btn){btn.disabled=false;btn.textContent='Analyse statuts';} return; }
+  if (!table) { if(btn){btn.disabled=false;btn.innerHTML=`${icons.analysis}Analyse statuts`;} return; }
 
   const speciesRows = Array.from(table.querySelectorAll('tbody tr'));
   const uniqueSpeciesNames = [];
@@ -1272,7 +1279,7 @@ async function runStatusAnalysis() {
       break;
     } catch(err) {
       if (attempt === ANALYSIS_MAX_RETRIES) {
-        if(btn){btn.disabled=false;btn.textContent='Analyse statuts';}
+        if(btn){btn.disabled=false;btn.innerHTML=`${icons.analysis}Analyse statuts`;}
         return showNotification(`Erreur : ${err.message}`, 'error');
       }
       await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
@@ -1303,7 +1310,7 @@ async function runStatusAnalysis() {
     tr.appendChild(td);
   });
 
-  if (btn) { btn.disabled = false; btn.textContent = 'Analyse statuts'; }
+  if (btn) { btn.disabled = false; btn.innerHTML = `${icons.analysis}Analyse statuts`; }
 }
 
 
