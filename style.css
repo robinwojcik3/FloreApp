@@ -157,6 +157,10 @@ h1 {
     margin: 0 0 1rem;
 }
 
+#map.measure-mode {
+    cursor: crosshair;
+}
+
 #map.hide-labels .leaflet-tooltip {
     display: none;
 }
