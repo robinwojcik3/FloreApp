@@ -74,19 +74,6 @@ h1 {
     padding: 1rem;
 }
 
-/* Suppression des marges et bordures pour l'affichage plein écran des cartes */
-body.compare .main-content {
-    padding: 0;
-}
-
-body.compare #loc-content.tab-content {
-    padding: 0;
-    border: none;
-    border-radius: 0;
-    box-shadow: none;
-    background: none;
-}
-
 .search-controls {
     display: flex;
     flex-wrap: wrap;
