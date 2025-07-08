@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         analysisLabelsVisible = !analysisLabelsVisible;
         mapContainer.classList.toggle('hide-labels', !analysisLabelsVisible);
         if (toggleLabelsBtn) {
-            toggleLabelsBtn.textContent = analysisLabelsVisible ? 'Masquer les étiquettes' : 'Afficher les étiquettes';
+            toggleLabelsBtn.textContent = analysisLabelsVisible ? '🏷️ Masquer les étiquettes' : '🏷️ Afficher les étiquettes';
         }
     };
 
