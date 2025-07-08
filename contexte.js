@@ -18,6 +18,16 @@ let lastCacheCoords = null;
 let measuring = false;
 let measurePoints = [];
 let measureLine = null;
+
+// Indique si l'extension Chrome est disponible
+let floreExtAvailable = false;
+
+// Écoute la présence de l'extension
+window.addEventListener('message', (e) => {
+    if (e.data && e.data.type === 'flore_extension_ready') {
+        floreExtAvailable = true;
+    }
+});
 let measureTooltip = null;
 
 // États de chargement des résultats pour chaque onglet
@@ -396,6 +406,22 @@ function displayResources() {
         link.appendChild(span);
         resultsGrid.appendChild(link);
     });
+
+    const autoBtn = document.createElement('button');
+    autoBtn.textContent = 'Ouvrir cartes automatiques';
+    autoBtn.className = 'action-button';
+    autoBtn.addEventListener('click', () => {
+        if (!floreExtAvailable) {
+            showNotification('Extension non détectée', 'error');
+            return;
+        }
+        window.postMessage({
+            type: 'flore_extension_coords',
+            lat: selectedLat,
+            lon: selectedLon
+        }, '*');
+    });
+    resultsGrid.appendChild(autoBtn);
     resultsGrid.style.display = 'grid';
 }
 

@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "Flore Automation",
+  "version": "1.0",
+  "description": "Automatise l\'affichage de la végétation potentielle et des sols.",
+  "permissions": ["tabs", "scripting"],
+  "host_permissions": [
+    "https://www.arcgis.com/*",
+    "https://www.geoportail.gouv.fr/*",
+    "https://*/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://*.netlify.app/*", "http://localhost/*"],
+      "js": ["netlify.js"]
+    },
+    {
+      "matches": ["https://www.arcgis.com/*"],
+      "js": ["arcgis.js"]
+    },
+    {
+      "matches": ["https://www.geoportail.gouv.fr/*"],
+      "js": ["geoportail.js"]
+    }
+  ],
+  "background": { "service_worker": "service_worker.js" },
+  "action": { "default_title": "Flore Automation" }
+}

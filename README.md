@@ -104,3 +104,13 @@ L.tileLayer('/tiles/{z}/{x}/{y}.png', {
 
 Activez la compression (gzip ou brotli) pour limiter le poids des transferts.
 
+## Automatisation des cartes externes
+
+Une extension Chrome facultative permet d'ouvrir automatiquement la Carte de la
+végétation potentielle (ArcGIS) et la Carte des sols (Géoportail) pour la
+localisation choisie dans l'onglet « Contexte éco ». Chargez le dossier
+`chrome-extension/` en mode développeur dans Chrome, puis depuis la page
+`contexte.html` cliquez sur « Ouvrir cartes automatiques ». Les deux onglets
+s’ouvriront et la configuration (plage de visibilité, transparence, recherche par
+coordonnées) sera appliquée automatiquement.
+
