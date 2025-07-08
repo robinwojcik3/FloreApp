@@ -740,9 +740,9 @@ function buildTable(items){
       similarArea = document.createElement('div');
       similarArea.id = 'similar-btn-area';
   }
-  wrap.innerHTML = `<div id="action-bar">
-      <button id="status-analysis-btn" class="action-button"><img class="btn-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxjaXJjbGUgY3g9IjExIiBjeT0iMTEiIHI9IjgiLz48bGluZSB4MT0iMjEiIHkxPSIyMSIgeDI9IjE2LjY1IiB5Mj0iMTYuNjUiLz48L3N2Zz4=" alt="">Analyse statuts</button>
-      <button id="compare-btn" class="action-button" style="display:none;"><img class="btn-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0xMCAzbC03IDcgNyA3TTE0IDNsNyA3LTcgNyIvPjwvc3ZnPg==" alt="">Comparer les espèces</button>
+  wrap.innerHTML = `<div id="action-bar" style="margin-bottom:1rem;text-align:center;">
+      <button id="status-analysis-btn" class="action-button">Analyse statuts</button>
+      <button id="compare-btn" class="action-button" style="display:none;padding:0.8rem 1.5rem;margin-left:0.5rem;width:auto;">Comparer les espèces</button>
   </div><div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-results-container" style="display:none;"></div>`;
   enableDragScroll(wrap);
   const actionBar = document.getElementById('action-bar');
@@ -900,10 +900,14 @@ function showSimilarSpeciesButton(speciesName) {
   if (!area) return;
   area.innerHTML = '';
   area.style.display = 'inline-block';
+  area.style.marginLeft = '0.5rem';
   const btn = document.createElement('button');
   btn.id = 'similar-btn';
+  btn.textContent = 'Montrer des espèces similaires (Rhône-Alpes/PACA)';
   btn.className = 'action-button';
-  btn.innerHTML = '<img class="btn-icon" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxyZWN0IHg9IjkiIHk9IjkiIHdpZHRoPSIxMyIgaGVpZ2h0PSIxMyIgcng9IjIiLz48cmVjdCB4PSIyIiB5PSIyIiB3aWR0aD0iMTMiIGhlaWdodD0iMTMiIHJ4PSIyIi8+PC9zdmc+" alt="">Montrer des espèces similaires';
+  btn.style.display = 'inline-block';
+  btn.style.width = 'auto';
+  btn.style.padding = '0.8rem 1.5rem';
   area.appendChild(btn);
   btn.addEventListener('click', async () => {
     btn.disabled = true;
