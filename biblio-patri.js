@@ -924,15 +924,49 @@ const initializeSelectionMap = (coords) => {
             } catch (e) {}
         }
         initializeSelectionMap(center);
-        setStatus('Tracez un polygone pour définir la zone de recherche.', false);
-        const drawer = new L.Draw.Polygon(map, { shapeOptions: { color: '#c62828' } });
-        drawer.enable();
-        map.once(L.Draw.Event.CREATED, (e) => {
-            const latlngs = e.layer.getLatLngs()[0];
+        setStatus('Volume + : ajoute un point \u2013 Volume - : retire le dernier. Validez pour terminer.', false);
+
+        const container = map.getContainer();
+        const target = L.DomUtil.create('div', 'map-target', container);
+        const validateBtn = L.DomUtil.create('button', 'action-button validate-polygon-btn', container);
+        validateBtn.textContent = 'Valider';
+
+        let points = [];
+        let preview = L.polyline([], { color: '#c62828' }).addTo(map);
+
+        const updatePreview = () => {
+            preview.setLatLngs(points);
+        };
+
+        const keyHandler = (e) => {
+            if (e.key === 'AudioVolumeUp' || e.key === 'VolumeUp') {
+                e.preventDefault();
+                points.push(map.getCenter());
+                updatePreview();
+            } else if (e.key === 'AudioVolumeDown' || e.key === 'VolumeDown') {
+                e.preventDefault();
+                points.pop();
+                updatePreview();
+            }
+        };
+
+        const finish = () => {
+            document.removeEventListener('keydown', keyHandler);
+            if (target.parentNode) target.parentNode.removeChild(target);
+            if (validateBtn.parentNode) validateBtn.parentNode.removeChild(validateBtn);
+            map.removeLayer(preview);
+            if (points.length < 3) {
+                setStatus('Au moins trois points sont n\u00e9cessaires.', false);
+                return;
+            }
+            const latlngs = points;
             const centroid = centroidOf(latlngs);
             const wkt = polygonToWkt(latlngs);
             showChoicePopup(L.latLng(centroid.latitude, centroid.longitude), { wkt, polygon: latlngs });
-        });
+        };
+
+        document.addEventListener('keydown', keyHandler);
+        validateBtn.addEventListener('click', finish);
     };
 
     let obsSearchCircle = null;
