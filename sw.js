@@ -2,7 +2,10 @@
  * Service-Worker – PlantID PWA
  * ================================================================ */
 
-const CACHE_NAME = "plantid-v24";
+// Augmenter le nom du cache force le service worker 
+// à recharger toutes les ressources, utile si un fichier
+// a été mis en cache de façon incomplète.
+const CACHE_NAME = "plantid-v25";
 
 const WASM_ASSETS = {
    "openjpeg.wasm": "./pdfjs/wasm/openjpeg.wasm.b64",
