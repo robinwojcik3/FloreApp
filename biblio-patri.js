@@ -841,15 +841,65 @@ const initializeSelectionMap = (coords) => {
             } catch (e) {}
         }
         initializeSelectionMap(center);
-        setStatus('Tracez un polygone pour définir la zone de recherche.', false);
-        const drawer = new L.Draw.Polygon(map, { shapeOptions: { color: '#c62828' } });
-        drawer.enable();
-        map.once(L.Draw.Event.CREATED, (e) => {
-            const latlngs = e.layer.getLatLngs()[0];
+        setStatus('Placez la cible puis appuyez sur Volume + pour ajouter un point, Volume - pour revenir en arrière.', false);
+
+        const crosshair = document.createElement('div');
+        crosshair.className = 'crosshair';
+        mapContainer.appendChild(crosshair);
+
+        const finishBtn = document.createElement('button');
+        finishBtn.textContent = 'Terminer';
+        finishBtn.className = 'action-button finish-polygon-btn';
+        mapContainer.appendChild(finishBtn);
+
+        const vertices = [];
+        let tempLayer = null;
+
+        const updateTempLayer = () => {
+            if (tempLayer) map.removeLayer(tempLayer);
+            if (vertices.length > 0) {
+                tempLayer = L.polyline(vertices.concat(map.getCenter()), { color: '#c62828' }).addTo(map);
+            }
+        };
+
+        const addVertex = () => {
+            vertices.push(map.getCenter());
+            updateTempLayer();
+        };
+
+        const removeVertex = () => {
+            vertices.pop();
+            updateTempLayer();
+        };
+
+        const onKey = (e) => {
+            if (e.code === 'AudioVolumeUp' || e.key === '+') {
+                e.preventDefault();
+                addVertex();
+            } else if (e.code === 'AudioVolumeDown' || e.key === '-') {
+                e.preventDefault();
+                removeVertex();
+            }
+        };
+
+        const finish = () => {
+            document.removeEventListener('keydown', onKey);
+            finishBtn.removeEventListener('click', finish);
+            if (tempLayer) map.removeLayer(tempLayer);
+            mapContainer.removeChild(crosshair);
+            mapContainer.removeChild(finishBtn);
+            if (vertices.length < 3) {
+                setStatus('Au moins 3 points nécessaires pour former un polygone.');
+                return;
+            }
+            const latlngs = vertices;
             const centroid = centroidOf(latlngs);
             const wkt = polygonToWkt(latlngs);
             showChoicePopup(L.latLng(centroid.latitude, centroid.longitude), { wkt, polygon: latlngs });
-        });
+        };
+
+        finishBtn.addEventListener('click', finish);
+        document.addEventListener('keydown', onKey);
     };
 
     let obsSearchCircle = null;

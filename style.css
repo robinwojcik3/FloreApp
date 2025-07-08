@@ -319,3 +319,42 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     height: 2px;
     background: var(--primary);
 }
+
+/* Croix centrale pour le dessin de polygone */
+.crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px;
+    height: 24px;
+    pointer-events: none;
+}
+.crosshair::before,
+.crosshair::after {
+    content: '';
+    position: absolute;
+    background: #c62828;
+}
+.crosshair::before {
+    left: 50%;
+    top: 0;
+    width: 2px;
+    height: 100%;
+    transform: translateX(-50%);
+}
+.crosshair::after {
+    top: 50%;
+    left: 0;
+    width: 100%;
+    height: 2px;
+    transform: translateY(-50%);
+}
+
+.finish-polygon-btn {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999;
+}
