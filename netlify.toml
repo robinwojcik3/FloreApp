@@ -1,43 +1,40 @@
-# =================================================================
 # Fichier : netlify.toml
-# =================================================================
 
-# ---------------------------------------------------------------
-# 1. Build et environnement
-# ---------------------------------------------------------------
+# =================================================================
+# Configuration du build et des fonctions
+# =================================================================
 [build]
-  command   = "npm install"          # Installation des dépendances
-  functions = "netlify/functions"    # Dossier des fonctions serverless
-  publish   = "."                    # Racine du site statique
+  # Commande à exécuter pour installer les dépendances (comme node-fetch)
+  command = "npm install"
+  # Dossier contenant les fonctions serverless
+  functions = "netlify/functions"
+  # Dossier racine du site à publier
+  publish = "."
 
 [build.environment]
-  PYTHON_VERSION = "3.11"            # Version de Python requise par vos fonctions
+  # Conserve la version de Python que vous aviez spécifiée
+  PYTHON_VERSION = "3.11"
 
-# ---------------------------------------------------------------
-# 2. Fonctions serverless
-# ---------------------------------------------------------------
 [functions]
-  included_files = [
-    "netlify/functions/flora_gallica_pdfs/**"  # Inclusion des PDF nécessaires
-  ]
+  # Conserve l'inclusion de vos fichiers PDF pour d'autres fonctions
+  included_files = ["netlify/functions/flora_gallica_pdfs/**"]
 
-# ---------------------------------------------------------------
-# 3. Redirections (proxies WMS / API)
-# ---------------------------------------------------------------
+# =================================================================
+# NOUVEAU : Règle de redirection pour le proxy WMS
+# Cette section est essentielle pour que les couches de la carte fonctionnent.
+# =================================================================
 [[redirects]]
-  from   = "/api/wms/inpn"           # Proxy vers l’INPN (WMS)
-  to     = "/.netlify/functions/inpn-proxy"
+  # Intercepte toutes les requêtes faites depuis le navigateur vers /api/wms/inpn
+  from = "/api/wms/inpn"
+  # Les redirige vers la fonction serverless inpn-proxy
+  to = "/.netlify/functions/inpn-proxy"
+  # Répond avec un statut 200 (succès) pour masquer la redirection
   status = 200
-  force  = true
+  # Force l'application de cette règle
+  force = true
 
 [[redirects]]
-  from   = "/api/gbif"               # Proxy vers le GBIF
-  to     = "/.netlify/functions/gbif-proxy"
+  from = "/api/gbif"
+  to = "/.netlify/functions/gbif-proxy"
   status = 200
-  force  = true
-
-# ---------------------------------------------------------------
-# 4. Plugins Netlify (un seul conservé)
-# ---------------------------------------------------------------
-[[plugins]]
-  package = "@netlify/plugin-lighthouse"  # Audit de performance/SEO
+  force = true
