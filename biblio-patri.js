@@ -178,6 +178,10 @@ let rulesByTaxonIndex = new Map();
     let trackingActive = false;
     let ecology = {};
     let floreAlpesIndex = {};
+    let measuring = false;
+    let measurePoints = [];
+    let measureLine = null;
+    let measureTooltip = null;
 
     function norm(txt) {
         if (typeof txt !== 'string') return '';
@@ -334,6 +338,10 @@ let rulesByTaxonIndex = new Map();
     
         // 2. Création de la carte (ou mise à jour si elle existe déjà)
         mapContainer.style.display = 'block';
+        const mBtn = document.getElementById('measure-distance');
+        if (mBtn) mBtn.style.display = 'inline-block';
+        const mBtn = document.getElementById('measure-distance');
+        if (mBtn) mBtn.style.display = 'inline-block';
         if (!map) {
             map = L.map(mapContainer, {
                 center: [params.latitude, params.longitude],
@@ -805,6 +813,8 @@ const initializeSelectionMap = (coords) => {
             } catch (e) {}
         }
         initializeSelectionMap(center);
+        const mBtn = document.getElementById('measure-distance');
+        if (mBtn) mBtn.style.display = 'inline-block';
         let pressTimer;
         const showPopup = (latlng) => showChoicePopup(latlng);
         const onContextMenu = (e) => {
@@ -841,6 +851,8 @@ const initializeSelectionMap = (coords) => {
             } catch (e) {}
         }
         initializeSelectionMap(center);
+        const mBtn = document.getElementById('measure-distance');
+        if (mBtn) mBtn.style.display = 'inline-block';
         setStatus('Tracez un polygone pour définir la zone de recherche.', false);
         const drawer = new L.Draw.Polygon(map, { shapeOptions: { color: '#c62828' } });
         drawer.enable();
@@ -853,6 +865,93 @@ const initializeSelectionMap = (coords) => {
     };
 
     let obsSearchCircle = null;
+
+    const addMeasurePointInternal = (latlng) => {
+        measurePoints.push(latlng);
+        if (measureLine) {
+            measureLine.setLatLngs(measurePoints);
+        } else {
+            measureLine = L.polyline(measurePoints, { color: '#ff0000' }).addTo(map);
+        }
+        let dist = 0;
+        for (let i = 1; i < measurePoints.length; i++) {
+            dist += measurePoints[i - 1].distanceTo(measurePoints[i]);
+        }
+        const text = dist < 1000 ? `${dist.toFixed(0)} m` : `${(dist/1000).toFixed(2)} km`;
+        if (!measureTooltip) {
+            measureTooltip = L.marker(latlng, { interactive: false,
+                icon: L.divIcon({ className: 'measure-tooltip', html: text }) }).addTo(map);
+        } else {
+            measureTooltip.setLatLng(latlng);
+            const el = measureTooltip.getElement();
+            if (el) el.innerHTML = text;
+        }
+    };
+
+    const addMeasurePoint = (e) => addMeasurePointInternal(e.latlng);
+
+    const addMeasurePointFromCenter = () => {
+        if (!map) return;
+        addMeasurePointInternal(map.getCenter());
+    };
+
+    const removeLastMeasurePoint = () => {
+        if (measurePoints.length === 0) return;
+        measurePoints.pop();
+        if (measurePoints.length === 0) {
+            if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
+            if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
+            return;
+        }
+        measureLine.setLatLngs(measurePoints);
+        let dist = 0;
+        for (let i = 1; i < measurePoints.length; i++) {
+            dist += measurePoints[i - 1].distanceTo(measurePoints[i]);
+        }
+        const last = measurePoints[measurePoints.length - 1];
+        const text = dist < 1000 ? `${dist.toFixed(0)} m` : `${(dist/1000).toFixed(2)} km`;
+        if (!measureTooltip) {
+            measureTooltip = L.marker(last, { interactive: false,
+                icon: L.divIcon({ className: 'measure-tooltip', html: text }) }).addTo(map);
+        } else {
+            measureTooltip.setLatLng(last);
+            const el = measureTooltip.getElement();
+            if (el) el.innerHTML = text;
+        }
+    };
+
+    const onMeasureKey = (e) => {
+        if (!measuring) return;
+        if (e.key === 'AudioVolumeUp') {
+            addMeasurePointFromCenter();
+        } else if (e.key === 'AudioVolumeDown' || e.key === 'Backspace') {
+            removeLastMeasurePoint();
+        }
+    };
+
+    const toggleMeasure = () => {
+        if (!map) return;
+        measuring = !measuring;
+        const btn = document.getElementById('measure-distance');
+        if (!btn) return;
+        if (measuring) {
+            btn.textContent = 'Arrêter la mesure';
+            measurePoints = [];
+            if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
+            if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
+            map.on('click', addMeasurePoint);
+            map.doubleClickZoom.disable();
+            document.addEventListener('keydown', onMeasureKey);
+        } else {
+            btn.textContent = 'Mesurer une distance';
+            map.off('click', addMeasurePoint);
+            map.doubleClickZoom.enable();
+            document.removeEventListener('keydown', onMeasureKey);
+            if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
+            if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
+            measurePoints = [];
+        }
+    };
 
     const displayObservations = (occurrences) => {
         observationsLayerGroup.clearLayers();
@@ -907,6 +1006,8 @@ const initializeSelectionMap = (coords) => {
           try {
               if (!map) initializeSelectionMap(params);
               mapContainer.style.display = 'block';
+              const mBtn = document.getElementById('measure-distance');
+              if (mBtn) mBtn.style.display = 'inline-block';
               if (searchAreaLayer) {
                   map.removeLayer(searchAreaLayer);
                   searchAreaLayer = null;
@@ -971,6 +1072,10 @@ const initializeSelectionMap = (coords) => {
     addressInput.addEventListener('keypress', (e) => e.key === 'Enter' && handleAddressSearch());
     downloadShapefileBtn.addEventListener('click', triggerShapefileDownload);
     toggleTrackingBtn.addEventListener('click', () => toggleLocationTracking(map, toggleTrackingBtn));
+    const measureBtn = document.getElementById('measure-distance');
+    if (measureBtn) {
+        measureBtn.addEventListener('click', toggleMeasure);
+    }
     if (toggleLabelsBtn) {
         toggleLabelsBtn.addEventListener('click', toggleAnalysisLabels);
     }
