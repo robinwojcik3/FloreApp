@@ -285,6 +285,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.key === 'Enter') searchAddress();
     });
     document.getElementById('measure-distance').addEventListener('click', toggleMeasure);
+    const extBtn = document.getElementById('open-external-maps');
+    if (extBtn) extBtn.addEventListener('click', launchExternalMaps);
     initializeEnvMap();
 });
 

@@ -1,0 +1,30 @@
+{
+  "name": "FloreApp Automation",
+  "description": "Ouvre automatiquement les cartes de végétation potentielle et des sols",
+  "manifest_version": 3,
+  "version": "1.0",
+  "permissions": ["tabs", "scripting"],
+  "host_permissions": [
+    "https://www.arcgis.com/*",
+    "https://www.geoportail.gouv.fr/*",
+    "https://*.netlify.app/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.netlify.app/*"],
+      "js": ["page-script.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://www.arcgis.com/*"],
+      "js": ["arcgis.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_title": "FloreApp Automation"
+  }
+}
