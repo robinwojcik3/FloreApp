@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const drawPolygonBtn = document.getElementById('draw-polygon-btn');
     const toggleTrackingBtn = document.getElementById('toggle-tracking-btn');
     const toggleLabelsBtn = document.getElementById('toggle-labels-btn');
-    const measureDistanceBtn = document.getElementById('measure-distance-btn');
     const downloadShapefileBtn = document.getElementById('download-shapefile-btn');
     const downloadContainer = document.getElementById('download-container');
     const navContainer = document.getElementById('section-nav');
@@ -128,82 +127,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
-    const clearMeasure = () => {
-        measurePoints = [];
-        measureMarkers.forEach(m => measureLayer.removeLayer(m));
-        measureMarkers = [];
-        if (measureLine) {
-            measureLayer.removeLayer(measureLine);
-            measureLine = null;
-        }
-        setStatus('', false);
-    };
-
-    const updateMeasureDisplay = () => {
-        if (measureLine) {
-            measureLayer.removeLayer(measureLine);
-            measureLine = null;
-        }
-        if (measurePoints.length > 1) {
-            measureLine = L.polyline(measurePoints, { color: 'yellow' }).addTo(measureLayer);
-            let total = 0;
-            for (let i = 1; i < measurePoints.length; i++) {
-                total += measurePoints[i - 1].distanceTo(measurePoints[i]);
-            }
-            const km = (total / 1000).toFixed(2);
-            setStatus(`Distance: ${km} km`, false);
-        } else {
-            setStatus('', false);
-        }
-    };
-
-    const addMeasurePoint = (latlng) => {
-        const marker = L.circleMarker(latlng, { radius: 5, color: '#fff', weight: 2, fillColor: '#c62828', fillOpacity: 1 }).addTo(measureLayer);
-        measurePoints.push(latlng);
-        measureMarkers.push(marker);
-        updateMeasureDisplay();
-    };
-
-    const removeLastMeasurePoint = () => {
-        if (measureMarkers.length) {
-            const marker = measureMarkers.pop();
-            measureLayer.removeLayer(marker);
-            measurePoints.pop();
-            updateMeasureDisplay();
-        }
-    };
-
-    const handleMeasureClick = (e) => {
-        if (measuring) addMeasurePoint(e.latlng);
-    };
-
-    const handleMeasureKey = (e) => {
-        if (!measuring) return;
-        if (e.key === 'AudioVolumeUp' || e.key === 'VolumeUp') {
-            e.preventDefault();
-            if (map) addMeasurePoint(map.getCenter());
-        } else if (e.key === 'AudioVolumeDown' || e.key === 'VolumeDown' || e.key === 'Backspace') {
-            e.preventDefault();
-            removeLastMeasurePoint();
-        }
-    };
-
-    const toggleMeasureMode = () => {
-        measuring = !measuring;
-        if (measuring) {
-            if (!measureLayer) measureLayer = L.layerGroup().addTo(map);
-            mapContainer.classList.add('measure-mode');
-            map.on('click', handleMeasureClick);
-            document.addEventListener('keydown', handleMeasureKey);
-            setStatus('Mode mesure actif. Cliquez ou appuyez sur volume + pour ajouter un point.', false);
-        } else {
-            map.off('click', handleMeasureClick);
-            document.removeEventListener('keydown', handleMeasureKey);
-            mapContainer.classList.remove('measure-mode');
-            clearMeasure();
-        }
-    };
-
     const showChoicePopup = (latlng, extra = {}) => {
         if (!map) return;
         const container = L.DomUtil.create('div', 'popup-button-container');
@@ -255,12 +178,6 @@ let rulesByTaxonIndex = new Map();
     let trackingActive = false;
     let ecology = {};
     let floreAlpesIndex = {};
-
-    let measureLayer = null;
-    let measurePoints = [];
-    let measureMarkers = [];
-    let measureLine = null;
-    let measuring = false;
 
     function norm(txt) {
         if (typeof txt !== 'string') return '';
@@ -1056,8 +973,5 @@ const initializeSelectionMap = (coords) => {
     toggleTrackingBtn.addEventListener('click', () => toggleLocationTracking(map, toggleTrackingBtn));
     if (toggleLabelsBtn) {
         toggleLabelsBtn.addEventListener('click', toggleAnalysisLabels);
-    }
-    if (measureDistanceBtn) {
-        measureDistanceBtn.addEventListener('click', toggleMeasureMode);
     }
 });
