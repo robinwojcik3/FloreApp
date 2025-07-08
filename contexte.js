@@ -39,6 +39,15 @@ function loadAltitudeData() {
 const GOOGLE_MAPS_LONG_PRESS_MS = 2000;
 const MAP_LONG_PRESS_MS = 3000; // delay for selecting a point on the map
 
+// Détection de l'extension Chrome
+let extensionDetected = false;
+window.addEventListener('message', (e) => {
+    if (e.data && e.data.type === 'EXTENSION_AVAILABLE') {
+        extensionDetected = true;
+    }
+});
+window.postMessage({ type: 'EXTENSION_PING' }, '*');
+
 function initializeEnvMap() {
     const defaultLat = 45.188529;
     const defaultLon = 5.724524;
@@ -381,22 +390,37 @@ function displayResources() {
     Object.keys(SERVICES).forEach(serviceKey => {
         const service = SERVICES[serviceKey];
         const url = service.buildUrl(selectedLat, selectedLon);
-        const link = document.createElement('a');
-        link.href = url;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        link.className = 'resource-btn';
+        const btn = document.createElement('button');
+        btn.className = 'resource-btn';
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            launchService(serviceKey, url);
+        });
         const img = document.createElement('img');
         img.src = service.icon;
         img.alt = '';
         img.className = 'resource-icon';
         const span = document.createElement('span');
         span.textContent = service.name;
-        link.appendChild(img);
-        link.appendChild(span);
-        resultsGrid.appendChild(link);
+        btn.appendChild(img);
+        btn.appendChild(span);
+        resultsGrid.appendChild(btn);
     });
     resultsGrid.style.display = 'grid';
+}
+
+function launchService(serviceKey, url) {
+    const message = {
+        type: 'LAUNCH_SERVICE',
+        service: serviceKey,
+        url,
+        lat: selectedLat,
+        lon: selectedLon
+    };
+    window.postMessage(message, '*');
+    if (!extensionDetected) {
+        window.open(url, '_blank');
+    }
 }
 
 /**
