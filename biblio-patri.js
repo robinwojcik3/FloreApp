@@ -828,6 +828,7 @@ const initializeSelectionMap = (coords) => {
         map.on('zoomstart', cancel);
     };
 
+
     const startPolygonSelection = async () => {
         let center;
         if (map) {
@@ -841,17 +842,73 @@ const initializeSelectionMap = (coords) => {
             } catch (e) {}
         }
         initializeSelectionMap(center);
-        setStatus('Tracez un polygone pour définir la zone de recherche.', false);
-        const drawer = new L.Draw.Polygon(map, { shapeOptions: { color: '#c62828' } });
-        drawer.enable();
-        map.once(L.Draw.Event.CREATED, (e) => {
-            const latlngs = e.layer.getLatLngs()[0];
-            const centroid = centroidOf(latlngs);
-            const wkt = polygonToWkt(latlngs);
-            showChoicePopup(L.latLng(centroid.latitude, centroid.longitude), { wkt, polygon: latlngs });
-        });
-    };
+        setStatus('Déplacez la carte pour placer la cible. Volume + : ajouter un point, Volume - : annuler.', false);
 
+        drawingPoints = [];
+        drawingMarkers.forEach(m => map.removeLayer(m));
+        drawingMarkers = [];
+        if (drawingLayer) { map.removeLayer(drawingLayer); drawingLayer = null; }
+
+        if (crosshairEl) crosshairEl.remove();
+        crosshairEl = L.DomUtil.create('div', '', mapContainer);
+        crosshairEl.id = 'map-crosshair';
+
+        if (finishPolygonBtn) finishPolygonBtn.remove();
+        finishPolygonBtn = L.DomUtil.create('button', 'action-button', mapContainer);
+        finishPolygonBtn.id = 'finish-polygon-btn';
+        finishPolygonBtn.textContent = 'Valider';
+
+        const cleanup = () => {
+            window.removeEventListener('keydown', drawingHandler);
+            drawingActive = false;
+            drawingMarkers.forEach(m => map.removeLayer(m));
+            drawingMarkers = [];
+            if (drawingLayer) { map.removeLayer(drawingLayer); drawingLayer = null; }
+            if (crosshairEl) { crosshairEl.remove(); crosshairEl = null; }
+            if (finishPolygonBtn) { finishPolygonBtn.remove(); finishPolygonBtn = null; }
+        };
+
+        finishPolygonBtn.addEventListener('click', () => {
+            if (drawingPoints.length >= 3) {
+                if (drawingLayer) { map.removeLayer(drawingLayer); }
+                const latlngs = drawingPoints.map(p => L.latLng(p.lat, p.lng));
+                L.polygon(latlngs, { color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(map);
+                const centroid = centroidOf(latlngs);
+                const wkt = polygonToWkt(latlngs);
+                cleanup();
+                showChoicePopup(L.latLng(centroid.latitude, centroid.longitude), { wkt, polygon: latlngs });
+            } else {
+                setStatus('Ajoutez au moins 3 points.', false);
+            }
+        });
+
+        drawingHandler = (e) => {
+            if (!drawingActive) return;
+            if (e.key === 'VolumeUp' || e.key === 'AudioVolumeUp') {
+                e.preventDefault();
+                const c = map.getCenter();
+                const latlng = L.latLng(c.lat, c.lng);
+                drawingPoints.push(latlng);
+                drawingMarkers.push(L.circleMarker(latlng, { radius: 4, color: '#c62828' }).addTo(map));
+            } else if (e.key === 'VolumeDown' || e.key === 'AudioVolumeDown') {
+                e.preventDefault();
+                drawingPoints.pop();
+                const m = drawingMarkers.pop();
+                if (m) map.removeLayer(m);
+            } else {
+                return;
+            }
+            if (drawingLayer) { map.removeLayer(drawingLayer); drawingLayer = null; }
+            if (drawingPoints.length >= 3) {
+                drawingLayer = L.polygon(drawingPoints, { color: '#c62828', weight: 2, fillOpacity: 0.1 }).addTo(map);
+            } else if (drawingPoints.length > 1) {
+                drawingLayer = L.polyline(drawingPoints, { color: '#c62828', weight: 2 }).addTo(map);
+            }
+        };
+
+        drawingActive = true;
+        window.addEventListener('keydown', drawingHandler);
+    };
     let obsSearchCircle = null;
 
     const displayObservations = (occurrences) => {

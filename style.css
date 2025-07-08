@@ -156,6 +156,11 @@ h1 {
     box-shadow: 0 2px 6px rgba(0,0,0,.1);
     margin: 0 0 1rem;
 }
+#map-crosshair{position:absolute;top:50%;left:50%;width:20px;height:20px;margin-left:-10px;margin-top:-10px;pointer-events:none;z-index:1000;}
+#map-crosshair::before,#map-crosshair::after{content:"";position:absolute;background:#c62828;}
+#map-crosshair::before{left:9px;top:0;width:2px;height:20px;}
+#map-crosshair::after{top:9px;left:0;width:20px;height:2px;}
+#finish-polygon-btn{position:absolute;bottom:10px;left:50%;transform:translateX(-50%);z-index:1000;}
 
 #map.hide-labels .leaflet-tooltip {
     display: none;
