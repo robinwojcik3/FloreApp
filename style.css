@@ -116,6 +116,37 @@ h1 {
 }
 .action-button:hover { background: #2e7d32; }
 
+/* Boutons au-dessus du tableau de résultats */
+#action-bar {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+#action-bar .action-button,
+#similar-btn-area .action-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    width: auto;
+    margin: 0;
+    padding: 0.6rem 1rem;
+    border: 1px solid var(--primary);
+    border-radius: 6px;
+}
+
+#action-bar .action-button:hover,
+#similar-btn-area .action-button:hover {
+    background: #2e7d32;
+}
+
+.btn-icon {
+    width: 1em;
+    height: 1em;
+}
+
 .status-container {
     text-align: center;
     margin: 0.5rem 0;
