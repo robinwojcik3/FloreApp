@@ -34,6 +34,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const scrollTableBtn = document.getElementById('scroll-table-btn');
     const addressGroup = document.querySelector('.address-group');
     const searchControls = document.querySelector('.search-controls');
+    const profileCanvas = document.getElementById('elevation-profile');
 
     const updateSecondaryNav = () => {
         if (navContainer && mainTabs) {
@@ -175,17 +176,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const updateMeasureDisplay = async (latlng) => {
         let dist = 0;
-        let elev = 0;
+        let elevPos = 0;
+        let elevNeg = 0;
         for (let i = 1; i < measurePoints.length; i++) {
             dist += measurePoints[i - 1].latlng.distanceTo(measurePoints[i].latlng);
             const a1 = measurePoints[i - 1].altitude;
             const a2 = measurePoints[i].altitude;
-            if (typeof a1 === 'number' && typeof a2 === 'number' && a2 > a1) {
-                elev += a2 - a1;
+            if (typeof a1 === 'number' && typeof a2 === 'number') {
+                const diff = a2 - a1;
+                if (diff > 0) elevPos += diff; else elevNeg += Math.abs(diff);
             }
         }
         const textDist = dist < 1000 ? `${dist.toFixed(0)} m` : `${(dist/1000).toFixed(2)} km`;
-        const text = elev > 0 ? `${textDist} (+${Math.round(elev)} m D+)` : textDist;
+        let text = textDist;
+        if (elevPos > 0 || elevNeg > 0) {
+            const parts = [];
+            if (elevPos > 0) parts.push(`+${Math.round(elevPos)} m D+`);
+            if (elevNeg > 0) parts.push(`-${Math.round(elevNeg)} m D-`);
+            text += ` (${parts.join(' / ')})`;
+        }
         if (!measureTooltip) {
             measureTooltip = L.marker(latlng, {
                 interactive: false,
@@ -196,6 +205,43 @@ document.addEventListener('DOMContentLoaded', async () => {
             const el = measureTooltip.getElement();
             if (el) el.innerHTML = text;
         }
+        drawElevationProfile();
+    };
+
+    const drawElevationProfile = () => {
+        if (!profileCanvas) return;
+        const ctx = profileCanvas.getContext('2d');
+        if (!ctx) return;
+        const width = profileCanvas.width;
+        const height = profileCanvas.height;
+        ctx.clearRect(0, 0, width, height);
+        if (measurePoints.length < 2) {
+            profileCanvas.style.display = 'none';
+            return;
+        }
+        profileCanvas.style.display = 'block';
+        const distances = [];
+        let total = 0;
+        for (let i = 0; i < measurePoints.length; i++) {
+            if (i > 0) {
+                total += measurePoints[i - 1].latlng.distanceTo(measurePoints[i].latlng);
+            }
+            distances.push(total);
+        }
+        const distTotal = distances[distances.length - 1] || 1;
+        const alts = measurePoints.map(p => typeof p.altitude === 'number' ? p.altitude : 0);
+        const minAlt = Math.min(...alts);
+        const maxAlt = Math.max(...alts);
+        const altRange = maxAlt - minAlt || 1;
+        ctx.beginPath();
+        ctx.strokeStyle = '#c62828';
+        ctx.lineWidth = 2;
+        for (let i = 0; i < measurePoints.length; i++) {
+            const x = (distances[i] / distTotal) * width;
+            const y = height - ((alts[i] - minAlt) / altRange) * height;
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
     };
 
     const addMeasurePoint = async (latlng) => {
@@ -219,11 +265,21 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
             if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
             measureDistanceBtn.textContent = '🛑 Fin mesure';
+            if (profileCanvas) {
+                const ctx = profileCanvas.getContext('2d');
+                if (ctx) ctx.clearRect(0, 0, profileCanvas.width, profileCanvas.height);
+                profileCanvas.style.display = 'none';
+            }
         } else {
             if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
             if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
             measurePoints = [];
             measureDistanceBtn.textContent = '📏 Mesurer';
+            if (profileCanvas) {
+                const ctx = profileCanvas.getContext('2d');
+                if (ctx) ctx.clearRect(0, 0, profileCanvas.width, profileCanvas.height);
+                profileCanvas.style.display = 'none';
+            }
         }
     };
 
