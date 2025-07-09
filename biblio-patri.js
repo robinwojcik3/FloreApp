@@ -212,6 +212,7 @@ let rulesByTaxonIndex = new Map();
     const RETRY_DELAY_MS = 3000;
     const FETCH_TIMEOUT_MS = 10000;
     const TRACHEOPHYTA_TAXON_KEY = 7707728; // GBIF taxonKey for vascular plants
+    const MAX_GBIF_PAGES = 20; // Page limit for GBIF requests
     const SPECIES_COLORS = ['#E6194B', '#3CB44B', '#FFE119', '#4363D8', '#F58231', '#911EB4', '#46F0F0', '#F032E6', '#BCF60C', '#FABEBE', '#800000', '#AA6E28', '#000075', '#A9A9A9'];
     const nonPatrimonialLabels = new Set(["Liste des espèces végétales sauvages pouvant faire l'objet d'une réglementation préfectorale dans les départements d'outre-mer : Article 1"]);
     const nonPatrimonialRedlistCodes = new Set(['LC', 'DD', 'NA', 'NE']);
@@ -691,18 +692,32 @@ const initializeSelectionMap = (coords) => {
                 wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
             }
             let allOccurrences = [];
-            const maxPages = 20;
             const limit = 300; // GBIF API maximum
-            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${maxPages})`, true);
-            for (let page = 0; page < maxPages; page++) {
+            const baseUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
+            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 1/?)`, true);
+            const firstResp = await fetchWithRetry(`${baseUrl}&offset=0`);
+            if (!firstResp.ok) throw new Error("L'API GBIF est indisponible.");
+            const firstData = await firstResp.json();
+            if (firstData.results?.length > 0) { allOccurrences = allOccurrences.concat(firstData.results); }
+            let totalPages = Math.ceil((firstData.count || 0) / limit) || 1;
+            let maxPages = Math.min(totalPages, MAX_GBIF_PAGES);
+            for (let page = 1; page < maxPages; page++) {
                 const offset = page * limit;
                 setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${maxPages})`, true);
-                const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
+                const gbifUrl = `${baseUrl}&offset=${offset}`;
                 const gbifResp = await fetchWithRetry(gbifUrl);
                 if (!gbifResp.ok) throw new Error("L'API GBIF est indisponible.");
                 const pageData = await gbifResp.json();
                 if (pageData.results?.length > 0) { allOccurrences = allOccurrences.concat(pageData.results); }
-                if (pageData.endOfRecords) { break; }
+                if (pageData.endOfRecords) { totalPages = page + 1; break; }
+            }
+            const msg = totalPages > MAX_GBIF_PAGES
+                ? `Résultats partiels : ${MAX_GBIF_PAGES} pages récupérées sur ${totalPages} disponibles.`
+                : `Résultats complets : ${totalPages} page(s) récupérée(s).`;
+            if (typeof showNotification === 'function') {
+                showNotification(msg, totalPages > MAX_GBIF_PAGES ? 'warning' : 'info');
+            } else {
+                setStatus(msg);
             }
             if (allOccurrences.length === 0) { throw new Error("Aucune occurrence de plante trouvée à proximité."); }
             setStatus("Étape 3/4: Analyse des données...", true);
