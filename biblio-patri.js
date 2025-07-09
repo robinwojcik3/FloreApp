@@ -801,26 +801,38 @@ const initializeSelectionMap = (coords) => {
             let allOccurrences = [];
             const maxPages = 20;
             const limit = 300; // GBIF API maximum
-            let totalPages = null;
-            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${maxPages})`, true);
-            for (let page = 0; page < maxPages; page++) {
+            let totalPages = 0;
+            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 1/?)`, true);
+
+            // -- Récupération de la première page pour connaître le nombre total --
+            const firstUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=0&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
+            const firstResp = await fetchWithRetry(firstUrl);
+            if (!firstResp.ok) throw new Error("L'API GBIF est indisponible.");
+            const firstData = await firstResp.json();
+            if (firstData.results?.length > 0) {
+                allOccurrences = allOccurrences.concat(firstData.results);
+            }
+            totalPages = typeof firstData.count === 'number' ? Math.ceil(firstData.count / limit) : 1;
+            let pagesToFetch = Math.min(totalPages, maxPages);
+            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 1/${pagesToFetch})`, true);
+
+            for (let page = 1; page < pagesToFetch; page++) {
                 const offset = page * limit;
-                setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${maxPages})`, true);
+                setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${pagesToFetch})`, true);
                 const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
                 const gbifResp = await fetchWithRetry(gbifUrl);
                 if (!gbifResp.ok) throw new Error("L'API GBIF est indisponible.");
                 const pageData = await gbifResp.json();
-                if (totalPages === null && typeof pageData.count === 'number') {
-                    totalPages = Math.ceil(pageData.count / limit);
-                }
                 if (pageData.results?.length > 0) {
                     allOccurrences = allOccurrences.concat(pageData.results);
                 }
                 if (pageData.endOfRecords) {
-                    totalPages = totalPages || page + 1;
+                    totalPages = page + 1;
+                    pagesToFetch = Math.min(totalPages, maxPages);
                     break;
                 }
             }
+
             const retrievedPages = Math.ceil(allOccurrences.length / limit);
             if (typeof showNotification === 'function' && totalPages) {
                 if (retrievedPages < totalPages) {
