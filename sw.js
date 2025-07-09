@@ -2,7 +2,8 @@
  * Service-Worker – PlantID PWA
  * ================================================================ */
 
-const CACHE_NAME = "plantid-v24";
+// Incrémentez cette valeur à chaque modification significative pour forcer la mise à jour du cache
+const CACHE_NAME = "plantid-v25";
 
 const WASM_ASSETS = {
    "openjpeg.wasm": "./pdfjs/wasm/openjpeg.wasm.b64",
