@@ -23,6 +23,19 @@
     <style>
       .logo-icon { width: 24px; height: auto; }
       .small-logo { height: 24px; width: auto; }
+      .small-button{
+        padding:4px 8px;background:var(--primary);color:#fff;border:none;
+        border-radius:4px;font-size:.9rem;cursor:pointer;
+        transition:background .3s,transform .3s;
+      }
+      .small-button:hover{background:#2e7d32;transform:scale(1.05);}
+      .measure-tooltip {
+        background: var(--primary);
+        color: #fff;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-size: 0.8rem;
+      }
     </style>
 </head>
 <body>
@@ -54,6 +67,7 @@
         <div id="status" class="status-container"></div>
 
         <div id="map"></div>
+        <button id="measure-distance" class="small-button" style="display:none;margin-bottom:0.5rem;">Mesurer une distance</button>
 
         <div id="download-container" style="text-align:center; display:none; margin-bottom:1rem;">
             <button id="download-shapefile-btn" class="action-button">⬇️ Shapefile</button>
