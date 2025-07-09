@@ -279,7 +279,7 @@ let rulesByTaxonIndex = new Map();
         try {
             setStatus("Chargement des données...", true);
             const [bdcResp, ecoResp, faResp] = await Promise.all([
-                fetch('/BDCstatut.csv'),
+                fetch('BDCstatut.csv'),
                 fetch('ecology.json'),
                 fetch('assets/florealpes_index.json')
             ]);
