@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const statusDiv = document.getElementById('status');
     const resultsContainer = document.getElementById('results');
     const mapContainer = document.getElementById('map');
+    const crosshair = document.getElementById('crosshair');
     const addressInput = document.getElementById('address-input');
     const searchAddressBtn = document.getElementById('search-address-btn');
     const useGeolocationBtn = document.getElementById('use-geolocation-btn');
@@ -73,6 +74,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     let trackingButton = null;
     let analysisLabelsVisible = true;
     let lastAnalysisCoords = null;
+    let polygonDrawing = false;
+    let polygonPoints = [];
+    let polygonPreview = null;
 
     const stopLocationTracking = () => {
         if (trackingWatchId !== null) {
@@ -828,7 +832,60 @@ const initializeSelectionMap = (coords) => {
         map.on('zoomstart', cancel);
     };
 
+    const updatePolygonPreview = () => {
+        if (!map) return;
+        if (polygonPreview) {
+            map.removeLayer(polygonPreview);
+            polygonPreview = null;
+        }
+        if (polygonPoints.length >= 3) {
+            polygonPreview = L.polygon(polygonPoints, { color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(map);
+        } else if (polygonPoints.length === 2) {
+            polygonPreview = L.polyline(polygonPoints, { color: '#c62828', weight: 2, interactive: false }).addTo(map);
+        } else if (polygonPoints.length === 1) {
+            polygonPreview = L.circleMarker(polygonPoints[0], { radius: 4, color: '#c62828', fillColor: '#c62828', fillOpacity: 1, interactive: false }).addTo(map);
+        }
+    };
+
+    const onVolumeKey = (e) => {
+        if (!polygonDrawing) return;
+        if (e.key === 'AudioVolumeUp' || e.key === 'VolumeUp') {
+            e.preventDefault();
+            polygonPoints.push(map.getCenter());
+            updatePolygonPreview();
+        } else if (e.key === 'AudioVolumeDown' || e.key === 'VolumeDown') {
+            e.preventDefault();
+            polygonPoints.pop();
+            updatePolygonPreview();
+        }
+    };
+
+    const finishPolygonSelection = () => {
+        if (!polygonDrawing) return;
+        polygonDrawing = false;
+        if (crosshair) crosshair.style.display = 'none';
+        if (drawPolygonBtn) drawPolygonBtn.textContent = '🔶 Zone personnalisée';
+        window.removeEventListener('keydown', onVolumeKey);
+        if (polygonPreview) {
+            map.removeLayer(polygonPreview);
+            polygonPreview = null;
+        }
+        if (polygonPoints.length >= 3) {
+            const latlngs = polygonPoints.slice();
+            const centroid = centroidOf(latlngs);
+            const wkt = polygonToWkt(latlngs);
+            showChoicePopup(L.latLng(centroid.latitude, centroid.longitude), { wkt, polygon: latlngs });
+        } else {
+            setStatus('Polygone non valide', true);
+        }
+        polygonPoints = [];
+    };
+
     const startPolygonSelection = async () => {
+        if (polygonDrawing) {
+            finishPolygonSelection();
+            return;
+        }
         let center;
         if (map) {
             const c = map.getCenter();
@@ -841,15 +898,12 @@ const initializeSelectionMap = (coords) => {
             } catch (e) {}
         }
         initializeSelectionMap(center);
-        setStatus('Tracez un polygone pour définir la zone de recherche.', false);
-        const drawer = new L.Draw.Polygon(map, { shapeOptions: { color: '#c62828' } });
-        drawer.enable();
-        map.once(L.Draw.Event.CREATED, (e) => {
-            const latlngs = e.layer.getLatLngs()[0];
-            const centroid = centroidOf(latlngs);
-            const wkt = polygonToWkt(latlngs);
-            showChoicePopup(L.latLng(centroid.latitude, centroid.longitude), { wkt, polygon: latlngs });
-        });
+        polygonDrawing = true;
+        polygonPoints = [];
+        setStatus('Placez la cible et appuyez sur Volume + pour ajouter un point.', false);
+        if (crosshair) crosshair.style.display = 'block';
+        if (drawPolygonBtn) drawPolygonBtn.textContent = '✔️ Terminer';
+        window.addEventListener('keydown', onVolumeKey);
     };
 
     let obsSearchCircle = null;
