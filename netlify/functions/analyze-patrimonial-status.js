@@ -28,7 +28,7 @@ exports.handler = async function(event) {
 
 **Règles Impératives d'Analyse :**
 1.  **Précision Taxonomique :** Un statut s'applique UNIQUEMENT au taxon exact. Le statut d'une sous-espèce/variété ne s'applique pas à l'espèce parente.
-2.  **Définition de Patrimonialité :** Une espèce est patrimoniale si elle est protégée par la loi, menacée (NT, VU, EN, CR), ou déterminante ZNIEFF régionale. Les statuts LC, DD, NA, NE ne sont pas patrimoniaux.
+2.  **Définition de Patrimonialité :** Une espèce est patrimoniale si elle est protégée par la loi — y compris par des arrêtés de protection régionale ou départementale —, menacée (NT, VU, EN, CR), ou déterminante ZNIEFF régionale. Les statuts LC, DD, NA, NE ne sont pas patrimoniaux. Les classements en Liste Rouge régionale avec ces codes de menace rendent également l'espèce patrimoniale.
 3.  **Gestion des Conflits :** Si pour un taxon, une règle 'LC' et une règle de menace coexistent pour la même liste, 'LC' a priorité.
 
 **1. Analyse par Correspondance Directe :**
