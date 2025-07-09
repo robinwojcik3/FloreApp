@@ -365,6 +365,22 @@ let rulesByTaxonIndex = new Map();
             }
         }
     };
+
+    const prefetchTilesAround = (layer, mapInstance, radius = 1) => {
+        const center = mapInstance.getCenter();
+        const tileSize = layer.getTileSize();
+        const zooms = [mapInstance.getZoom(), mapInstance.getZoom() + 1];
+        zooms.forEach(z => {
+            const centerPoint = mapInstance.project(center, z).divideBy(tileSize.x).floor();
+            for (let dx = -radius; dx <= radius; dx++) {
+                for (let dy = -radius; dy <= radius; dy++) {
+                    const coords = { x: centerPoint.x + dx, y: centerPoint.y + dy, z };
+                    const url = layer.getTileUrl(coords);
+                    fetch(url, { mode: 'no-cors' }).catch(() => {});
+                }
+            }
+        });
+    };
     
     const indexRulesFromCSV = (csvText) => {
         const lines = csvText.trim().split(/\r?\n/);
@@ -419,7 +435,8 @@ let rulesByTaxonIndex = new Map();
 
         // 1. Définition des couches de base
         const topoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-            attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)'
+            attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)',
+            crossOrigin: true
         });
 
         const satelliteMap = L.tileLayer(
@@ -455,6 +472,7 @@ let rulesByTaxonIndex = new Map();
         } else {
             map.setView([params.latitude, params.longitude], 13);
         }
+        map.whenReady(() => prefetchTilesAround(topoMap, map));
 
         // 3. Définition des objets pour le contrôle des couches
         const baseMaps = {
@@ -487,7 +505,8 @@ let rulesByTaxonIndex = new Map();
 const initializeSelectionMap = (coords) => {
         stopLocationTracking();
         const topoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-            attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)'
+            attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)',
+            crossOrigin: true
         });
         const satelliteMap = L.tileLayer(
             'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -519,6 +538,7 @@ const initializeSelectionMap = (coords) => {
         } else {
             map.setView([coords.latitude, coords.longitude], map.getZoom() || 12);
         }
+        map.whenReady(() => prefetchTilesAround(topoMap, map));
 };
 
     const polygonToWkt = (latlngs) => {
