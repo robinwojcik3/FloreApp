@@ -2,7 +2,7 @@
  * Service-Worker – PlantID PWA
  * ================================================================ */
 
-const CACHE_NAME = "plantid-v24";
+const CACHE_NAME = "plantid-v25";
 
 const WASM_ASSETS = {
    "openjpeg.wasm": "./pdfjs/wasm/openjpeg.wasm.b64",
