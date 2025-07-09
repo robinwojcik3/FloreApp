@@ -847,13 +847,31 @@ const initializeSelectionMap = (coords) => {
         }
     };
 
+    const isVolumeUp = (e) => {
+        return (
+            e.key === 'AudioVolumeUp' ||
+            e.key === 'VolumeUp' ||
+            e.code === 'AudioVolumeUp' ||
+            e.code === 'VolumeUp'
+        );
+    };
+
+    const isVolumeDown = (e) => {
+        return (
+            e.key === 'AudioVolumeDown' ||
+            e.key === 'VolumeDown' ||
+            e.code === 'AudioVolumeDown' ||
+            e.code === 'VolumeDown'
+        );
+    };
+
     const onVolumeKey = (e) => {
         if (!polygonDrawing) return;
-        if (e.key === 'AudioVolumeUp' || e.key === 'VolumeUp') {
+        if (isVolumeUp(e)) {
             e.preventDefault();
             polygonPoints.push(map.getCenter());
             updatePolygonPreview();
-        } else if (e.key === 'AudioVolumeDown' || e.key === 'VolumeDown') {
+        } else if (isVolumeDown(e)) {
             e.preventDefault();
             polygonPoints.pop();
             updatePolygonPreview();
@@ -866,6 +884,7 @@ const initializeSelectionMap = (coords) => {
         if (crosshair) crosshair.style.display = 'none';
         if (drawPolygonBtn) drawPolygonBtn.textContent = '🔶 Zone personnalisée';
         window.removeEventListener('keydown', onVolumeKey);
+        window.removeEventListener('keyup', onVolumeKey);
         if (polygonPreview) {
             map.removeLayer(polygonPreview);
             polygonPreview = null;
@@ -904,6 +923,7 @@ const initializeSelectionMap = (coords) => {
         if (crosshair) crosshair.style.display = 'block';
         if (drawPolygonBtn) drawPolygonBtn.textContent = '✔️ Terminer';
         window.addEventListener('keydown', onVolumeKey);
+        window.addEventListener('keyup', onVolumeKey);
     };
 
     let obsSearchCircle = null;
