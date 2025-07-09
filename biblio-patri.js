@@ -75,6 +75,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let trackingButton = null;
     let analysisLabelsVisible = true;
     let lastAnalysisCoords = null;
+    let selectedCoords = null;
     let polygonDrawing = false;
     let polygonPoints = [];
     let polygonPreview = null;
@@ -239,16 +240,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         L.DomEvent.on(patrBtn, 'click', () => {
             map.closePopup();
             showNavigation();
+            selectedCoords = { latitude: latlng.lat, longitude: latlng.lng };
             runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, true);
         });
         L.DomEvent.on(patrZnieffBtn, 'click', () => {
             map.closePopup();
             showNavigation();
+            selectedCoords = { latitude: latlng.lat, longitude: latlng.lng };
             runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, false);
         });
         L.DomEvent.on(obsBtn, 'click', () => {
             map.closePopup();
             showNavigation();
+            selectedCoords = { latitude: latlng.lat, longitude: latlng.lng };
             loadObservationsAt({ latitude: latlng.lat, longitude: latlng.lng, ...extra });
         });
         L.DomEvent.disableClickPropagation(container);
@@ -816,7 +820,8 @@ const initializeSelectionMap = (coords) => {
             setStatus("Étape 3/4: Analyse des données...", true);
             const uniqueSpeciesNames = [...new Set(allOccurrences.map(o => o.species).filter(Boolean))];
             const relevantRules = new Map();
-            const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${params.latitude}&lon=${params.longitude}&fields=departement,region`)).json())[0];
+            const coordsForRules = selectedCoords || { latitude: params.latitude, longitude: params.longitude };
+            const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${coordsForRules.latitude}&lon=${coordsForRules.longitude}&fields=departement,region`)).json())[0];
             for (const speciesName of uniqueSpeciesNames) {
                 const rulesForThisTaxon = rulesByTaxonIndex.get(speciesName);
                 if (rulesForThisTaxon) {
@@ -856,7 +861,7 @@ const initializeSelectionMap = (coords) => {
                         body: JSON.stringify({
                             relevantRules: Array.from(relevantRules.values()),
                             uniqueSpeciesNames,
-                            coords: { latitude: params.latitude, longitude: params.longitude }
+                            coords: coordsForRules
                         })
                     });
                     if (!analysisResp.ok) {
@@ -890,6 +895,7 @@ const initializeSelectionMap = (coords) => {
             if (data.length === 0) throw new Error("Adresse non trouvée.");
             const coords = { latitude: parseFloat(data[0].lat), longitude: parseFloat(data[0].lon) };
             initializeSelectionMap(coords);
+            selectedCoords = coords;
             showChoicePopup(L.latLng(coords.latitude, coords.longitude));
         } catch (error) { setStatus(`Erreur : ${error.message}`); }
     };
@@ -899,6 +905,7 @@ const initializeSelectionMap = (coords) => {
             setStatus("Récupération de votre position...", true);
             const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 }));
             initializeSelectionMap(coords);
+            selectedCoords = { latitude: coords.latitude, longitude: coords.longitude };
             if (showPopup) {
                 showChoicePopup(L.latLng(coords.latitude, coords.longitude));
             }
@@ -918,6 +925,7 @@ const initializeSelectionMap = (coords) => {
             } catch (e) {}
         }
         initializeSelectionMap(center);
+        selectedCoords = center;
         let pressTimer;
         const showPopup = (latlng) => showChoicePopup(latlng);
         const onContextMenu = (e) => {
