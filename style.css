@@ -258,6 +258,14 @@ th, td {
     color: var(--primary);
     text-shadow: 0 0 3px #fff;
 }
+
+.measure-tooltip {
+    background: var(--primary);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
 th {
     font-weight: 600;
     background: #555555;
