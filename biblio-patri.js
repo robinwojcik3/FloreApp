@@ -178,6 +178,10 @@ let rulesByTaxonIndex = new Map();
     let trackingActive = false;
     let ecology = {};
     let floreAlpesIndex = {};
+    let measureMode = false;
+    let measurePoints = [];
+    let measureLine = null;
+    const measureLayer = L.layerGroup();
 
     function norm(txt) {
         if (typeof txt !== 'string') return '';
@@ -874,6 +878,67 @@ const initializeSelectionMap = (coords) => {
         setStatus(`${floraOccs.length} observation(s) de flore trouvée(s).`, true);
     };
 
+    const updateMeasureDisplay = () => {
+        if (measurePoints.length < 2) {
+            setStatus('Distance : 0 m');
+            return;
+        }
+        let d = 0;
+        for (let i = 1; i < measurePoints.length; i++) {
+            d += measurePoints[i - 1].distanceTo(measurePoints[i]);
+        }
+        setStatus(`Distance : ${(d / 1000).toFixed(2)} km`);
+    };
+
+    const addMeasurePoint = (latlng) => {
+        measurePoints.push(latlng);
+        L.marker(latlng).addTo(measureLayer);
+        if (measureLine) measureLine.addLatLng(latlng);
+        else measureLine = L.polyline(measurePoints, { color: '#ff9800' }).addTo(measureLayer);
+        updateMeasureDisplay();
+    };
+
+    const removeMeasurePoint = () => {
+        if (measurePoints.length === 0) return;
+        measurePoints.pop();
+        measureLayer.clearLayers();
+        measureLine = null;
+        if (measurePoints.length) {
+            measurePoints.forEach(p => L.marker(p).addTo(measureLayer));
+            if (measurePoints.length > 1) measureLine = L.polyline(measurePoints, { color: '#ff9800' }).addTo(measureLayer);
+        }
+        updateMeasureDisplay();
+    };
+
+    const toggleMeasureMode = () => {
+        if (!map) return;
+        measureMode = !measureMode;
+        if (measureMode) {
+            measurePoints = [];
+            measureLayer.addTo(map);
+            setStatus('Mode mesure activé');
+            document.getElementById('measure-distance-btn').textContent = '🛑 Arrêter mesure';
+        } else {
+            measureLayer.clearLayers();
+            map.removeLayer(measureLayer);
+            setStatus('');
+            document.getElementById('measure-distance-btn').textContent = '📏 Mesurer';
+        }
+    };
+
+    mapContainer.addEventListener('click', (e) => {
+        if (measureMode && map) addMeasurePoint(map.mouseEventToLatLng(e));
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (!measureMode) return;
+        if (e.code === 'AudioVolumeUp' || e.code === 'VolumeUp') {
+            addMeasurePoint(map.getCenter());
+        } else if (e.code === 'AudioVolumeDown' || e.code === 'VolumeDown' || e.key === 'Backspace') {
+            removeMeasurePoint();
+        }
+    });
+
     const triggerShapefileDownload = async () => {
         if (!currentShapefileData) return;
         try {
@@ -970,6 +1035,7 @@ const initializeSelectionMap = (coords) => {
     drawPolygonBtn.addEventListener('click', startPolygonSelection);
     addressInput.addEventListener('keypress', (e) => e.key === 'Enter' && handleAddressSearch());
     downloadShapefileBtn.addEventListener('click', triggerShapefileDownload);
+    document.getElementById('measure-distance-btn').addEventListener('click', toggleMeasureMode);
     toggleTrackingBtn.addEventListener('click', () => toggleLocationTracking(map, toggleTrackingBtn));
     if (toggleLabelsBtn) {
         toggleLabelsBtn.addEventListener('click', toggleAnalysisLabels);
