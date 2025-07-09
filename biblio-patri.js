@@ -406,7 +406,7 @@ let rulesByTaxonIndex = new Map();
         stopLocationTracking();
 
         // 1. Définition des couches de base
-        const topoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        const topoMap = L.tileLayer('https://{s}.tile-cdn.opentopomap.org/{z}/{x}/{y}.png', {
             attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)'
         });
 
@@ -474,7 +474,7 @@ let rulesByTaxonIndex = new Map();
 
 const initializeSelectionMap = (coords) => {
         stopLocationTracking();
-        const topoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+        const topoMap = L.tileLayer('https://{s}.tile-cdn.opentopomap.org/{z}/{x}/{y}.png', {
             attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)'
         });
         const satelliteMap = L.tileLayer(

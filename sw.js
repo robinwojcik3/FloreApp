@@ -129,7 +129,8 @@ self.addEventListener("fetch", event => {
    if (request.url.includes("unpkg.com") ||
        request.url.includes("cdnjs.cloudflare.com") ||
        request.url.includes("tile.openstreetmap.org") ||
-       request.url.includes("tile.opentopomap.org")) {
+       request.url.includes("tile.opentopomap.org") ||
+       request.url.includes("tile-cdn.opentopomap.org")) {
        event.respondWith(
            caches.match(request)
                .then(cachedResponse => {
