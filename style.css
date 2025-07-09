@@ -232,6 +232,14 @@ h1 {
     transform: translateY(-50%);
 }
 
+.measure-tooltip {
+    background: var(--primary);
+    color: #fff;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+}
+
 #map.hide-labels .leaflet-tooltip {
     display: none;
 }
