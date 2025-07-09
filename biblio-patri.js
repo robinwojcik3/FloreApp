@@ -413,13 +413,38 @@ let rulesByTaxonIndex = new Map();
         }
     };
 
+    const latLonToTile = (lat, lon, zoom) => {
+        const latRad = lat * Math.PI / 180;
+        const n = Math.pow(2, zoom);
+        const x = Math.floor((lon + 180) / 360 * n);
+        const y = Math.floor((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * n);
+        return { x, y };
+    };
+
+    const prefetchOpenTopoTiles = (lat, lon, zoom) => {
+        const zooms = [zoom - 1, zoom, zoom + 1].filter(z => z >= 3 && z <= 17);
+        const radius = 1;
+        zooms.forEach(z => {
+            const { x, y } = latLonToTile(lat, lon, z);
+            for (let dx = -radius; dx <= radius; dx++) {
+                for (let dy = -radius; dy <= radius; dy++) {
+                    const sub = "abc"[Math.abs(x + dx + y + dy) % 3];
+                    const url = `https://${sub}.tile.opentopomap.org/${z}/${x + dx}/${y + dy}.png`;
+                    fetch(url, { mode: "no-cors" }).catch(() => {});
+                }
+            }
+        });
+    };
+
     // --- *** MODIFICATION MAJEURE : Ajout du contrôle des couches *** ---
     const initializeMap = (params) => {
         stopLocationTracking();
 
         // 1. Définition des couches de base
         const topoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-            attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)'
+            attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)',
+            maxZoom: 17,
+            crossOrigin: true
         });
 
         const satelliteMap = L.tileLayer(
@@ -452,9 +477,14 @@ let rulesByTaxonIndex = new Map();
                 zoom: 13,
                 layers: [topoMap]
             });
+            map.on('moveend', () => {
+                const c = map.getCenter();
+                prefetchOpenTopoTiles(c.lat, c.lng, map.getZoom());
+            });
         } else {
             map.setView([params.latitude, params.longitude], 13);
         }
+        prefetchOpenTopoTiles(params.latitude, params.longitude, map.getZoom());
 
         // 3. Définition des objets pour le contrôle des couches
         const baseMaps = {
@@ -487,7 +517,9 @@ let rulesByTaxonIndex = new Map();
 const initializeSelectionMap = (coords) => {
         stopLocationTracking();
         const topoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-            attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)'
+            attribution: 'Map data: © OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)',
+            maxZoom: 17,
+            crossOrigin: true
         });
         const satelliteMap = L.tileLayer(
             'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
@@ -516,9 +548,14 @@ const initializeSelectionMap = (coords) => {
                     { "Espèces Patrimoniales": patrimonialLayerGroup, "Observations GBIF": observationsLayerGroup }
                 ).addTo(map);
             }
+            map.on('moveend', () => {
+                const c = map.getCenter();
+                prefetchOpenTopoTiles(c.lat, c.lng, map.getZoom());
+            });
         } else {
             map.setView([coords.latitude, coords.longitude], map.getZoom() || 12);
         }
+        prefetchOpenTopoTiles(coords.latitude, coords.longitude, map.getZoom());
 };
 
     const polygonToWkt = (latlngs) => {
