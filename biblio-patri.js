@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const drawPolygonBtn = document.getElementById('draw-polygon-btn');
     const toggleTrackingBtn = document.getElementById('toggle-tracking-btn');
     const toggleLabelsBtn = document.getElementById('toggle-labels-btn');
+    const measureDistanceBtn = document.getElementById('measure-distance-btn');
     const downloadShapefileBtn = document.getElementById('download-shapefile-btn');
     const downloadContainer = document.getElementById('download-container');
     const navContainer = document.getElementById('section-nav');
@@ -177,6 +178,40 @@ let znieffOnlySpecies = new Set();
 let hideZnieffOnly = false;
 let excludeZnieffAnalysis = false;
 let rulesByTaxonIndex = new Map();
+    let measuring = false;
+    let measurePoints = [];
+    let measureLine = null;
+    let measureTooltip = null;
+    let measureAltitudes = [];
+    const ALTITUDES_URL = 'assets/altitudes_fr.json';
+    let altitudeDataPromise = null;
+    function loadAltitudeData() {
+        if (!altitudeDataPromise) {
+            altitudeDataPromise = fetch(ALTITUDES_URL)
+                .then(r => (r.ok ? r.json() : {}))
+                .catch(() => ({}));
+        }
+        return altitudeDataPromise;
+    }
+    async function fetchAltitudeFromApi(lat, lon) {
+        try {
+            const resp = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m`);
+            if (!resp.ok) throw new Error('api');
+            const json = await resp.json();
+            if (typeof json.elevation === 'number') return json.elevation;
+        } catch (e) {
+            return null;
+        }
+        return null;
+    }
+    async function fetchAltitude(lat, lon) {
+        const apiAlt = await fetchAltitudeFromApi(lat, lon);
+        if (apiAlt !== null) return apiAlt;
+        const data = await loadAltitudeData();
+        const round = v => (Math.round(v * 2) / 2).toFixed(1);
+        const key = `${round(lat)},${round(lon)}`;
+        return data[key] ?? null;
+    }
     let trackingWatchId = null;
     let trackingMarker = null;
     let trackingActive = false;
@@ -906,6 +941,90 @@ const initializeSelectionMap = (coords) => {
         window.addEventListener('keydown', onVolumeKey);
     };
 
+    // --- Outils de mesure ---
+    const updateMeasureTooltip = (latlng) => {
+        let dist = 0;
+        for (let i = 1; i < measurePoints.length; i++) {
+            dist += measurePoints[i - 1].distanceTo(measurePoints[i]);
+        }
+        let text = dist < 1000 ? `${dist.toFixed(0)} m` : `${(dist / 1000).toFixed(2)} km`;
+        if (measureAltitudes[0] != null && measureAltitudes[measureAltitudes.length - 1] != null) {
+            const diff = measureAltitudes[measureAltitudes.length - 1] - measureAltitudes[0];
+            const sign = diff > 0 ? '+' : '';
+            text += ` / ${sign}${Math.round(diff)} m d${diff >= 0 ? '+' : '-'}`;
+        }
+        if (!measureTooltip) {
+            measureTooltip = L.marker(latlng, {
+                interactive: false,
+                icon: L.divIcon({ className: 'measure-tooltip', html: text })
+            }).addTo(map);
+        } else {
+            measureTooltip.setLatLng(latlng);
+            const el = measureTooltip.getElement();
+            if (el) el.innerHTML = text;
+        }
+    };
+
+    const addMeasurePoint = async (latlng) => {
+        measurePoints.push(latlng);
+        measureAltitudes.push(null);
+        if (measureLine) {
+            measureLine.setLatLngs(measurePoints);
+        } else {
+            measureLine = L.polyline(measurePoints, { color: '#ff0000' }).addTo(map);
+        }
+        updateMeasureTooltip(latlng);
+        const idx = measureAltitudes.length - 1;
+        try {
+            const alt = await fetchAltitude(latlng.lat, latlng.lng);
+            measureAltitudes[idx] = alt;
+            updateMeasureTooltip(latlng);
+        } catch (e) {}
+    };
+
+    const removeLastMeasurePoint = () => {
+        measurePoints.pop();
+        measureAltitudes.pop();
+        if (measurePoints.length === 0) {
+            if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
+            if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
+            return;
+        }
+        if (measureLine) measureLine.setLatLngs(measurePoints);
+        updateMeasureTooltip(measurePoints[measurePoints.length - 1]);
+    };
+
+    const onMeasureKey = (e) => {
+        if (!measuring) return;
+        if (e.key === 'AudioVolumeUp' || e.key === 'VolumeUp') {
+            e.preventDefault();
+            addMeasurePoint(map.getCenter());
+        } else if (e.key === 'AudioVolumeDown' || e.key === 'VolumeDown' || e.key === 'Backspace') {
+            e.preventDefault();
+            removeLastMeasurePoint();
+        }
+    };
+
+    const toggleMeasure = () => {
+        if (!map) return;
+        measuring = !measuring;
+        if (measuring) {
+            measureDistanceBtn.textContent = '🛑 Fin mesure';
+            if (crosshair) crosshair.style.display = 'block';
+            map.on('click', addMeasurePoint);
+            window.addEventListener('keydown', onMeasureKey);
+        } else {
+            measureDistanceBtn.textContent = '📏 Mesurer';
+            if (crosshair) crosshair.style.display = 'none';
+            map.off('click', addMeasurePoint);
+            window.removeEventListener('keydown', onMeasureKey);
+            if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
+            if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
+            measurePoints = [];
+            measureAltitudes = [];
+        }
+    };
+
     let obsSearchCircle = null;
 
     const displayObservations = (occurrences) => {
@@ -1025,6 +1144,7 @@ const initializeSelectionMap = (coords) => {
     addressInput.addEventListener('keypress', (e) => e.key === 'Enter' && handleAddressSearch());
     downloadShapefileBtn.addEventListener('click', triggerShapefileDownload);
     toggleTrackingBtn.addEventListener('click', () => toggleLocationTracking(map, toggleTrackingBtn));
+    measureDistanceBtn.addEventListener('click', toggleMeasure);
     if (toggleLabelsBtn) {
         toggleLabelsBtn.addEventListener('click', toggleAnalysisLabels);
     }
