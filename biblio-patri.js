@@ -801,6 +801,7 @@ const initializeSelectionMap = (coords) => {
             let allOccurrences = [];
             const maxPages = 20;
             const limit = 300; // GBIF API maximum
+            let totalPages = null;
             setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${maxPages})`, true);
             for (let page = 0; page < maxPages; page++) {
                 const offset = page * limit;
@@ -809,8 +810,24 @@ const initializeSelectionMap = (coords) => {
                 const gbifResp = await fetchWithRetry(gbifUrl);
                 if (!gbifResp.ok) throw new Error("L'API GBIF est indisponible.");
                 const pageData = await gbifResp.json();
-                if (pageData.results?.length > 0) { allOccurrences = allOccurrences.concat(pageData.results); }
-                if (pageData.endOfRecords) { break; }
+                if (totalPages === null && typeof pageData.count === 'number') {
+                    totalPages = Math.ceil(pageData.count / limit);
+                }
+                if (pageData.results?.length > 0) {
+                    allOccurrences = allOccurrences.concat(pageData.results);
+                }
+                if (pageData.endOfRecords) {
+                    totalPages = totalPages || page + 1;
+                    break;
+                }
+            }
+            const retrievedPages = Math.ceil(allOccurrences.length / limit);
+            if (typeof showNotification === 'function' && totalPages) {
+                if (retrievedPages < totalPages) {
+                    showNotification(`Résultats partiels : ${retrievedPages} pages récupérées sur ${totalPages} disponibles`, 'warning');
+                } else {
+                    showNotification(`Résultats complets : ${retrievedPages} pages récupérées sur ${totalPages}`);
+                }
             }
             if (allOccurrences.length === 0) { throw new Error("Aucune occurrence de plante trouvée à proximité."); }
             setStatus("Étape 3/4: Analyse des données...", true);
