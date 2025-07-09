@@ -167,6 +167,13 @@ main {
     z-index: 1000;
 }
 
+body.embed #map {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    box-shadow: none;
+}
+
 /* Style pour les icônes SVG personnalisées */
 .custom-div-icon {
     background: transparent;
