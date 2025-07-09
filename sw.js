@@ -137,7 +137,12 @@ self.addEventListener("fetch", event => {
                        return cachedResponse;
                    }
                    return fetch(request).then(networkResponse => {
-                       if (request.url.includes("unpkg.com") || request.url.includes("cdnjs.cloudflare.com")) {
+                       if (
+                           request.url.includes("unpkg.com") ||
+                           request.url.includes("cdnjs.cloudflare.com") ||
+                           request.url.includes("tile.openstreetmap.org") ||
+                           request.url.includes("tile.opentopomap.org")
+                       ) {
                            return caches.open(CACHE_NAME).then(cache => {
                                cache.put(request, networkResponse.clone());
                                return networkResponse;
