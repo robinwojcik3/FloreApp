@@ -267,13 +267,16 @@ let rulesByTaxonIndex = new Map();
         lines.forEach(line => {
             const cols = line.split(';');
             const rowData = {
-                adm: cols[indices.adm]?.trim().replace(/"/g, '') || '', nom: cols[indices.nom]?.trim().replace(/"/g, '') || '',
-                code: cols[indices.code]?.trim().replace(/"/g, '') || '', type: cols[indices.type]?.trim().replace(/"/g, '') || '',
+                adm: cols[indices.adm]?.trim().replace(/"/g, '') || '',
+                nom: cols[indices.nom]?.trim().replace(/"/g, '') || '',
+                code: cols[indices.code]?.trim().replace(/"/g, '') || '',
+                type: cols[indices.type]?.trim().replace(/"/g, '') || '',
                 label: cols[indices.label]?.trim().replace(/"/g, '') || ''
             };
             if (rowData.nom && rowData.type) {
-                if (!index.has(rowData.nom)) { index.set(rowData.nom, []); }
-                index.get(rowData.nom).push(rowData);
+                const key = norm(rowData.nom);
+                if (!index.has(key)) { index.set(key, []); }
+                index.get(key).push(rowData);
             }
         });
         return index;
@@ -710,7 +713,7 @@ const initializeSelectionMap = (coords) => {
             const relevantRules = new Map();
             const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${params.latitude}&lon=${params.longitude}&fields=departement,region`)).json())[0];
             for (const speciesName of uniqueSpeciesNames) {
-                const rulesForThisTaxon = rulesByTaxonIndex.get(speciesName);
+                const rulesForThisTaxon = rulesByTaxonIndex.get(norm(speciesName));
                 if (rulesForThisTaxon) {
                     for (const row of rulesForThisTaxon) {
                         let ruleApplies = false;

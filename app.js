@@ -1174,8 +1174,9 @@ async function loadBDCData() {
           label: c[idx.label] || ''
         };
         if (!row.nom) return;
-        if (!map.has(row.nom)) map.set(row.nom, []);
-        map.get(row.nom).push(row);
+        const key = norm(row.nom);
+        if (!map.has(key)) map.set(key, []);
+        map.get(key).push(row);
       });
       bdcRulesByTaxon = map;
     });
@@ -1222,7 +1223,7 @@ async function runStatusAnalysis() {
     const name = latinCell ? (latinCell.dataset.latin || latinCell.textContent.split('\n')[0]).trim() : '';
     if (!name) return;
     uniqueSpeciesNames.push(name);
-    const rulesForThisTaxon = bdcRulesByTaxon.get(name) || [];
+    const rulesForThisTaxon = bdcRulesByTaxon.get(norm(name)) || [];
     rulesForThisTaxon.forEach(r => {
       let ruleApplies = false;
       const type = r.type.toLowerCase();
