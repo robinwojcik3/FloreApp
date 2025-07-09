@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const speciesParam = params.get('species');
     if (speciesParam) {
         const frame = document.getElementById('map-frame');
-        frame.src = 'carte_interactive/map_view.html?species=' + encodeURIComponent(speciesParam);
+        frame.src = 'carte_interactive/map_view.html?species=' + encodeURIComponent(speciesParam) + '&embed=1';
     }
     showTab('loc');
 });

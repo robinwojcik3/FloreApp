@@ -32,5 +32,13 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     
     <script src="script.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const params = new URLSearchParams(window.location.search);
+        if (params.has('embed')) {
+          document.body.classList.add('embed');
+        }
+      });
+    </script>
 </body>
 </html>
