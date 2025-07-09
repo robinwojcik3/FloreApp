@@ -150,8 +150,10 @@ self.addEventListener("fetch", event => {
        return;
    }
 
-   // Stratégie "Network First" pour HTML et scripts
-   if (request.destination === 'document' || request.destination === 'script') {
+   // Stratégie "Network First" pour HTML, scripts et feuilles de style
+   if (request.destination === 'document' ||
+       request.destination === 'script' ||
+       request.destination === 'style') {
        event.respondWith(
            fetch(request)
                .then(networkResponse => {
