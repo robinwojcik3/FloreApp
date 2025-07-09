@@ -802,20 +802,26 @@ const initializeSelectionMap = (coords) => {
             const maxPages = 20;
             const limit = 300; // GBIF API maximum
             let totalPages = null;
-            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${maxPages})`, true);
-            for (let page = 0; page < maxPages; page++) {
+            let pagesToFetch = maxPages;
+
+            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${pagesToFetch})`, true);
+            for (let page = 0; page < pagesToFetch; page++) {
                 const offset = page * limit;
-                setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${maxPages})`, true);
+                setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${pagesToFetch})`, true);
                 const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
                 const gbifResp = await fetchWithRetry(gbifUrl);
                 if (!gbifResp.ok) throw new Error("L'API GBIF est indisponible.");
                 const pageData = await gbifResp.json();
+
                 if (totalPages === null && typeof pageData.count === 'number') {
                     totalPages = Math.ceil(pageData.count / limit);
+                    pagesToFetch = Math.min(maxPages, totalPages);
                 }
+
                 if (pageData.results?.length > 0) {
                     allOccurrences = allOccurrences.concat(pageData.results);
                 }
+
                 if (pageData.endOfRecords) {
                     totalPages = totalPages || page + 1;
                     break;
