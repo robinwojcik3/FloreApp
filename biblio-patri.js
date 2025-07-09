@@ -175,17 +175,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const updateMeasureDisplay = async (latlng) => {
         let dist = 0;
-        let elev = 0;
+        let elevPlus = 0;
+        let elevMinus = 0;
         for (let i = 1; i < measurePoints.length; i++) {
             dist += measurePoints[i - 1].latlng.distanceTo(measurePoints[i].latlng);
             const a1 = measurePoints[i - 1].altitude;
             const a2 = measurePoints[i].altitude;
-            if (typeof a1 === 'number' && typeof a2 === 'number' && a2 > a1) {
-                elev += a2 - a1;
+            if (typeof a1 === 'number' && typeof a2 === 'number') {
+                const diff = a2 - a1;
+                if (diff > 0) elevPlus += diff; else if (diff < 0) elevMinus += -diff;
             }
         }
         const textDist = dist < 1000 ? `${dist.toFixed(0)} m` : `${(dist/1000).toFixed(2)} km`;
-        const text = elev > 0 ? `${textDist} (+${Math.round(elev)} m D+)` : textDist;
+        let text = textDist;
+        if (elevPlus > 0 || elevMinus > 0) {
+            const parts = [];
+            if (elevPlus > 0) parts.push(`+${Math.round(elevPlus)} m D+`);
+            if (elevMinus > 0) parts.push(`-${Math.round(elevMinus)} m D-`);
+            text += ` (${parts.join(' / ')})`;
+        }
         if (!measureTooltip) {
             measureTooltip = L.marker(latlng, {
                 interactive: false,
@@ -196,6 +204,42 @@ document.addEventListener('DOMContentLoaded', async () => {
             const el = measureTooltip.getElement();
             if (el) el.innerHTML = text;
         }
+        updateMeasureProfile();
+    };
+
+    const updateMeasureProfile = () => {
+        const canvas = document.getElementById('measure-profile');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const width = canvas.width;
+        const height = canvas.height;
+        if (measurePoints.length < 2) {
+            canvas.style.display = 'none';
+            ctx.clearRect(0, 0, width, height);
+            return;
+        }
+        canvas.style.display = 'block';
+        ctx.clearRect(0, 0, width, height);
+        const dists = [0];
+        let dist = 0;
+        for (let i = 1; i < measurePoints.length; i++) {
+            dist += measurePoints[i - 1].latlng.distanceTo(measurePoints[i].latlng);
+            dists.push(dist);
+        }
+        const alts = measurePoints.map(p => typeof p.altitude === 'number' ? p.altitude : 0);
+        const minAlt = Math.min(...alts);
+        const maxAlt = Math.max(...alts);
+        const altRange = maxAlt - minAlt || 1;
+        const totalDist = dists[dists.length - 1] || 1;
+        ctx.strokeStyle = '#c62828';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        for (let i = 0; i < alts.length; i++) {
+            const x = (dists[i] / totalDist) * width;
+            const y = height - ((alts[i] - minAlt) / altRange) * height;
+            if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
     };
 
     const addMeasurePoint = async (latlng) => {
@@ -218,10 +262,14 @@ document.addEventListener('DOMContentLoaded', async () => {
             measurePoints = [];
             if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
             if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
+            const canvas = document.getElementById('measure-profile');
+            if (canvas) { canvas.style.display = 'none'; const ctx = canvas.getContext('2d'); ctx && ctx.clearRect(0,0,canvas.width,canvas.height); }
             measureDistanceBtn.textContent = '🛑 Fin mesure';
         } else {
             if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
             if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
+            const canvas = document.getElementById('measure-profile');
+            if (canvas) { canvas.style.display = 'none'; const ctx = canvas.getContext('2d'); ctx && ctx.clearRect(0,0,canvas.width,canvas.height); }
             measurePoints = [];
             measureDistanceBtn.textContent = '📏 Mesurer';
         }

@@ -24,11 +24,22 @@
       .logo-icon { width: 24px; height: auto; }
       .small-logo { height: 24px; width: auto; }
       .measure-tooltip {
-        background: var(--primary);
-        color: #fff;
+        background: #fff;
+        color: #000;
         padding: 2px 6px;
         border-radius: 4px;
+        border: 1px solid #000;
         font-size: 0.8rem;
+      }
+
+      .measure-profile {
+        background: #fff;
+        border: 1px solid #000;
+        width: 100%;
+        max-width: 400px;
+        height: 150px;
+        display: none;
+        margin: 0.5rem auto;
       }
     </style>
 </head>
@@ -64,6 +75,7 @@
         <div id="map">
             <div id="crosshair" style="display:none;"></div>
         </div>
+        <canvas id="measure-profile" class="measure-profile"></canvas>
 
         <div id="download-container" style="text-align:center; display:none; margin-bottom:1rem;">
             <button id="download-shapefile-btn" class="action-button">⬇️ Shapefile</button>
