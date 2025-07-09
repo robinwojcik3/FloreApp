@@ -259,6 +259,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let currentShapefileData = null;
 
     let map = null;
+    let prefetchListenerAdded = false;
     let layersControl = null;
     let searchAreaLayer = null;
     let patrimonialLayerGroup = L.layerGroup();
@@ -346,6 +347,26 @@ let rulesByTaxonIndex = new Map();
         }
 
         statusDiv.appendChild(container);
+    };
+
+    // Prefetch OpenTopoMap tiles near a center to improve map rendering speed
+    const prefetchTopoTiles = (layer, center, zoom = map ? map.getZoom() : 13) => {
+        if (!layer || !center || !map) return;
+        const tileSize = layer.getTileSize();
+        [zoom, zoom + 1].forEach(z => {
+            const p = map.project(center, z);
+            const tx = Math.floor(p.x / tileSize.x);
+            const ty = Math.floor(p.y / tileSize.y);
+            for (let dx = -1; dx <= 1; dx++) {
+                for (let dy = -1; dy <= 1; dy++) {
+                    const coords = { x: tx + dx, y: ty + dy, z };
+                    const url = layer.getTileUrl(coords);
+                    const img = new Image();
+                    img.crossOrigin = '';
+                    img.src = url;
+                }
+            }
+        });
     };
 
     const fetchWithRetry = async (url, options = {}, maxRetries = ANALYSIS_MAX_RETRIES) => {
@@ -482,6 +503,12 @@ let rulesByTaxonIndex = new Map();
         } else {
             searchAreaLayer = L.circle([params.latitude, params.longitude], { radius: SEARCH_RADIUS_KM * 1000, color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(map);
         }
+
+        prefetchTopoTiles(topoMap, L.latLng(params.latitude, params.longitude));
+        if (!prefetchListenerAdded) {
+            map.on('moveend', () => prefetchTopoTiles(topoMap, map.getCenter()));
+            prefetchListenerAdded = true;
+        }
     };
 
 const initializeSelectionMap = (coords) => {
@@ -518,6 +545,12 @@ const initializeSelectionMap = (coords) => {
             }
         } else {
             map.setView([coords.latitude, coords.longitude], map.getZoom() || 12);
+        }
+
+        prefetchTopoTiles(topoMap, L.latLng(coords.latitude, coords.longitude));
+        if (!prefetchListenerAdded) {
+            map.on('moveend', () => prefetchTopoTiles(topoMap, map.getCenter()));
+            prefetchListenerAdded = true;
         }
 };
 
