@@ -2,7 +2,8 @@
  * Service-Worker – PlantID PWA
  * ================================================================ */
 
-const CACHE_NAME = "plantid-v25";
+// Incrémenter le nom du cache pour forcer la mise à jour du service worker
+const CACHE_NAME = "plantid-v26";
 
 const WASM_ASSETS = {
    "openjpeg.wasm": "./pdfjs/wasm/openjpeg.wasm.b64",
@@ -137,7 +138,10 @@ self.addEventListener("fetch", event => {
                        return cachedResponse;
                    }
                    return fetch(request).then(networkResponse => {
-                       if (request.url.includes("unpkg.com") || request.url.includes("cdnjs.cloudflare.com")) {
+                       if (request.url.includes("unpkg.com") ||
+                           request.url.includes("cdnjs.cloudflare.com") ||
+                           request.url.includes("tile.openstreetmap.org") ||
+                           request.url.includes("tile.opentopomap.org")) {
                            return caches.open(CACHE_NAME).then(cache => {
                                cache.put(request, networkResponse.clone());
                                return networkResponse;
