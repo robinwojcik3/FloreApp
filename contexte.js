@@ -39,24 +39,28 @@ function loadAltitudeData() {
 const GOOGLE_MAPS_LONG_PRESS_MS = 2000;
 const MAP_LONG_PRESS_MS = 3000; // delay for selecting a point on the map
 
-function initializeEnvMap() {
-    const defaultLat = 45.188529;
-    const defaultLon = 5.724524;
-    envMap = L.map('env-map', { preferCanvas: true }).setView([defaultLat, defaultLon], 11);
+function addDefaultBaseLayer(map) {
     const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
         attribution: '© OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)',
         maxZoom: 17,
         crossOrigin: true
-    }).addTo(envMap);
+    }).addTo(map);
     topoLayer.on('tileerror', () => {
-        if (envMap.hasLayer(topoLayer)) {
-            envMap.removeLayer(topoLayer);
+        if (map.hasLayer(topoLayer)) {
+            map.removeLayer(topoLayer);
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                 attribution: '© OpenStreetMap contributors',
                 maxZoom: 19
-            }).addTo(envMap);
+            }).addTo(map);
         }
     });
+}
+
+function initializeEnvMap() {
+    const defaultLat = 45.188529;
+    const defaultLon = 5.724524;
+    envMap = L.map('env-map', { preferCanvas: true }).setView([defaultLat, defaultLon], 11);
+    addDefaultBaseLayer(envMap);
     enableChoicePopup(envMap);
 }
 
@@ -421,20 +425,7 @@ async function displayInteractiveEnvMap() {
     // Initialisation ou réinitialisation de la carte
     if (!envMap) {
         envMap = L.map('env-map', { preferCanvas: true }).setView([selectedLat, selectedLon], 11);
-        const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)',
-            maxZoom: 17,
-            crossOrigin: true
-        }).addTo(envMap);
-        topoLayer.on('tileerror', () => {
-            if (envMap.hasLayer(topoLayer)) {
-                envMap.removeLayer(topoLayer);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors',
-                    maxZoom: 19
-                }).addTo(envMap);
-            }
-        });
+        addDefaultBaseLayer(envMap);
     } else {
         envMap.setView([selectedLat, selectedLon], 11);
         if (layerControl) envMap.removeControl(layerControl); // Supprime l'ancien contrôle de couches
