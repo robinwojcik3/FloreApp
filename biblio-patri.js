@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let measurePoints = [];
     let measureLine = null;
     let measureTooltip = null;
+    let profileSamples = [];
 
     const ALTITUDES_URL = 'assets/altitudes_fr.json';
     let altitudeDataPromise = null;
@@ -178,7 +179,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const drawElevationProfile = () => {
         if (!profileCanvas || !profileContainer) return;
-        if (measurePoints.length < 2) {
+        if (profileSamples.length < 2) {
             profileContainer.style.display = 'none';
             return;
         }
@@ -187,14 +188,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const h = profileCanvas.height;
         ctx.clearRect(0, 0, w, h);
 
-        const dists = [];
-        const alts = [];
-        let d = 0;
-        for (let i = 0; i < measurePoints.length; i++) {
-            if (i > 0) d += measurePoints[i - 1].latlng.distanceTo(measurePoints[i].latlng);
-            dists.push(d);
-            alts.push(typeof measurePoints[i].altitude === 'number' ? measurePoints[i].altitude : 0);
-        }
+        const dists = profileSamples.map(p => p.dist);
+        const alts = profileSamples.map(p => (typeof p.alt === 'number' ? p.alt : 0));
         const minAlt = Math.min(...alts);
         const maxAlt = Math.max(...alts);
         const totalDist = dists[dists.length - 1] || 1;
@@ -215,23 +210,22 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const updateMeasureDisplay = async (latlng) => {
         let dist = 0;
-        let elevPos = 0;
-        let elevNeg = 0;
         for (let i = 1; i < measurePoints.length; i++) {
             dist += measurePoints[i - 1].latlng.distanceTo(measurePoints[i].latlng);
-            const a1 = measurePoints[i - 1].altitude;
-            const a2 = measurePoints[i].altitude;
-            if (typeof a1 === 'number' && typeof a2 === 'number') {
-                const diff = a2 - a1;
-                if (diff > 0) elevPos += diff; else elevNeg += Math.abs(diff);
-            }
+        }
+
+        let elevPos = 0;
+        let elevNeg = 0;
+        for (let i = 1; i < profileSamples.length; i++) {
+            const diff = profileSamples[i].alt - profileSamples[i - 1].alt;
+            if (diff > 0) elevPos += diff; else elevNeg += Math.abs(diff);
         }
         const textDist = dist < 1000 ? `${dist.toFixed(0)} m` : `${(dist/1000).toFixed(2)} km`;
         const dPlus = Math.round(elevPos);
         const dMinus = Math.round(elevNeg);
         if (profileInfo) {
-            profileInfo.innerHTML =
-                `Distance : ${textDist}<br>D+ total : ${dPlus} m<br>D- total : ${dMinus} m`;
+            profileInfo.textContent =
+                `Distance : ${textDist}\nD+ total : ${dPlus} m\nD- total : ${dMinus} m`;
         }
         const elevTextParts = [];
         if (dPlus > 0) elevTextParts.push(`+${dPlus} m`);
@@ -254,6 +248,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     const addMeasurePoint = async (latlng) => {
         const altitude = await fetchAltitude(latlng.lat, latlng.lng);
         measurePoints.push({ latlng, altitude });
+        if (measurePoints.length === 1) {
+            profileSamples = [{ dist: 0, alt: altitude }];
+        } else {
+            const prev = measurePoints[measurePoints.length - 2];
+            const startDist = profileSamples.length
+                ? profileSamples[profileSamples.length - 1].dist
+                : 0;
+            const segDist = prev.latlng.distanceTo(latlng);
+            const steps = Math.max(1, Math.ceil(segDist / 50));
+            for (let i = 1; i <= steps; i++) {
+                const t = i / steps;
+                const lat = prev.latlng.lat + (latlng.lat - prev.latlng.lat) * t;
+                const lng = prev.latlng.lng + (latlng.lng - prev.latlng.lng) * t;
+                const alt = i === steps ? altitude : await fetchAltitude(lat, lng);
+                profileSamples.push({ dist: startDist + segDist * t, alt });
+            }
+        }
         const latlngs = measurePoints.map(p => p.latlng);
         if (measureLine) {
             measureLine.setLatLngs(latlngs);
@@ -269,6 +280,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         measuring = !measuring;
         if (measuring) {
             measurePoints = [];
+            profileSamples = [];
             if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
             if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
             if (profileCanvas) {
@@ -283,6 +295,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
             if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
             measurePoints = [];
+            profileSamples = [];
             if (profileContainer) profileContainer.style.display = 'none';
             measureDistanceBtn.textContent = '📏 Mesurer';
         }
