@@ -722,15 +722,20 @@ const initializeSelectionMap = (coords) => {
             if (!taxonKey) continue;
             const color = SPECIES_COLORS[index % SPECIES_COLORS.length];
             let speciesOccs = [];
-            let endOfRecords = false;
             const limit = 300; // GBIF API max
-            for (let page = 0; page < 20 && !endOfRecords; page++) {
+            let totalPages = 1;
+            for (let page = 0; page < totalPages; page++) {
                 const offset = page * limit;
                 const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&taxonKey=${taxonKey}`;
                 try {
                     const resp = await fetchWithRetry(gbifUrl);
                     if (!resp.ok) break;
                     const pageData = await resp.json();
+
+                    if (page === 0 && typeof pageData.count === 'number') {
+                        totalPages = Math.ceil(pageData.count / limit);
+                    }
+
                     if (pageData.results?.length > 0) {
                         pageData.results.forEach(occ => {
                             occ.speciesName = speciesName;
@@ -738,7 +743,8 @@ const initializeSelectionMap = (coords) => {
                         });
                         speciesOccs = speciesOccs.concat(pageData.results);
                     }
-                    endOfRecords = pageData.endOfRecords;
+
+                    if (pageData.endOfRecords) break;
                 } catch (e) { console.error("Erreur durant la cartographie détaillée pour :", speciesName, e); break; }
             }
             allOccurrencesWithContext = allOccurrencesWithContext.concat(speciesOccs);
