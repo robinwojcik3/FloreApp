@@ -202,6 +202,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         const h = profileCanvas.height;
         ctx.clearRect(0, 0, w, h);
 
+        const marginLeft = 30; // space for altitude labels
+        const marginBottom = 20; // space for distance labels
+        const plotWidth = w - marginLeft - 2;
+        const plotHeight = h - marginBottom - 2;
+
         const dists = [];
         const alts = [];
         let d = 0;
@@ -214,8 +219,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const maxAlt = Math.max(...alts);
         const totalDist = dists[dists.length - 1] || 1;
 
-        const scaleX = w / totalDist;
-        const scaleY = maxAlt - minAlt === 0 ? 1 : h / (maxAlt - minAlt);
+        const scaleX = plotWidth / totalDist;
+        const scaleY = maxAlt - minAlt === 0 ? 1 : plotHeight / (maxAlt - minAlt);
 
         const niceStep = (v) => {
             const pow = Math.pow(10, Math.floor(Math.log10(v)));
@@ -232,22 +237,38 @@ document.addEventListener('DOMContentLoaded', async () => {
         ctx.lineWidth = 1;
         ctx.beginPath();
         for (let x = distSpacing; x < totalDist; x += distSpacing) {
-            const px = x * scaleX;
+            const px = marginLeft + x * scaleX;
             ctx.moveTo(px, 0);
-            ctx.lineTo(px, h);
+            ctx.lineTo(px, plotHeight);
         }
         for (let a = Math.ceil(minAlt / altSpacing) * altSpacing; a <= maxAlt; a += altSpacing) {
-            const py = h - (a - minAlt) * scaleY;
-            ctx.moveTo(0, py);
-            ctx.lineTo(w, py);
+            const py = plotHeight - (a - minAlt) * scaleY;
+            ctx.moveTo(marginLeft, py);
+            ctx.lineTo(marginLeft + plotWidth, py);
         }
         ctx.stroke();
 
+        ctx.fillStyle = '#000000';
+        ctx.font = '10px sans-serif';
+        ctx.textBaseline = 'top';
+        ctx.textAlign = 'center';
+        for (let x = 0; x <= totalDist; x += distSpacing) {
+            const px = marginLeft + x * scaleX;
+            const label = totalDist < 1000 ? `${Math.round(x)} m` : `${(x / 1000).toFixed(x < 1000 ? 2 : 1)} km`;
+            ctx.fillText(label, px, plotHeight + 2);
+        }
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        for (let a = Math.ceil(minAlt / altSpacing) * altSpacing; a <= maxAlt; a += altSpacing) {
+            const py = plotHeight - (a - minAlt) * scaleY;
+            ctx.fillText(`${Math.round(a)} m`, marginLeft - 4, py);
+        }
+
         ctx.beginPath();
-        ctx.moveTo(0, h - (alts[0] - minAlt) * scaleY);
+        ctx.moveTo(marginLeft, plotHeight - (alts[0] - minAlt) * scaleY);
         for (let i = 1; i < alts.length; i++) {
-            const x = dists[i] * scaleX;
-            const y = h - (alts[i] - minAlt) * scaleY;
+            const x = marginLeft + dists[i] * scaleX;
+            const y = plotHeight - (alts[i] - minAlt) * scaleY;
             ctx.lineTo(x, y);
         }
         ctx.strokeStyle = '#c62828';
