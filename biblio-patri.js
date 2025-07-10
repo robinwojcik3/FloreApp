@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const toggleTrackingBtn = document.getElementById('toggle-tracking-btn');
     const toggleLabelsBtn = document.getElementById('toggle-labels-btn');
     const measureDistanceBtn = document.getElementById('measure-distance-btn');
+    const profileCanvas = document.getElementById('profile-canvas');
     const downloadShapefileBtn = document.getElementById('download-shapefile-btn');
     const downloadContainer = document.getElementById('download-container');
     const navContainer = document.getElementById('section-nav');
@@ -173,19 +174,61 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
+    const drawElevationProfile = () => {
+        if (!profileCanvas) return;
+        if (measurePoints.length < 2) {
+            profileCanvas.style.display = 'none';
+            return;
+        }
+        const ctx = profileCanvas.getContext('2d');
+        const w = profileCanvas.width;
+        const h = profileCanvas.height;
+        ctx.clearRect(0, 0, w, h);
+
+        const dists = [];
+        const alts = [];
+        let d = 0;
+        for (let i = 0; i < measurePoints.length; i++) {
+            if (i > 0) d += measurePoints[i - 1].latlng.distanceTo(measurePoints[i].latlng);
+            dists.push(d);
+            alts.push(typeof measurePoints[i].altitude === 'number' ? measurePoints[i].altitude : 0);
+        }
+        const minAlt = Math.min(...alts);
+        const maxAlt = Math.max(...alts);
+        const totalDist = dists[dists.length - 1] || 1;
+        const scaleX = w / totalDist;
+        const scaleY = maxAlt - minAlt === 0 ? 1 : h / (maxAlt - minAlt);
+        ctx.beginPath();
+        ctx.moveTo(0, h - (alts[0] - minAlt) * scaleY);
+        for (let i = 1; i < alts.length; i++) {
+            const x = dists[i] * scaleX;
+            const y = h - (alts[i] - minAlt) * scaleY;
+            ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = '#c62828';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        profileCanvas.style.display = 'block';
+    };
+
     const updateMeasureDisplay = async (latlng) => {
         let dist = 0;
-        let elev = 0;
+        let elevPos = 0;
+        let elevNeg = 0;
         for (let i = 1; i < measurePoints.length; i++) {
             dist += measurePoints[i - 1].latlng.distanceTo(measurePoints[i].latlng);
             const a1 = measurePoints[i - 1].altitude;
             const a2 = measurePoints[i].altitude;
-            if (typeof a1 === 'number' && typeof a2 === 'number' && a2 > a1) {
-                elev += a2 - a1;
+            if (typeof a1 === 'number' && typeof a2 === 'number') {
+                const diff = a2 - a1;
+                if (diff > 0) elevPos += diff; else elevNeg += Math.abs(diff);
             }
         }
         const textDist = dist < 1000 ? `${dist.toFixed(0)} m` : `${(dist/1000).toFixed(2)} km`;
-        const text = elev > 0 ? `${textDist} (+${Math.round(elev)} m D+)` : textDist;
+        let elevText = '';
+        if (elevPos > 0) elevText += ` +${Math.round(elevPos)} m`;
+        if (elevNeg > 0) elevText += ` -${Math.round(elevNeg)} m`;
+        const text = elevText ? `${textDist} (${elevText.trim()})` : textDist;
         if (!measureTooltip) {
             measureTooltip = L.marker(latlng, {
                 interactive: false,
@@ -196,6 +239,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const el = measureTooltip.getElement();
             if (el) el.innerHTML = text;
         }
+        drawElevationProfile();
     };
 
     const addMeasurePoint = async (latlng) => {
@@ -218,11 +262,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             measurePoints = [];
             if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
             if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
+            if (profileCanvas) {
+                const ctx = profileCanvas.getContext('2d');
+                ctx && ctx.clearRect(0, 0, profileCanvas.width, profileCanvas.height);
+                profileCanvas.style.display = 'none';
+            }
             measureDistanceBtn.textContent = '🛑 Fin mesure';
         } else {
             if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
             if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
             measurePoints = [];
+            if (profileCanvas) profileCanvas.style.display = 'none';
             measureDistanceBtn.textContent = '📏 Mesurer';
         }
     };
