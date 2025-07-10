@@ -27,6 +27,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const toggleLabelsBtn = document.getElementById('toggle-labels-btn');
     const measureDistanceBtn = document.getElementById('measure-distance-btn');
     const profileCanvas = document.getElementById('profile-canvas');
+    const profileContainer = document.getElementById('profile-container');
+    const measureInfo = document.getElementById('measure-info');
     const downloadShapefileBtn = document.getElementById('download-shapefile-btn');
     const downloadContainer = document.getElementById('download-container');
     const navContainer = document.getElementById('section-nav');
@@ -175,9 +177,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const drawElevationProfile = () => {
-        if (!profileCanvas) return;
+        if (!profileCanvas || !profileContainer) return;
         if (measurePoints.length < 2) {
-            profileCanvas.style.display = 'none';
+            profileContainer.style.display = 'none';
             return;
         }
         const ctx = profileCanvas.getContext('2d');
@@ -208,7 +210,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ctx.strokeStyle = '#c62828';
         ctx.lineWidth = 2;
         ctx.stroke();
-        profileCanvas.style.display = 'block';
+        profileContainer.style.display = 'block';
     };
 
     const updateMeasureDisplay = async (latlng) => {
@@ -229,6 +231,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (elevPos > 0) elevText += ` +${Math.round(elevPos)} m`;
         if (elevNeg > 0) elevText += ` -${Math.round(elevNeg)} m`;
         const text = elevText ? `${textDist} (${elevText.trim()})` : textDist;
+        if (measureInfo) {
+            const info = `Distance : ${textDist}\n\nD+ total : ${Math.round(elevPos)} m\n\nD- total : ${Math.round(elevNeg)} m`;
+            measureInfo.innerText = info;
+        }
         if (!measureTooltip) {
             measureTooltip = L.marker(latlng, {
                 interactive: false,
@@ -265,14 +271,16 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (profileCanvas) {
                 const ctx = profileCanvas.getContext('2d');
                 ctx && ctx.clearRect(0, 0, profileCanvas.width, profileCanvas.height);
-                profileCanvas.style.display = 'none';
             }
+            if (profileContainer) profileContainer.style.display = 'none';
+            if (measureInfo) measureInfo.innerText = '';
             measureDistanceBtn.textContent = '🛑 Fin mesure';
         } else {
             if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
             if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
             measurePoints = [];
-            if (profileCanvas) profileCanvas.style.display = 'none';
+            if (profileContainer) profileContainer.style.display = 'none';
+            if (measureInfo) measureInfo.innerText = '';
             measureDistanceBtn.textContent = '📏 Mesurer';
         }
     };
