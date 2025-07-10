@@ -371,17 +371,24 @@ document.addEventListener('DOMContentLoaded', async () => {
         patrBtn.textContent = 'Flore Patri';
         const patrZnieffBtn = L.DomUtil.create('button', 'action-button', container);
         patrZnieffBtn.textContent = 'Flore Patri & ZNIEFF';
+        const deepPatrBtn = L.DomUtil.create('button', 'action-button', container);
+        deepPatrBtn.textContent = 'Flore Patri approfondie';
         const obsBtn = L.DomUtil.create('button', 'action-button', container);
         obsBtn.textContent = 'Flore commune';
         L.DomEvent.on(patrBtn, 'click', () => {
             map.closePopup();
             showNavigation();
-            runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, true);
+            runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, true, false);
         });
         L.DomEvent.on(patrZnieffBtn, 'click', () => {
             map.closePopup();
             showNavigation();
-            runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, false);
+            runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, false, false);
+        });
+        L.DomEvent.on(deepPatrBtn, 'click', () => {
+            map.closePopup();
+            showNavigation();
+            runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, true, true);
         });
         L.DomEvent.on(obsBtn, 'click', () => {
             map.closePopup();
@@ -957,7 +964,7 @@ const initializeSelectionMap = (coords) => {
         fetchAndDisplayAllPatrimonialOccurrences(patrimonialMap, wkt, occurrences);
     };
 
-    const runAnalysis = async (params, excludeZnieff = false) => {
+    const runAnalysis = async (params, excludeZnieff = false, fetchAllPages = false) => {
         excludeZnieffAnalysis = excludeZnieff;
         try {
             lastAnalysisCoords = { latitude: params.latitude, longitude: params.longitude };
@@ -970,15 +977,16 @@ const initializeSelectionMap = (coords) => {
                 wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
             }
             let allOccurrences = [];
-            const maxPages = 20;
+            const maxPages = fetchAllPages ? Infinity : 20;
             const limit = 300; // GBIF API maximum
             let totalPages = null;
             let pagesToFetch = maxPages;
 
-            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${pagesToFetch})`, true);
-            for (let page = 0; page < pagesToFetch; page++) {
+            const CHUNK_SIZE = 30;
+            let page = 0;
+            while (page < pagesToFetch) {
                 const offset = page * limit;
-                setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${pagesToFetch})`, true);
+                setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${pagesToFetch === Infinity ? '?' : pagesToFetch})`, true);
                 const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
                 const gbifResp = await fetchWithRetry(gbifUrl);
                 if (!gbifResp.ok) throw new Error("L'API GBIF est indisponible.");
@@ -996,6 +1004,11 @@ const initializeSelectionMap = (coords) => {
                 if (pageData.endOfRecords) {
                     totalPages = totalPages || page + 1;
                     break;
+                }
+
+                page++;
+                if (page % CHUNK_SIZE === 0) {
+                    await new Promise(res => setTimeout(res, 200));
                 }
             }
             const retrievedPages = Math.ceil(allOccurrences.length / limit);
