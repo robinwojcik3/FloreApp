@@ -722,15 +722,18 @@ const initializeSelectionMap = (coords) => {
             if (!taxonKey) continue;
             const color = SPECIES_COLORS[index % SPECIES_COLORS.length];
             let speciesOccs = [];
-            let endOfRecords = false;
             const limit = 300; // GBIF API max
-            for (let page = 0; page < 20 && !endOfRecords; page++) {
+            let totalPages = null;
+            for (let page = 0; ; page++) {
                 const offset = page * limit;
                 const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&taxonKey=${taxonKey}`;
                 try {
                     const resp = await fetchWithRetry(gbifUrl);
                     if (!resp.ok) break;
                     const pageData = await resp.json();
+                    if (totalPages === null && typeof pageData.count === 'number') {
+                        totalPages = Math.ceil(pageData.count / limit);
+                    }
                     if (pageData.results?.length > 0) {
                         pageData.results.forEach(occ => {
                             occ.speciesName = speciesName;
@@ -738,7 +741,8 @@ const initializeSelectionMap = (coords) => {
                         });
                         speciesOccs = speciesOccs.concat(pageData.results);
                     }
-                    endOfRecords = pageData.endOfRecords;
+                    const reachedLastPage = pageData.endOfRecords || (totalPages !== null && page + 1 >= totalPages);
+                    if (reachedLastPage) break;
                 } catch (e) { console.error("Erreur durant la cartographie détaillée pour :", speciesName, e); break; }
             }
             allOccurrencesWithContext = allOccurrencesWithContext.concat(speciesOccs);
@@ -968,15 +972,14 @@ const initializeSelectionMap = (coords) => {
                 wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
             }
             let allOccurrences = [];
-            const maxPages = 20;
             const limit = 300; // GBIF API maximum
             let totalPages = null;
-            let pagesToFetch = maxPages;
 
-            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${pagesToFetch})`, true);
-            for (let page = 0; page < pagesToFetch; page++) {
+            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/?)`, true);
+            for (let page = 0; ; page++) {
                 const offset = page * limit;
-                setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${pagesToFetch})`, true);
+                const totalText = totalPages ? totalPages : '?';
+                setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${totalText})`, true);
                 const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
                 const gbifResp = await fetchWithRetry(gbifUrl);
                 if (!gbifResp.ok) throw new Error("L'API GBIF est indisponible.");
@@ -984,15 +987,15 @@ const initializeSelectionMap = (coords) => {
 
                 if (totalPages === null && typeof pageData.count === 'number') {
                     totalPages = Math.ceil(pageData.count / limit);
-                    pagesToFetch = Math.min(maxPages, totalPages);
                 }
 
                 if (pageData.results?.length > 0) {
                     allOccurrences = allOccurrences.concat(pageData.results);
                 }
 
-                if (pageData.endOfRecords) {
-                    totalPages = totalPages || page + 1;
+                const reachedLastPage = pageData.endOfRecords || (totalPages !== null && page + 1 >= totalPages);
+                if (reachedLastPage) {
+                    if (totalPages === null) totalPages = page + 1;
                     break;
                 }
             }
