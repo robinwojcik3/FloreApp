@@ -233,7 +233,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
 
         const distSpacing = niceStep(totalDist / 5);
-        const altSpacing = niceStep((maxAlt - minAlt) / 5);
+
+        const altRange = maxAlt - minAlt;
+        let altSpacing = altRange === 0 ? 1 : niceStep(altRange / 5);
+        if (altRange > 0) {
+            let tickCount = Math.floor(altRange / altSpacing) + 1;
+            while (tickCount > 5) {
+                altSpacing = niceStep(altSpacing * 1.5);
+                tickCount = Math.floor(altRange / altSpacing) + 1;
+            }
+        }
 
         ctx.strokeStyle = '#cccccc';
         ctx.lineWidth = 1;
@@ -243,7 +252,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             ctx.moveTo(px, 0);
             ctx.lineTo(px, plotHeight);
         }
-        for (let a = Math.ceil(minAlt / altSpacing) * altSpacing; a <= maxAlt; a += altSpacing) {
+        const altStart = Math.ceil(minAlt / altSpacing) * altSpacing;
+        const altEnd = Math.floor(maxAlt / altSpacing) * altSpacing;
+        for (let a = altStart; a <= altEnd; a += altSpacing) {
             const py = plotHeight - (a - minAlt) * scaleY;
             ctx.moveTo(marginLeft, py);
             ctx.lineTo(marginLeft + plotWidth, py);
@@ -261,7 +272,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         ctx.textAlign = 'right';
         ctx.textBaseline = 'middle';
-        for (let a = Math.ceil(minAlt / altSpacing) * altSpacing; a <= maxAlt; a += altSpacing) {
+        for (let a = altStart; a <= altEnd; a += altSpacing) {
             const py = plotHeight - (a - minAlt) * scaleY;
             ctx.fillText(`${Math.round(a)} m`, marginLeft - 4, py);
         }
