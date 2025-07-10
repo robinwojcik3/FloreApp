@@ -89,6 +89,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     let measureLine = null;
     let measureTooltip = null;
 
+    // Distance en mètres entre deux points du profil topographique
+    const PROFILE_SAMPLE_STEP = 100;
+
     const ALTITUDES_URL = 'assets/altitudes_fr.json';
     let altitudeDataPromise = null;
 
@@ -124,7 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return data[key] ?? null;
     };
 
-    const sampleSegment = async (p1, p2, step = 20) => {
+    const sampleSegment = async (p1, p2, step = PROFILE_SAMPLE_STEP) => {
         const dist = p1.latlng.distanceTo(p2.latlng);
         const samples = [];
         const n = Math.max(1, Math.round(dist / step));
@@ -322,7 +325,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             profileSamples = [point];
         } else {
             const prev = measurePoints[measurePoints.length - 1];
-            const seg = await sampleSegment(prev, point);
+            const seg = await sampleSegment(prev, point, PROFILE_SAMPLE_STEP);
             profileSamples.push(...seg);
         }
         measurePoints.push(point);
