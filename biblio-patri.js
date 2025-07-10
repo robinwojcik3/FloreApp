@@ -198,9 +198,13 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
         const ctx = profileCanvas.getContext('2d');
-        const w = profileCanvas.width;
-        const h = profileCanvas.height;
-        ctx.clearRect(0, 0, w, h);
+        const marginLeft = 35;
+        const marginBottom = 18;
+        const w = profileCanvas.width - marginLeft;
+        const h = profileCanvas.height - marginBottom;
+        ctx.clearRect(0, 0, profileCanvas.width, profileCanvas.height);
+        ctx.save();
+        ctx.translate(marginLeft, 0);
 
         const dists = [];
         const alts = [];
@@ -231,7 +235,11 @@ document.addEventListener('DOMContentLoaded', async () => {
         ctx.strokeStyle = '#cccccc';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        for (let x = distSpacing; x < totalDist; x += distSpacing) {
+        ctx.moveTo(0, 0);
+        ctx.lineTo(0, h);
+        ctx.moveTo(0, h);
+        ctx.lineTo(w, h);
+        for (let x = 0; x <= totalDist; x += distSpacing) {
             const px = x * scaleX;
             ctx.moveTo(px, 0);
             ctx.lineTo(px, h);
@@ -243,6 +251,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
         ctx.stroke();
 
+        ctx.fillStyle = '#333';
+        ctx.font = '10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        for (let x = 0; x <= totalDist; x += distSpacing) {
+            const px = x * scaleX;
+            const text = totalDist < 1000 ? `${Math.round(x)} m` : `${(x/1000).toFixed(1)} km`;
+            ctx.fillText(text, px, h + 2);
+        }
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        for (let a = Math.ceil(minAlt / altSpacing) * altSpacing; a <= maxAlt; a += altSpacing) {
+            const py = h - (a - minAlt) * scaleY;
+            ctx.fillText(`${Math.round(a)} m`, -4, py);
+        }
+
         ctx.beginPath();
         ctx.moveTo(0, h - (alts[0] - minAlt) * scaleY);
         for (let i = 1; i < alts.length; i++) {
@@ -253,6 +277,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ctx.strokeStyle = '#c62828';
         ctx.lineWidth = 2;
         ctx.stroke();
+        ctx.restore();
         profileContainer.style.display = 'block';
     };
 
