@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         return data[key] ?? null;
     };
 
-    const sampleSegment = async (p1, p2, step = 100) => {
+    const sampleSegment = async (p1, p2, step = 20) => {
         const dist = p1.latlng.distanceTo(p2.latlng);
         const samples = [];
         const n = Math.max(1, Math.round(dist / step));
@@ -213,8 +213,36 @@ document.addEventListener('DOMContentLoaded', async () => {
         const minAlt = Math.min(...alts);
         const maxAlt = Math.max(...alts);
         const totalDist = dists[dists.length - 1] || 1;
+
         const scaleX = w / totalDist;
         const scaleY = maxAlt - minAlt === 0 ? 1 : h / (maxAlt - minAlt);
+
+        const niceStep = (v) => {
+            const pow = Math.pow(10, Math.floor(Math.log10(v)));
+            const frac = v / pow;
+            if (frac < 2) return pow;
+            if (frac < 5) return 2 * pow;
+            return 5 * pow;
+        };
+
+        const distSpacing = niceStep(totalDist / 5);
+        const altSpacing = niceStep((maxAlt - minAlt) / 5);
+
+        ctx.strokeStyle = '#cccccc';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        for (let x = distSpacing; x < totalDist; x += distSpacing) {
+            const px = x * scaleX;
+            ctx.moveTo(px, 0);
+            ctx.lineTo(px, h);
+        }
+        for (let a = Math.ceil(minAlt / altSpacing) * altSpacing; a <= maxAlt; a += altSpacing) {
+            const py = h - (a - minAlt) * scaleY;
+            ctx.moveTo(0, py);
+            ctx.lineTo(w, py);
+        }
+        ctx.stroke();
+
         ctx.beginPath();
         ctx.moveTo(0, h - (alts[0] - minAlt) * scaleY);
         for (let i = 1; i < alts.length; i++) {
