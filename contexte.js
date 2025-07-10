@@ -48,14 +48,11 @@ function initializeEnvMap() {
         maxZoom: 17,
         crossOrigin: true
     }).addTo(envMap);
+    // Keep OpenTopoMap as the default background. If the tiles fail to load,
+    // we simply log the error instead of switching to OpenStreetMap so that
+    // the user does not see an unexpected change of basemap.
     topoLayer.on('tileerror', () => {
-        if (envMap.hasLayer(topoLayer)) {
-            envMap.removeLayer(topoLayer);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors',
-                maxZoom: 19
-            }).addTo(envMap);
-        }
+        console.warn('OpenTopoMap tiles could not be loaded.');
     });
     enableChoicePopup(envMap);
 }
@@ -426,14 +423,10 @@ async function displayInteractiveEnvMap() {
             maxZoom: 17,
             crossOrigin: true
         }).addTo(envMap);
+        // Keep OpenTopoMap as the preferred basemap. On tile errors we just log
+        // the issue instead of switching to OpenStreetMap.
         topoLayer.on('tileerror', () => {
-            if (envMap.hasLayer(topoLayer)) {
-                envMap.removeLayer(topoLayer);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors',
-                    maxZoom: 19
-                }).addTo(envMap);
-            }
+            console.warn('OpenTopoMap tiles could not be loaded.');
         });
     } else {
         envMap.setView([selectedLat, selectedLon], 11);
