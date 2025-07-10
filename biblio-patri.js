@@ -191,6 +191,19 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
     };
 
+    const niceStep = (range) => {
+        if (range <= 0) return 1;
+        const exp = Math.floor(Math.log10(range));
+        const base = Math.pow(10, exp);
+        const frac = range / base;
+        let nice;
+        if (frac <= 1) nice = 1;
+        else if (frac <= 2) nice = 2;
+        else if (frac <= 5) nice = 5;
+        else nice = 10;
+        return nice * base;
+    };
+
     const drawElevationProfile = () => {
         if (!profileCanvas || !profileContainer) return;
         if (profileSamples.length < 2) {
@@ -215,6 +228,26 @@ document.addEventListener('DOMContentLoaded', async () => {
         const totalDist = dists[dists.length - 1] || 1;
         const scaleX = w / totalDist;
         const scaleY = maxAlt - minAlt === 0 ? 1 : h / (maxAlt - minAlt);
+
+        // Grid
+        ctx.strokeStyle = '#cccccc';
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        const altStep = niceStep((maxAlt - minAlt) / 4);
+        for (let a = Math.ceil(minAlt / altStep) * altStep; a < maxAlt; a += altStep) {
+            const y = h - (a - minAlt) * scaleY;
+            ctx.moveTo(0, y);
+            ctx.lineTo(w, y);
+        }
+        const distStep = niceStep(totalDist / 5);
+        for (let s = distStep; s < totalDist; s += distStep) {
+            const x = s * scaleX;
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, h);
+        }
+        ctx.stroke();
+
+        // Profile line
         ctx.beginPath();
         ctx.moveTo(0, h - (alts[0] - minAlt) * scaleY);
         for (let i = 1; i < alts.length; i++) {
@@ -273,7 +306,9 @@ document.addEventListener('DOMContentLoaded', async () => {
             profileSamples = [point];
         } else {
             const prev = measurePoints[measurePoints.length - 1];
-            const seg = await sampleSegment(prev, point);
+            const distSeg = prev.latlng.distanceTo(point.latlng);
+            const step = Math.max(10, distSeg / 50);
+            const seg = await sampleSegment(prev, point, step);
             profileSamples.push(...seg);
         }
         measurePoints.push(point);
