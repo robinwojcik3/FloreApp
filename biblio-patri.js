@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let measurePoints = [];
     let measureLine = null;
     let measureTooltip = null;
+    let measureSamples = [];
 
     const ALTITUDES_URL = 'assets/altitudes_fr.json';
     let altitudeDataPromise = null;
@@ -121,6 +122,27 @@ document.addEventListener('DOMContentLoaded', async () => {
         const round = v => (Math.round(v * 2) / 2).toFixed(1);
         const key = `${round(lat)},${round(lon)}`;
         return data[key] ?? null;
+    };
+
+    const computeMeasureSamples = async () => {
+        measureSamples = [];
+        if (measurePoints.length === 0) return;
+        let dist = 0;
+        measureSamples.push({ dist: 0, altitude: measurePoints[0].altitude });
+        for (let i = 1; i < measurePoints.length; i++) {
+            const p1 = measurePoints[i - 1];
+            const p2 = measurePoints[i];
+            const segDist = p1.latlng.distanceTo(p2.latlng);
+            const steps = Math.max(1, Math.ceil(segDist / 50));
+            for (let s = 1; s <= steps; s++) {
+                const ratio = s / steps;
+                const lat = p1.latlng.lat + (p2.latlng.lat - p1.latlng.lat) * ratio;
+                const lng = p1.latlng.lng + (p2.latlng.lng - p1.latlng.lng) * ratio;
+                const alt = await fetchAltitude(lat, lng);
+                measureSamples.push({ dist: dist + segDist * ratio, altitude: alt });
+            }
+            dist += segDist;
+        }
     };
 
     const stopLocationTracking = () => {
@@ -178,7 +200,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const drawElevationProfile = () => {
         if (!profileCanvas || !profileContainer) return;
-        if (measurePoints.length < 2) {
+        if (measureSamples.length < 2) {
             profileContainer.style.display = 'none';
             return;
         }
@@ -187,14 +209,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const h = profileCanvas.height;
         ctx.clearRect(0, 0, w, h);
 
-        const dists = [];
-        const alts = [];
-        let d = 0;
-        for (let i = 0; i < measurePoints.length; i++) {
-            if (i > 0) d += measurePoints[i - 1].latlng.distanceTo(measurePoints[i].latlng);
-            dists.push(d);
-            alts.push(typeof measurePoints[i].altitude === 'number' ? measurePoints[i].altitude : 0);
-        }
+        const dists = measureSamples.map(p => p.dist);
+        const alts = measureSamples.map(p => typeof p.altitude === 'number' ? p.altitude : 0);
         const minAlt = Math.min(...alts);
         const maxAlt = Math.max(...alts);
         const totalDist = dists[dists.length - 1] || 1;
@@ -214,13 +230,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     };
 
     const updateMeasureDisplay = async (latlng) => {
+        await computeMeasureSamples();
         let dist = 0;
         let elevPos = 0;
         let elevNeg = 0;
-        for (let i = 1; i < measurePoints.length; i++) {
-            dist += measurePoints[i - 1].latlng.distanceTo(measurePoints[i].latlng);
-            const a1 = measurePoints[i - 1].altitude;
-            const a2 = measurePoints[i].altitude;
+        for (let i = 1; i < measureSamples.length; i++) {
+            dist = measureSamples[i].dist;
+            const a1 = measureSamples[i - 1].altitude;
+            const a2 = measureSamples[i].altitude;
             if (typeof a1 === 'number' && typeof a2 === 'number') {
                 const diff = a2 - a1;
                 if (diff > 0) elevPos += diff; else elevNeg += Math.abs(diff);
@@ -269,6 +286,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         measuring = !measuring;
         if (measuring) {
             measurePoints = [];
+            measureSamples = [];
             if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
             if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
             if (profileCanvas) {
@@ -283,6 +301,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
             if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
             measurePoints = [];
+            measureSamples = [];
             if (profileContainer) profileContainer.style.display = 'none';
             measureDistanceBtn.textContent = '📏 Mesurer';
         }
