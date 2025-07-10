@@ -124,7 +124,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         return data[key] ?? null;
     };
 
-    const sampleSegment = async (p1, p2, step = 20) => {
+    // Échantillonnage d'un segment pour le profil altimétrique
+    // Un point est pris environ toutes les 100 m pour limiter le nombre de
+    // requêtes d'altitude et l'affichage du profil.
+    const sampleSegment = async (p1, p2, step = 100) => {
         const dist = p1.latlng.distanceTo(p2.latlng);
         const samples = [];
         const n = Math.max(1, Math.round(dist / step));
