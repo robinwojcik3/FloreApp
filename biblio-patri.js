@@ -124,7 +124,9 @@ document.addEventListener('DOMContentLoaded', async () => {
         return data[key] ?? null;
     };
 
-    const sampleSegment = async (p1, p2, step = 20) => {
+    // Échantillonnage du profil topographique.
+    // Utilise un pas de 100 m pour limiter le nombre de points calculés.
+    const sampleSegment = async (p1, p2, step = 100) => {
         const dist = p1.latlng.distanceTo(p2.latlng);
         const samples = [];
         const n = Math.max(1, Math.round(dist / step));
