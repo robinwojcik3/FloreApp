@@ -6,6 +6,8 @@
 // Variables globales
 let envMap = null; // Carte pour l'affichage des résultats
 let layerControl = null; // Contrôleur de couches pour la carte de résultats
+let openTopoLayer = null; // Couche OpenTopoMap par défaut
+let openStreetLayer = null; // Alternative OpenStreetMap
 let envMarker = null; // Marqueur du point analysé
 let selectedLat = null;
 let selectedLon = null;
@@ -43,20 +45,23 @@ function initializeEnvMap() {
     const defaultLat = 45.188529;
     const defaultLon = 5.724524;
     envMap = L.map('env-map', { preferCanvas: true }).setView([defaultLat, defaultLon], 11);
-    const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-        attribution: '© OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)',
-        maxZoom: 17,
-        crossOrigin: true
-    }).addTo(envMap);
-    topoLayer.on('tileerror', () => {
-        if (envMap.hasLayer(topoLayer)) {
-            envMap.removeLayer(topoLayer);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '© OpenStreetMap contributors',
-                maxZoom: 19
-            }).addTo(envMap);
-        }
-    });
+
+    if (!openTopoLayer) {
+        openTopoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)',
+            maxZoom: 17,
+            crossOrigin: true
+        });
+    }
+    if (!openStreetLayer) {
+        openStreetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        });
+    }
+
+    openTopoLayer.addTo(envMap);
+    layerControl = L.control.layers({ 'OpenTopoMap': openTopoLayer, 'OpenStreetMap': openStreetLayer }, null, { collapsed: false }).addTo(envMap);
     enableChoicePopup(envMap);
 }
 
@@ -419,38 +424,37 @@ async function displayInteractiveEnvMap() {
     lastCacheCoords = { lat: selectedLat, lon: selectedLon };
 
     // Initialisation ou réinitialisation de la carte
-    if (!envMap) {
-        envMap = L.map('env-map', { preferCanvas: true }).setView([selectedLat, selectedLon], 11);
-        const topoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    if (!openTopoLayer) {
+        openTopoLayer = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors, SRTM | Map style: © OpenTopoMap (CC-BY-SA)',
             maxZoom: 17,
             crossOrigin: true
-        }).addTo(envMap);
-        topoLayer.on('tileerror', () => {
-            if (envMap.hasLayer(topoLayer)) {
-                envMap.removeLayer(topoLayer);
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors',
-                    maxZoom: 19
-                }).addTo(envMap);
-            }
-        });
-    } else {
-        envMap.setView([selectedLat, selectedLon], 11);
-        if (layerControl) envMap.removeControl(layerControl); // Supprime l'ancien contrôle de couches
-        envMap.eachLayer(layer => { // Supprime les anciennes couches GeoJSON
-            if (layer instanceof L.GeoJSON) envMap.removeLayer(layer);
         });
     }
+    if (!openStreetLayer) {
+        openStreetLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        });
+    }
+
+    const baseLayers = { 'OpenTopoMap': openTopoLayer, 'OpenStreetMap': openStreetLayer };
+
+    if (!envMap) {
+        envMap = L.map('env-map', { preferCanvas: true }).setView([selectedLat, selectedLon], 11);
+        openTopoLayer.addTo(envMap);
+    } else {
+        envMap.setView([selectedLat, selectedLon], 11);
+        envMap.eachLayer(layer => { if (layer instanceof L.GeoJSON) envMap.removeLayer(layer); });
+    }
+
+    if (layerControl) envMap.removeControl(layerControl);
+    layerControl = L.control.layers(baseLayers, null, { collapsed: false }).addTo(envMap);
 
     // Ajoute un marqueur pour le point analysé
     if (envMarker) envMap.removeLayer(envMarker);
     envMarker = L.marker([selectedLat, selectedLon]).addTo(envMap)
       .bindPopup("Point d'analyse").openPopup();
-
-    // Initialise le nouveau contrôle de couches
-    const overlayMaps = {};
-    layerControl = L.control.layers(null, overlayMaps, { collapsed: false }).addTo(envMap);
 
     const loading = document.getElementById('loading');
     const total = Object.keys(APICARTO_LAYERS).length;
