@@ -369,6 +369,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const container = L.DomUtil.create('div', 'popup-button-container');
         const patrBtn = L.DomUtil.create('button', 'action-button', container);
         patrBtn.textContent = 'Flore Patri';
+        const deepPatrBtn = L.DomUtil.create('button', 'action-button', container);
+        deepPatrBtn.textContent = 'Flore Patri approfondie';
         const patrZnieffBtn = L.DomUtil.create('button', 'action-button', container);
         patrZnieffBtn.textContent = 'Flore Patri & ZNIEFF';
         const obsBtn = L.DomUtil.create('button', 'action-button', container);
@@ -377,6 +379,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             map.closePopup();
             showNavigation();
             runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, true);
+        });
+        L.DomEvent.on(deepPatrBtn, 'click', () => {
+            map.closePopup();
+            showNavigation();
+            runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, true, true);
         });
         L.DomEvent.on(patrZnieffBtn, 'click', () => {
             map.closePopup();
@@ -957,7 +964,7 @@ const initializeSelectionMap = (coords) => {
         fetchAndDisplayAllPatrimonialOccurrences(patrimonialMap, wkt, occurrences);
     };
 
-    const runAnalysis = async (params, excludeZnieff = false) => {
+    const runAnalysis = async (params, excludeZnieff = false, fetchAll = false) => {
         excludeZnieffAnalysis = excludeZnieff;
         try {
             lastAnalysisCoords = { latitude: params.latitude, longitude: params.longitude };
@@ -970,7 +977,7 @@ const initializeSelectionMap = (coords) => {
                 wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
             }
             let allOccurrences = [];
-            const maxPages = 20;
+            const maxPages = fetchAll ? Infinity : 20;
             const limit = 300; // GBIF API maximum
             let totalPages = null;
             let pagesToFetch = maxPages;
@@ -986,7 +993,7 @@ const initializeSelectionMap = (coords) => {
 
                 if (totalPages === null && typeof pageData.count === 'number') {
                     totalPages = Math.ceil(pageData.count / limit);
-                    pagesToFetch = Math.min(maxPages, totalPages);
+                    pagesToFetch = fetchAll ? totalPages : Math.min(maxPages, totalPages);
                 }
 
                 if (pageData.results?.length > 0) {
@@ -996,6 +1003,9 @@ const initializeSelectionMap = (coords) => {
                 if (pageData.endOfRecords) {
                     totalPages = totalPages || page + 1;
                     break;
+                }
+                if (fetchAll && (page + 1) % 30 === 0) {
+                    await new Promise(res => setTimeout(res, 50));
                 }
             }
             const retrievedPages = Math.ceil(allOccurrences.length / limit);
