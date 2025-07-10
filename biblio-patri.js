@@ -307,6 +307,7 @@ let rulesByTaxonIndex = new Map();
         return null;
     };
     const SEARCH_RADIUS_KM = 2;
+    // Rayon de recherche pour "Flore commune" (500 m)
     const OBS_RADIUS_KM = 0.5;
     const ANALYSIS_MAX_RETRIES = 3;
     const RETRY_DELAY_MS = 3000;
