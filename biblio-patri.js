@@ -1026,6 +1026,7 @@ const initializeSelectionMap = (coords) => {
             updateProgress(40);
             const uniqueSpeciesNames = [...new Set(allOccurrences.map(o => o.species).filter(Boolean))];
             const relevantRules = new Map();
+            const matchedSpecies = new Set();
             const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${params.latitude}&lon=${params.longitude}&fields=departement,region`)).json())[0];
             for (const speciesName of uniqueSpeciesNames) {
                 const rulesForThisTaxon = rulesByTaxonIndex.get(speciesName);
@@ -1054,10 +1055,12 @@ const initializeSelectionMap = (coords) => {
                                 const descriptiveStatus = isRedList ? `${row.type} (${row.code}) (${row.adm})` : row.label;
                                 relevantRules.set(ruleKey, { species: row.nom, status: descriptiveStatus });
                             }
+                            matchedSpecies.add(speciesName);
                         }
                     }
                 }
             }
+            const namesForSynonymCheck = uniqueSpeciesNames.filter(n => !matchedSpecies.has(n)).slice(0, 500);
             let analysisResp;
             for (let attempt = 1; attempt <= ANALYSIS_MAX_RETRIES; attempt++) {
                 try {
@@ -1065,7 +1068,7 @@ const initializeSelectionMap = (coords) => {
                         method: 'POST',
                         body: JSON.stringify({
                             relevantRules: Array.from(relevantRules.values()),
-                            uniqueSpeciesNames,
+                            uniqueSpeciesNames: namesForSynonymCheck,
                             coords: { latitude: params.latitude, longitude: params.longitude }
                         })
                     });
