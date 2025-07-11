@@ -389,6 +389,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const container = L.DomUtil.create('div', 'popup-button-container');
         const patrBtn = L.DomUtil.create('button', 'action-button', container);
         patrBtn.textContent = 'Flore Patri';
+        const patrDeepBtn = L.DomUtil.create('button', 'action-button', container);
+        patrDeepBtn.textContent = 'Flore Patri approfondie';
         const patrZnieffBtn = L.DomUtil.create('button', 'action-button', container);
         patrZnieffBtn.textContent = 'Flore Patri & ZNIEFF';
         const obsBtn = L.DomUtil.create('button', 'action-button', container);
@@ -397,6 +399,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             map.closePopup();
             showNavigation();
             runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, true);
+        });
+        L.DomEvent.on(patrDeepBtn, 'click', () => {
+            map.closePopup();
+            showNavigation();
+            runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, true, true);
         });
         L.DomEvent.on(patrZnieffBtn, 'click', () => {
             map.closePopup();
@@ -977,7 +984,8 @@ const initializeSelectionMap = (coords) => {
         fetchAndDisplayAllPatrimonialOccurrences(patrimonialMap, wkt, occurrences);
     };
 
-    const runAnalysis = async (params, excludeZnieff = false) => {
+    let cancelGbifFetch = false;
+    const runAnalysis = async (params, excludeZnieff = false, fetchAll = false) => {
         excludeZnieffAnalysis = excludeZnieff;
         try {
             lastAnalysisCoords = { latitude: params.latitude, longitude: params.longitude };
@@ -990,34 +998,78 @@ const initializeSelectionMap = (coords) => {
                 wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
             }
             let allOccurrences = [];
-            const maxPages = 20;
             const limit = 300; // GBIF API maximum
+            const maxPages = 20;
+            let batchSize = 20;
             let totalPages = null;
-            let pagesToFetch = maxPages;
 
-            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${pagesToFetch})`, true);
-            for (let page = 0; page < pagesToFetch; page++) {
-                const offset = page * limit;
-                setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${pagesToFetch})`, true);
-                const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
-                const gbifResp = await fetchWithRetry(gbifUrl);
-                if (!gbifResp.ok) throw new Error("L'API GBIF est indisponible.");
-                const pageData = await gbifResp.json();
+            // --- Étape 1 : détection du volume total ---
+            updateStatus('Étape 2/4: Inventaire de la flore locale via GBIF... (initialisation)');
+            const firstUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=0&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
+            const firstResp = await fetchWithRetry(firstUrl);
+            if (!firstResp.ok) throw new Error("L'API GBIF est indisponible.");
+            const firstData = await firstResp.json();
+            if (firstData.results?.length) {
+                allOccurrences = allOccurrences.concat(firstData.results);
+            }
+            totalPages = Math.ceil((firstData.count || firstData.results.length) / limit);
+            let pagesToFetch = fetchAll ? totalPages : Math.min(maxPages, totalPages);
 
-                if (totalPages === null && typeof pageData.count === 'number') {
-                    totalPages = Math.ceil(pageData.count / limit);
-                    pagesToFetch = Math.min(maxPages, totalPages);
+            if (pagesToFetch > 1) await new Promise(res => setTimeout(res, 500));
+
+            // Bouton d'annulation pour le chargement approfondi
+            cancelGbifFetch = false;
+            let cancelBtn;
+            let updateStatus = (msg) => {
+                setStatus(msg, true);
+                if (cancelBtn) statusDiv.appendChild(cancelBtn);
+            };
+            if (fetchAll) {
+                cancelBtn = document.createElement('button');
+                cancelBtn.textContent = 'Annuler';
+                cancelBtn.className = 'action-button';
+                cancelBtn.addEventListener('click', () => {
+                    cancelGbifFetch = true;
+                    cancelBtn.disabled = true;
+                });
+                statusDiv.appendChild(cancelBtn);
+            } else {
+                // For non-exhaustive mode, simple wrapper
+                updateStatus = (msg) => setStatus(msg, true);
+            }
+
+            // --- Étape 2 : chargement par lots ---
+            for (let page = 1; page < pagesToFetch && !cancelGbifFetch; ) {
+                const endPage = Math.min(page + batchSize, pagesToFetch);
+                updateStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Pages ${page + 1}-${endPage}/${pagesToFetch})`);
+                for (; page < endPage && !cancelGbifFetch; page++) {
+                    const offset = page * limit;
+                    const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
+                    try {
+                        const gbifResp = await fetchWithRetry(gbifUrl);
+                        if (!gbifResp.ok) throw new Error('API');
+                        const pageData = await gbifResp.json();
+                        if (pageData.results?.length) {
+                            allOccurrences = allOccurrences.concat(pageData.results);
+                        }
+                    } catch (e) {
+                        if (e.message.includes('Failed to fetch') && batchSize > 10) {
+                            batchSize = 10;
+                            page -= (page % batchSize);
+                            updateStatus('Erreur de connexion, réduction de la taille des lots...');
+                            break;
+                        } else {
+                            throw e;
+                        }
+                    }
                 }
-
-                if (pageData.results?.length > 0) {
-                    allOccurrences = allOccurrences.concat(pageData.results);
-                }
-
-                if (pageData.endOfRecords) {
-                    totalPages = totalPages || page + 1;
-                    break;
+                if (!cancelGbifFetch) {
+                    await new Promise(res => setTimeout(res, 500));
                 }
             }
+
+            if (cancelBtn) cancelBtn.remove();
+
             const retrievedPages = Math.ceil(allOccurrences.length / limit);
             if (typeof showNotification === 'function' && totalPages) {
                 if (retrievedPages < totalPages) {
