@@ -1027,6 +1027,8 @@ const initializeSelectionMap = (coords) => {
             const uniqueSpeciesNames = [...new Set(allOccurrences.map(o => o.species).filter(Boolean))];
             const relevantRules = new Map();
             const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${params.latitude}&lon=${params.longitude}&fields=departement,region`)).json())[0];
+            const departementCode = departement.code;
+            const regionCode = region.code;
             for (const speciesName of uniqueSpeciesNames) {
                 const rulesForThisTaxon = rulesByTaxonIndex.get(speciesName);
                 if (rulesForThisTaxon) {
@@ -1066,7 +1068,9 @@ const initializeSelectionMap = (coords) => {
                         body: JSON.stringify({
                             relevantRules: Array.from(relevantRules.values()),
                             uniqueSpeciesNames,
-                            coords: { latitude: params.latitude, longitude: params.longitude }
+                            coords: { latitude: params.latitude, longitude: params.longitude },
+                            departementCode,
+                            regionCode
                         })
                     });
                     if (!analysisResp.ok) {
