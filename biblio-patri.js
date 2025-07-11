@@ -31,12 +31,14 @@ document.addEventListener('DOMContentLoaded', async () => {
     const profileInfo = document.getElementById('profile-info');
     const downloadShapefileBtn = document.getElementById('download-shapefile-btn');
     const downloadContainer = document.getElementById('download-container');
+    const cancelAnalysisBtn = document.getElementById('cancel-btn');
     const navContainer = document.getElementById('section-nav');
     const mainTabs = document.querySelector('.tabs-container');
     const scrollMapBtn = document.getElementById('scroll-map-btn');
     const scrollTableBtn = document.getElementById('scroll-table-btn');
     const addressGroup = document.querySelector('.address-group');
     const searchControls = document.querySelector('.search-controls');
+    let analysisCancelled = false;
 
     const updateSecondaryNav = () => {
         if (navContainer && mainTabs) {
@@ -391,6 +393,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         patrBtn.textContent = 'Flore Patri';
         const patrZnieffBtn = L.DomUtil.create('button', 'action-button', container);
         patrZnieffBtn.textContent = 'Flore Patri & ZNIEFF';
+        const deepBtn = L.DomUtil.create('button', 'action-button', container);
+        deepBtn.textContent = 'Flore patri approfondie';
         const obsBtn = L.DomUtil.create('button', 'action-button', container);
         obsBtn.textContent = 'Flore commune';
         L.DomEvent.on(patrBtn, 'click', () => {
@@ -402,6 +406,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             map.closePopup();
             showNavigation();
             runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, false);
+        });
+        L.DomEvent.on(deepBtn, 'click', () => {
+            map.closePopup();
+            showNavigation();
+            runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, true, { deep: true });
         });
         L.DomEvent.on(obsBtn, 'click', () => {
             map.closePopup();
@@ -726,6 +735,70 @@ const initializeSelectionMap = (coords) => {
         const n = latlngs.length;
         return { latitude: lat/n, longitude: lng/n };
     };
+
+    const fetchOccurrences = async (wkt, deep = false) => {
+        const limit = 300;
+        const allOccurrences = [];
+        let totalPages = 0;
+
+        if (!deep) {
+            const maxPages = 20;
+            let pagesToFetch = maxPages;
+            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${pagesToFetch})`, true);
+            for (let page = 0; page < pagesToFetch && !analysisCancelled; page++) {
+                const offset = page * limit;
+                setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${pagesToFetch})`, true);
+                const url = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
+                const resp = await fetchWithRetry(url);
+                if (!resp.ok) throw new Error("L'API GBIF est indisponible.");
+                const data = await resp.json();
+                if (!totalPages && typeof data.count === 'number') {
+                    totalPages = Math.ceil(data.count / limit);
+                    pagesToFetch = Math.min(maxPages, totalPages);
+                }
+                if (data.results?.length) allOccurrences.push(...data.results);
+                if (data.endOfRecords) { totalPages = totalPages || page + 1; break; }
+            }
+            return { occurrences: allOccurrences, totalPages };
+        }
+
+        const firstUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=0&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
+        const firstResp = await fetchWithRetry(firstUrl);
+        if (!firstResp.ok) throw new Error("L'API GBIF est indisponible.");
+        const firstData = await firstResp.json();
+        if (firstData.results?.length) allOccurrences.push(...firstData.results);
+        totalPages = Math.ceil(firstData.count / limit);
+        if (firstData.endOfRecords) totalPages = 1;
+
+        let page = 1;
+        let batchSize = 20;
+        while (page < totalPages && !analysisCancelled) {
+            const endPage = Math.min(page + batchSize - 1, totalPages - 1);
+            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Pages ${page + 1}-${endPage + 1}/${totalPages})`, true);
+            let error = null;
+            for (; page <= endPage && !analysisCancelled; page++) {
+                const offset = page * limit;
+                const url = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
+                try {
+                    const resp = await fetchWithRetry(url);
+                    if (!resp.ok) throw new Error('L\'API GBIF est indisponible.');
+                    const data = await resp.json();
+                    if (data.results?.length) allOccurrences.push(...data.results);
+                    if (data.endOfRecords) { totalPages = Math.min(totalPages, page + 1); break; }
+                } catch (e) {
+                    error = e;
+                    break;
+                }
+            }
+            if (error) {
+                if (String(error).toLowerCase().includes('failed to fetch')) batchSize = 10;
+            } else {
+                await new Promise(res => setTimeout(res, 500));
+            }
+        }
+
+        return { occurrences: allOccurrences, totalPages };
+    };
     
     const fetchAndDisplayAllPatrimonialOccurrences = async (patrimonialMap, wkt, initialOccurrences) => {
         const speciesNames = Object.keys(patrimonialMap);
@@ -977,9 +1050,15 @@ const initializeSelectionMap = (coords) => {
         fetchAndDisplayAllPatrimonialOccurrences(patrimonialMap, wkt, occurrences);
     };
 
-    const runAnalysis = async (params, excludeZnieff = false) => {
+    const runAnalysis = async (params, excludeZnieff = false, options = {}) => {
         excludeZnieffAnalysis = excludeZnieff;
+        const deep = options.deep === true;
         try {
+            analysisCancelled = false;
+            if (deep && cancelAnalysisBtn) {
+                cancelAnalysisBtn.style.display = 'inline-block';
+                cancelAnalysisBtn.onclick = () => { analysisCancelled = true; };
+            }
             lastAnalysisCoords = { latitude: params.latitude, longitude: params.longitude };
             resultsContainer.innerHTML = '';
             mapContainer.style.display = 'none';
@@ -989,36 +1068,13 @@ const initializeSelectionMap = (coords) => {
             if (!wkt) {
                 wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
             }
-            let allOccurrences = [];
-            const maxPages = 20;
-            const limit = 300; // GBIF API maximum
-            let totalPages = null;
-            let pagesToFetch = maxPages;
-
-            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${pagesToFetch})`, true);
-            for (let page = 0; page < pagesToFetch; page++) {
-                const offset = page * limit;
-                setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${pagesToFetch})`, true);
-                const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
-                const gbifResp = await fetchWithRetry(gbifUrl);
-                if (!gbifResp.ok) throw new Error("L'API GBIF est indisponible.");
-                const pageData = await gbifResp.json();
-
-                if (totalPages === null && typeof pageData.count === 'number') {
-                    totalPages = Math.ceil(pageData.count / limit);
-                    pagesToFetch = Math.min(maxPages, totalPages);
-                }
-
-                if (pageData.results?.length > 0) {
-                    allOccurrences = allOccurrences.concat(pageData.results);
-                }
-
-                if (pageData.endOfRecords) {
-                    totalPages = totalPages || page + 1;
-                    break;
-                }
+            const { occurrences: allOccurrences, totalPages } = await fetchOccurrences(wkt, deep);
+            if (analysisCancelled) {
+                setStatus('Analyse annulée');
+                if (cancelAnalysisBtn) cancelAnalysisBtn.style.display = 'none';
+                return;
             }
-            const retrievedPages = Math.ceil(allOccurrences.length / limit);
+            const retrievedPages = Math.ceil(allOccurrences.length / 300);
             if (typeof showNotification === 'function' && totalPages) {
                 if (retrievedPages < totalPages) {
                     showNotification(`Résultats partiels : ${retrievedPages} pages récupérées sur ${totalPages} disponibles`, 'warning');
@@ -1090,6 +1146,8 @@ const initializeSelectionMap = (coords) => {
             console.error("Erreur durant l'analyse:", error);
             setStatus(`Erreur : ${error.message}`);
             if (mapContainer) mapContainer.style.display = 'none';
+        } finally {
+            if (cancelAnalysisBtn) cancelAnalysisBtn.style.display = 'none';
         }
     };
     
