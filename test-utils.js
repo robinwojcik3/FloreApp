@@ -103,4 +103,17 @@ function loadAnalyzeHandler(mockFetch, env = {}) {
   return context.exports.handler;
 }
 
-module.exports = { loadApp, loadHandler, loadAuraHandler, loadGbifHandler, loadApiProxyHandler, loadAnalyzeHandler, mockFetch };
+function loadDeepGbifHandler(mockFetch) {
+  const code = fs.readFileSync('netlify/functions/gbif-deep-search.js', 'utf-8');
+  const patched = code.replace(
+    /const fetch = require\('.+fetch'\);/,
+    'const fetch = (...args) => global.__fetch(...args);'
+  );
+  const context = { require, console, exports: {}, __fetch: mockFetch };
+  context.global = context;
+  vm.createContext(context);
+  vm.runInContext(patched, context);
+  return context.exports.handler;
+}
+
+module.exports = { loadApp, loadHandler, loadAuraHandler, loadGbifHandler, loadApiProxyHandler, loadAnalyzeHandler, loadDeepGbifHandler, mockFetch };
