@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const LIMIT = 300;
-const BATCH_SIZE = 20;
+const BATCH_SIZE = 20; // pages per batch
 const RETRIES = 3;
 const RETRY_DELAY = 1000;
 
@@ -44,27 +44,36 @@ exports.handler = async function(event) {
 
     const batchFiles = [];
     for (let start = 0, batch = 1; start < totalPages; start += BATCH_SIZE, batch++) {
-      let all = [];
+      const batchFile = path.join('/tmp', `gbif_batch_${batch}.json`);
+      const stream = fs.createWriteStream(batchFile, { encoding: 'utf8' });
       for (let p = start; p < Math.min(start + BATCH_SIZE, totalPages); p++) {
         const url = baseSearch();
         url.searchParams.set('limit', LIMIT.toString());
         url.searchParams.set('offset', (p * LIMIT).toString());
         const data = await fetchJson(url.toString());
-        if (Array.isArray(data.results)) all = all.concat(data.results);
+        if (Array.isArray(data.results)) {
+          stream.write(JSON.stringify(data.results));
+        }
       }
-      const file = path.join('/tmp', `gbif_batch_${batch}.json`);
-      fs.writeFileSync(file, JSON.stringify(all));
-      batchFiles.push(file);
-      all = null;
+      stream.end();
+      batchFiles.push(batchFile);
     }
 
     let finalResults = [];
-    for (const f of batchFiles) {
-      const data = JSON.parse(fs.readFileSync(f, 'utf8'));
-      finalResults = finalResults.concat(data);
-      fs.unlinkSync(f);
+    for (const file of batchFiles) {
+      const content = fs.readFileSync(file, 'utf8');
+      if (content) {
+        const parsed = JSON.parse(content.replace(/\]\s*\[/g, ','));
+        finalResults = finalResults.concat(parsed);
+      }
+      fs.unlinkSync(file);
     }
-    return { statusCode: 200, headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(finalResults) };
+
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(finalResults)
+    };
   } catch (err) {
     console.error('deep-search error:', err);
     return { statusCode: 500, body: 'Server error' };
