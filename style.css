@@ -159,7 +159,10 @@ h1 {
 #similar-btn { --icon: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CiAgPHBhdGggZD0iTTYgM3YxMiIgLz4KICA8Y2lyY2xlIGN4PSIxOCIgY3k9IjYiIHI9IjMiIC8+CiAgPGNpcmNsZSBjeD0iNiIgY3k9IjE4IiByPSIzIiAvPgogIDxwYXRoIGQ9Ik0xOCA5YTkgOSAwIDAxLTkgOSIgLz4KPC9zdmc+Cg=="); }
 
 .status-container {
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
     margin: 0.5rem 0;
     font-size: 1rem;
     min-height: 24px;
@@ -173,12 +176,12 @@ h1 {
 }
 
 #progress-container {
-    width: 100%;
+    width: 80px;
     height: 6px;
     background-color: var(--border);
     border-radius: 3px;
     overflow: hidden;
-    margin-bottom: 0.25rem;
+    margin-right: 0.5rem;
 }
 
 #progress-bar {
