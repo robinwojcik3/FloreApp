@@ -1186,45 +1186,7 @@ const initializeSelectionMap = (coords) => {
                     currentPage++;
                     updateProgress();
                 }
-                await new Promise((res, rej) => {
-                    const openReq = indexedDB.open('gbif-cache', 1);
-                    openReq.onupgradeneeded = (e) => { e.target.result.createObjectStore('blocks'); };
-                    openReq.onsuccess = () => {
-                        const db = openReq.result;
-                        const tx = db.transaction('blocks', 'readwrite');
-                        tx.objectStore('blocks').put(blockResults, blockStart);
-                        tx.oncomplete = () => { db.close(); res(); };
-                        tx.onerror = () => { db.close(); rej(tx.error); };
-                    };
-                    openReq.onerror = () => rej(openReq.error);
-                });
-
-                const cachedData = await new Promise((res, rej) => {
-                    const openReq = indexedDB.open('gbif-cache', 1);
-                    openReq.onsuccess = () => {
-                        const db = openReq.result;
-                        const tx = db.transaction('blocks');
-                        tx.objectStore('blocks').get(blockStart).onsuccess = (ev) => {
-                            const val = ev.target.result;
-                            db.close();
-                            res(val || []);
-                        };
-                        tx.onerror = () => { db.close(); rej(tx.error); };
-                    };
-                    openReq.onerror = () => rej(openReq.error);
-                });
-                processResults(cachedData);
-                await new Promise((res, rej) => {
-                    const openReq = indexedDB.open('gbif-cache', 1);
-                    openReq.onsuccess = () => {
-                        const db = openReq.result;
-                        const tx = db.transaction('blocks', 'readwrite');
-                        tx.objectStore('blocks').delete(blockStart);
-                        tx.oncomplete = () => { db.close(); res(); };
-                        tx.onerror = () => { db.close(); rej(tx.error); };
-                    };
-                    openReq.onerror = () => rej(openReq.error);
-                });
+                processResults(blockResults);
             }
 
             const uniqueSpeciesNames = Array.from(uniqueSpecies);
@@ -1295,7 +1257,7 @@ const initializeSelectionMap = (coords) => {
             setStatus(`Erreur : ${error.message}`);
             if (mapContainer) mapContainer.style.display = 'none';
         } finally {
-            indexedDB.deleteDatabase('gbif-cache');
+            // aucun cache persistant utilisé
         }
     };
     
