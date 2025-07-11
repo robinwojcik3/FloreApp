@@ -746,7 +746,7 @@ const initializeSelectionMap = (coords) => {
             let speciesOccs = [];
             let endOfRecords = false;
             const limit = 300; // GBIF API max
-            for (let page = 0; page < 20 && !endOfRecords; page++) {
+            for (let page = 0; page < 30 && !endOfRecords; page++) {
                 const offset = page * limit;
                 const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&taxonKey=${taxonKey}`;
                 try {
@@ -990,7 +990,7 @@ const initializeSelectionMap = (coords) => {
                 wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
             }
             let allOccurrences = [];
-            const maxPages = 20;
+            const maxPages = 30;
             const limit = 300; // GBIF API maximum
             let totalPages = null;
             let pagesToFetch = maxPages;
