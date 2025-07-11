@@ -772,6 +772,14 @@ const initializeSelectionMap = (coords) => {
 
         let page = 1;
         let batchSize = 20;
+        const occurrenceChunks = [];
+        let currentChunk = [];
+        const flushChunk = () => {
+            if (currentChunk.length) {
+                occurrenceChunks.push(currentChunk);
+                currentChunk = [];
+            }
+        };
         while (page < totalPages && !analysisCancelled) {
             const endPage = Math.min(page + batchSize - 1, totalPages - 1);
             setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Pages ${page + 1}-${endPage + 1}/${totalPages})`, true);
@@ -783,19 +791,27 @@ const initializeSelectionMap = (coords) => {
                     const resp = await fetchWithRetry(url);
                     if (!resp.ok) throw new Error('L\'API GBIF est indisponible.');
                     const data = await resp.json();
-                    if (data.results?.length) allOccurrences.push(...data.results);
+                    if (data.results?.length) {
+                        currentChunk.push(...data.results);
+                        if (currentChunk.length >= limit * batchSize) {
+                            flushChunk();
+                        }
+                    }
                     if (data.endOfRecords) { totalPages = Math.min(totalPages, page + 1); break; }
                 } catch (e) {
                     error = e;
                     break;
                 }
             }
+            flushChunk();
             if (error) {
                 if (String(error).toLowerCase().includes('failed to fetch')) batchSize = 10;
             } else {
                 await new Promise(res => setTimeout(res, 500));
             }
         }
+        flushChunk();
+        occurrenceChunks.forEach(chunk => allOccurrences.push(...chunk));
 
         return { occurrences: allOccurrences, totalPages };
     };
