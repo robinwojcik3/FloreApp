@@ -572,6 +572,44 @@ let rulesByTaxonIndex = new Map();
             }
         }
     };
+
+    const openCacheDB = () => new Promise((resolve, reject) => {
+        if (typeof indexedDB === 'undefined') {
+            resolve(null);
+            return;
+        }
+        const request = indexedDB.open('deep-analysis-cache', 1);
+        request.onupgradeneeded = () => {
+            request.result.createObjectStore('pages');
+        };
+        request.onsuccess = () => resolve(request.result);
+        request.onerror = () => reject(request.error);
+    });
+
+    const cachePut = (db, key, value) => new Promise((resolve, reject) => {
+        if (!db) { resolve(); return; }
+        const tx = db.transaction('pages', 'readwrite');
+        tx.objectStore('pages').put(value, key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+
+    const cacheGet = (db, key) => new Promise((resolve, reject) => {
+        if (!db) { resolve(null); return; }
+        const tx = db.transaction('pages', 'readonly');
+        const req = tx.objectStore('pages').get(key);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+    });
+
+    const cacheDelete = (db, key) => new Promise((resolve, reject) => {
+        if (!db) { resolve(); return; }
+        const tx = db.transaction('pages', 'readwrite');
+        tx.objectStore('pages').delete(key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+    });
+
     
     const indexRulesFromCSV = (csvText) => {
         const lines = csvText.trim().split(/\r?\n/);
@@ -1161,13 +1199,19 @@ const initializeSelectionMap = (coords) => {
             loadedPages++;
             setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${loadedPages}/${totalPages})`, true, loadedPages / totalPages);
 
+            const db = await openCacheDB();
             for (let blockStart = 1; blockStart < totalPages; blockStart += blockSize) {
                 const end = Math.min(blockStart + blockSize, totalPages);
                 for (let p = blockStart; p < end; p++) {
                     const data = await fetchPage(p);
-                    processResults(data.results);
+                    await cachePut(db, p, data.results);
                     loadedPages++;
                     setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${loadedPages}/${totalPages})`, true, loadedPages / totalPages);
+                }
+                for (let p = blockStart; p < end; p++) {
+                    const stored = await cacheGet(db, p);
+                    processResults(stored);
+                    await cacheDelete(db, p);
                 }
             }
 
