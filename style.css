@@ -163,6 +163,10 @@ h1 {
     margin: 0.5rem 0;
     font-size: 1rem;
     min-height: 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 /* Icons and text horizontally aligned for status messages */
@@ -173,12 +177,13 @@ h1 {
 }
 
 #progress-container {
-    width: 100%;
+    width: 80px;
     height: 6px;
     background-color: var(--border);
     border-radius: 3px;
     overflow: hidden;
-    margin-bottom: 0.25rem;
+    margin: 0;
+    display: inline-block;
 }
 
 #progress-bar {
