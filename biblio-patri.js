@@ -1079,6 +1079,10 @@ const initializeSelectionMap = (coords) => {
                             currentPage++;
                             fetchedInBatch++;
                             setProgress(10 + (currentPage / pagesToFetch) * 50);
+                            if (pageData.endOfRecords || pageData.results?.length === 0) {
+                                pagesToFetch = currentPage;
+                                break;
+                            }
                         } catch (err) {
                             if (/failed to fetch/i.test(err.message) && batchSize > 10) {
                                 batchSize = 10;
