@@ -571,6 +571,7 @@ let cancelRequested = false;
             try {
                 const resp = await fetch(url, { ...options, signal: controller.signal });
                 clearTimeout(timeoutId);
+                if (resp.status === 429) throw new Error('Too Many Requests');
                 if (!resp.ok) throw new Error(resp.statusText || 'Request failed');
                 return resp;
             } catch (err) {
@@ -1051,33 +1052,33 @@ const initializeSelectionMap = (coords) => {
                 addResults(firstData.results);
                 pagesFetched = 1;
                 setProgress(10 + (pagesFetched / totalPages) * 60);
-                let page = 1;
+                let nextPage = 1;
                 let batchSize = 20;
-                while (page < totalPages && !cancelRequested) {
-                    const remaining = totalPages - page;
-                    const thisBatch = Math.min(batchSize, remaining);
-                    setStatus(`Étape 2/4: Chargement pages ${page + 1}-${page + thisBatch}/${totalPages}`, true);
-                    try {
-                        for (let i = 0; i < thisBatch && !cancelRequested; i++) {
-                            const offset = (page + i) * limit;
+                while (nextPage < totalPages && !cancelRequested) {
+                    const endPage = Math.min(nextPage + batchSize, totalPages);
+                    setStatus(`Étape 2/4: Chargement pages ${nextPage + 1}-${endPage}/${totalPages}`, true);
+                    for (; nextPage < endPage && !cancelRequested; nextPage++) {
+                        try {
+                            const offset = nextPage * limit;
                             const url = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
                             const resp = await fetchWithRetry(url);
                             if (!resp.ok) throw new Error("L'API GBIF est indisponible.");
                             const data = await resp.json();
                             addResults(data.results);
-                        }
-                        page += thisBatch;
-                        pagesFetched += thisBatch;
-                        setProgress(10 + (pagesFetched / totalPages) * 60);
-                        await new Promise(res => setTimeout(res, 500));
-                    } catch (err) {
-                        if (err.message && err.message.includes('failed to fetch') && batchSize > 10) {
-                            batchSize = 10;
-                        } else {
-                            hideCancel();
-                            throw err;
+                            pagesFetched++;
+                            setProgress(10 + (pagesFetched / totalPages) * 60);
+                            await new Promise(r => setTimeout(r, 100));
+                        } catch (err) {
+                            if (err.message && err.message.includes('failed to fetch') && batchSize > 10) {
+                                batchSize = 10;
+                                break;
+                            } else {
+                                hideCancel();
+                                throw err;
+                            }
                         }
                     }
+                    await new Promise(r => setTimeout(r, 500));
                 }
                 hideCancel();
                 if (cancelRequested) throw new Error('Analyse annulée');
