@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // --- 2. Déclaration des variables et constantes globales ---
     const statusDiv = document.getElementById('status');
+    const progressBar = document.getElementById('progress-bar');
+    const progressFill = document.getElementById('progress-fill');
     const resultsContainer = document.getElementById('results');
     const mapContainer = document.getElementById('map');
     const crosshair = document.getElementById('crosshair');
@@ -486,9 +488,21 @@ let rulesByTaxonIndex = new Map();
     Object.entries(OLD_REGIONS_TO_DEPARTMENTS).forEach(([name, depts]) => {
         NORMALIZED_OLD_REGIONS[normAdmin(name)] = depts;
     });
+    const resetProgress = () => {
+        if (progressFill) progressFill.style.width = '0%';
+        if (progressBar) progressBar.style.display = 'none';
+    };
+
+    const updateProgress = (step, sub = 0) => {
+        if (!progressBar || !progressFill) return;
+        const ratio = ((step - 1) + sub) / 4;
+        progressFill.style.width = `${Math.round(ratio * 100)}%`;
+        progressBar.style.display = 'block';
+    };
+
     const setStatus = (message = '', showIcons = false) => {
         statusDiv.innerHTML = '';
-        if (!message) return;
+        if (!message) { resetProgress(); return; }
 
         const container = document.createElement('span');
         container.className = 'status-line';
@@ -731,6 +745,7 @@ const initializeSelectionMap = (coords) => {
         const speciesNames = Object.keys(patrimonialMap);
         if (speciesNames.length === 0) return;
         setStatus(`Étape 4/4: Cartographie détaillée des espèces patrimoniales... (0/${speciesNames.length})`, true);
+        updateProgress(4, 0);
         let allOccurrencesWithContext = [];
         const taxonKeyMap = new Map();
         initialOccurrences.forEach(occ => {
@@ -740,6 +755,7 @@ const initializeSelectionMap = (coords) => {
         });
         for (const [index, speciesName] of speciesNames.entries()) {
             setStatus(`Étape 4/4: Cartographie détaillée des espèces patrimoniales... (${index + 1}/${speciesNames.length})`, true);
+            updateProgress(4, (index + 1) / speciesNames.length);
             const taxonKey = taxonKeyMap.get(speciesName);
             if (!taxonKey) continue;
             const color = SPECIES_COLORS[index % SPECIES_COLORS.length];
@@ -788,6 +804,7 @@ const initializeSelectionMap = (coords) => {
             selectedSpecies = new Set(allPatrimonialSpecies);
         }
         renderPatrimonialLocations();
+        updateProgress(4, 1);
     };
 
     const renderPatrimonialLocations = () => {
@@ -843,6 +860,7 @@ const initializeSelectionMap = (coords) => {
         hideZnieffOnly = false;
         if (Object.keys(patrimonialMap).length === 0) {
             setStatus(`Aucune occurrence d'espèce patrimoniale trouvée dans ce rayon de ${SEARCH_RADIUS_KM} km.`);
+            updateProgress(4, 1);
             return;
         }
 
@@ -858,6 +876,7 @@ const initializeSelectionMap = (coords) => {
         }
         if (allSpeciesList.length === 0) {
             setStatus(`Aucune occurrence d'espèce patrimoniale trouvée dans ce rayon de ${SEARCH_RADIUS_KM} km.`);
+            updateProgress(4, 1);
             return;
         }
         setStatus(`${allSpeciesList.length} espèce(s) patrimoniale(s) trouvée(s). Lancement de l'étape 4/4 : cartographie détaillée...`);
@@ -983,8 +1002,10 @@ const initializeSelectionMap = (coords) => {
             lastAnalysisCoords = { latitude: params.latitude, longitude: params.longitude };
             resultsContainer.innerHTML = '';
             mapContainer.style.display = 'none';
+            updateProgress(1, 0);
             initializeMap(params);
             setStatus("Étape 1/4: Initialisation de la carte...", true);
+            updateProgress(1, 1);
             let wkt = params.wkt;
             if (!wkt) {
                 wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
@@ -996,9 +1017,11 @@ const initializeSelectionMap = (coords) => {
             let pagesToFetch = maxPages;
 
             setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${pagesToFetch})`, true);
+            updateProgress(2, 0);
             for (let page = 0; page < pagesToFetch; page++) {
                 const offset = page * limit;
                 setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${pagesToFetch})`, true);
+                updateProgress(2, (page + 1) / pagesToFetch);
                 const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
                 const gbifResp = await fetchWithRetry(gbifUrl);
                 if (!gbifResp.ok) throw new Error("L'API GBIF est indisponible.");
@@ -1019,6 +1042,7 @@ const initializeSelectionMap = (coords) => {
                 }
             }
             const retrievedPages = Math.ceil(allOccurrences.length / limit);
+            updateProgress(2, 1);
             if (typeof showNotification === 'function' && totalPages) {
                 if (retrievedPages < totalPages) {
                     showNotification(`Résultats partiels : ${retrievedPages} pages récupérées sur ${totalPages} disponibles`, 'warning');
@@ -1028,6 +1052,7 @@ const initializeSelectionMap = (coords) => {
             }
             if (allOccurrences.length === 0) { throw new Error("Aucune occurrence de plante trouvée à proximité."); }
             setStatus("Étape 3/4: Analyse des données...", true);
+            updateProgress(3, 0);
             const uniqueSpeciesNames = [...new Set(allOccurrences.map(o => o.species).filter(Boolean))];
             const relevantRules = new Map();
             const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${params.latitude}&lon=${params.longitude}&fields=departement,region`)).json())[0];
@@ -1085,10 +1110,12 @@ const initializeSelectionMap = (coords) => {
                 }
             }
             const patrimonialMap = await analysisResp.json();
+            updateProgress(3, 1);
             displayResults(allOccurrences, patrimonialMap, wkt);
         } catch (error) {
             console.error("Erreur durant l'analyse:", error);
             setStatus(`Erreur : ${error.message}`);
+            resetProgress();
             if (mapContainer) mapContainer.style.display = 'none';
         }
     };
