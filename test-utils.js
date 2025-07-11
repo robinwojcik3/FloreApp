@@ -71,6 +71,18 @@ function loadGbifHandler(mockFetch) {
   return context.exports.handler;
 }
 
+function loadDeepGbifHandler(mockFetch, fsMock) {
+  const code = fs.readFileSync('netlify/functions/deep-gbif-search.js', 'utf-8');
+  const patched = code
+    .replace("const fetch = require('./utils/fetch');", 'const fetch = (...args) => global.__fetch(...args);')
+    .replace("const fs = require('fs');", 'const fs = global.__fs;');
+  const context = { require, console, exports: {}, __fetch: mockFetch, __fs: fsMock || fs, setTimeout };
+  context.global = context;
+  vm.createContext(context);
+  vm.runInContext(patched, context);
+  return context.exports.handler;
+}
+
 function mockFetch(html) {
   return jest.fn().mockResolvedValue({
     ok: true,
@@ -103,4 +115,4 @@ function loadAnalyzeHandler(mockFetch, env = {}) {
   return context.exports.handler;
 }
 
-module.exports = { loadApp, loadHandler, loadAuraHandler, loadGbifHandler, loadApiProxyHandler, loadAnalyzeHandler, mockFetch };
+module.exports = { loadApp, loadHandler, loadAuraHandler, loadGbifHandler, loadDeepGbifHandler, loadApiProxyHandler, loadAnalyzeHandler, mockFetch };
