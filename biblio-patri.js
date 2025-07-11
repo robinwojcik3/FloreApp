@@ -486,9 +486,20 @@ let rulesByTaxonIndex = new Map();
     Object.entries(OLD_REGIONS_TO_DEPARTMENTS).forEach(([name, depts]) => {
         NORMALIZED_OLD_REGIONS[normAdmin(name)] = depts;
     });
-    const setStatus = (message = '', showIcons = false) => {
+    const progressBarContainer = document.getElementById('progress-bar-container');
+    const progressBar = document.getElementById('progress-bar');
+    const setProgress = (percent) => {
+        if (!progressBarContainer || !progressBar) return;
+        progressBarContainer.style.display = 'block';
+        progressBar.style.width = `${Math.max(0, Math.min(100, percent))}%`;
+    };
+
+    const setStatus = (message = '', progress = null) => {
         statusDiv.innerHTML = '';
-        if (!message) return;
+        if (!message) {
+            if (progressBarContainer) progressBarContainer.style.display = 'none';
+            return;
+        }
 
         const container = document.createElement('span');
         container.className = 'status-line';
@@ -497,14 +508,8 @@ let rulesByTaxonIndex = new Map();
         text.textContent = message;
         container.appendChild(text);
 
-        if (showIcons) {
-            const worker = document.createElement('span');
-            worker.className = 'robot-working';
-            worker.innerHTML = '<span class="robot">🤖</span><span class="gear">⚙️</span>';
-            container.appendChild(worker);
-        }
-
         statusDiv.appendChild(container);
+        if (typeof progress === 'number') setProgress(progress);
     };
 
     // Prefetch OpenTopoMap tiles near a center to improve map rendering speed
@@ -568,7 +573,7 @@ let rulesByTaxonIndex = new Map();
 
     const initializeApp = async () => {
         try {
-            setStatus("Chargement des données...", true);
+            setStatus("Chargement des données...", 0);
             const [bdcResp, ecoResp, faResp] = await Promise.all([
                 fetch('BDCstatut.csv'),
                 fetch('ecology.json'),
@@ -730,7 +735,7 @@ const initializeSelectionMap = (coords) => {
     const fetchAndDisplayAllPatrimonialOccurrences = async (patrimonialMap, wkt, initialOccurrences) => {
         const speciesNames = Object.keys(patrimonialMap);
         if (speciesNames.length === 0) return;
-        setStatus(`Étape 4/4: Cartographie détaillée des espèces patrimoniales... (0/${speciesNames.length})`, true);
+        setStatus(`Étape 4/4: Cartographie détaillée des espèces patrimoniales... (0/${speciesNames.length})`, 75);
         let allOccurrencesWithContext = [];
         const taxonKeyMap = new Map();
         initialOccurrences.forEach(occ => {
@@ -739,7 +744,7 @@ const initializeSelectionMap = (coords) => {
             }
         });
         for (const [index, speciesName] of speciesNames.entries()) {
-            setStatus(`Étape 4/4: Cartographie détaillée des espèces patrimoniales... (${index + 1}/${speciesNames.length})`, true);
+            setStatus(`Étape 4/4: Cartographie détaillée des espèces patrimoniales... (${index + 1}/${speciesNames.length})`, 75 + ((index + 1) / speciesNames.length) * 25);
             const taxonKey = taxonKeyMap.get(speciesName);
             if (!taxonKey) continue;
             const color = SPECIES_COLORS[index % SPECIES_COLORS.length];
@@ -834,7 +839,7 @@ const initializeSelectionMap = (coords) => {
         if(!map.hasLayer(patrimonialLayerGroup)) {
             patrimonialLayerGroup.addTo(map);
         }
-        setStatus(`${selectedSpecies.size} espèce(s) patrimoniale(s) cartographiée(s) sur ${pointCount} points.`, false);
+        setStatus(`${selectedSpecies.size} espèce(s) patrimoniale(s) cartographiée(s) sur ${pointCount} points.`, 100);
     };
 
     const displayResults = (occurrences, patrimonialMap, wkt) => {
@@ -984,7 +989,7 @@ const initializeSelectionMap = (coords) => {
             resultsContainer.innerHTML = '';
             mapContainer.style.display = 'none';
             initializeMap(params);
-            setStatus("Étape 1/4: Initialisation de la carte...", true);
+            setStatus("Étape 1/4: Initialisation de la carte...", 5);
             let wkt = params.wkt;
             if (!wkt) {
                 wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
@@ -995,10 +1000,10 @@ const initializeSelectionMap = (coords) => {
             let totalPages = null;
             let pagesToFetch = maxPages;
 
-            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${pagesToFetch})`, true);
+            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${pagesToFetch})`, 25);
             for (let page = 0; page < pagesToFetch; page++) {
                 const offset = page * limit;
-                setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${pagesToFetch})`, true);
+                setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${pagesToFetch})`, 25 + ((page + 1) / pagesToFetch) * 25);
                 const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
                 const gbifResp = await fetchWithRetry(gbifUrl);
                 if (!gbifResp.ok) throw new Error("L'API GBIF est indisponible.");
@@ -1027,11 +1032,12 @@ const initializeSelectionMap = (coords) => {
                 }
             }
             if (allOccurrences.length === 0) { throw new Error("Aucune occurrence de plante trouvée à proximité."); }
-            setStatus("Étape 3/4: Analyse des données...", true);
+            setStatus("Étape 3/4: Analyse des données...", 50);
             const uniqueSpeciesNames = [...new Set(allOccurrences.map(o => o.species).filter(Boolean))];
             const relevantRules = new Map();
             const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${params.latitude}&lon=${params.longitude}&fields=departement,region`)).json())[0];
-            for (const speciesName of uniqueSpeciesNames) {
+            for (const [idx, speciesName] of uniqueSpeciesNames.entries()) {
+                setStatus(`Étape 3/4: Analyse des données... (${idx + 1}/${uniqueSpeciesNames.length})`, 50 + ((idx + 1) / uniqueSpeciesNames.length) * 25);
                 const rulesForThisTaxon = rulesByTaxonIndex.get(speciesName);
                 if (rulesForThisTaxon) {
                     for (const row of rulesForThisTaxon) {
@@ -1097,7 +1103,7 @@ const initializeSelectionMap = (coords) => {
         const address = addressInput.value.trim();
         if (!address) return alert("Veuillez saisir une adresse.");
         try {
-            setStatus(`Géocodage de l'adresse...`, true);
+            setStatus(`Géocodage de l'adresse...`, 0);
             const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
             if (!resp.ok) throw new Error("Service de géocodage indisponible.");
             const data = await resp.json();
@@ -1110,7 +1116,7 @@ const initializeSelectionMap = (coords) => {
     
     const handleGeolocationSearch = async (showPopup = true) => {
         try {
-            setStatus("Récupération de votre position...", true);
+            setStatus("Récupération de votre position...", 0);
             const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 }));
             initializeSelectionMap(coords);
             if (showPopup) {

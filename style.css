@@ -172,6 +172,23 @@ h1 {
     gap: 0.25rem;
 }
 
+.progress-bar-container {
+    width: 100%;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+    display: none;
+    margin-top: 0.25rem;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0;
+    background: #c62828;
+    transition: width 0.3s ease;
+}
+
 /* Animation d'un robot au travail pour patienter pendant l'analyse */
 .robot-working {
     display: inline-flex;
