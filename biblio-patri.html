@@ -1,18 +1,21 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr" data-theme="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Analyse Patrimoniale de la Flore</title>
-    <link rel="manifest" href="manifest.json">
-    <link rel="icon" href="icons/icon-192.png">
+    <link rel="manifest" href="manifest.json" />
+    <link rel="icon" href="icons/icon-192.png" />
 
-    <link rel="stylesheet" href="style.css"/>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"/>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css"
+    />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
-    
+
     <!-- Bibliothèques pour l'export shapefile -->
     <script src="https://unpkg.com/proj4@2.9.0/dist/proj4.js"></script>
     <script src="shapefile.js"></script>
@@ -21,8 +24,14 @@
     <script defer src="biblio-patri.js"></script>
     <script defer src="sw-register.js"></script>
     <style>
-      .logo-icon { width: 24px; height: auto; }
-      .small-logo { height: 24px; width: auto; }
+      .logo-icon {
+        width: 24px;
+        height: auto;
+      }
+      .small-logo {
+        height: 24px;
+        width: auto;
+      }
       .measure-tooltip {
         background: #ffffff;
         color: #000000;
@@ -36,7 +45,7 @@
         bottom: 10px;
         left: 10px;
         width: 300px;
-        background: rgba(255,255,255,0.9);
+        background: rgba(255, 255, 255, 0.9);
         border: 1px solid #000;
         border-radius: 4px;
         padding: 4px;
@@ -55,49 +64,56 @@
         white-space: nowrap;
       }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <nav class="tabs-container">
-        <div class="tabs">
-            <button class="tab" onclick="window.location.href='index.html'">Identification</button>
-            <button class="tab active">Biblio Patri</button>
-            <button class="tab" onclick="window.location.href='contexte.html'">Contexte éco</button>
-        </div>
+      <div class="tabs">
+        <button class="tab" onclick="window.location.href='index.html'">Identification</button>
+        <button class="tab active">Biblio Patri</button>
+        <button class="tab" onclick="window.location.href='contexte.html'">Contexte éco</button>
+      </div>
     </nav>
-    <div id="section-nav" class="section-nav" style="display:none;">
-        <button id="scroll-map-btn" class="nav-tab">Carte</button>
-        <button id="scroll-table-btn" class="nav-tab">Tableau</button>
+    <div id="section-nav" class="section-nav" style="display: none">
+      <button id="scroll-map-btn" class="nav-tab">Carte</button>
+      <button id="scroll-table-btn" class="nav-tab">Tableau</button>
     </div>
     <div class="main-content">
-        <div class="search-controls">
-            <div class="search-group address-group">
-                <input type="text" id="address-input" placeholder="Saisir une adresse, une ville, un lieu...">
-                <button id="search-address-btn" class="action-button">🔍 Rechercher</button>
-            </div>
-            <div class="button-grid">
-                <button id="use-geolocation-btn" class="action-button">📍 Ma position</button>
-                <button id="draw-polygon-btn" class="action-button">🔶 Zone personnalisée</button>
-                <button id="toggle-tracking-btn" class="action-button">⭐ Suivi de position</button>
-                <button id="toggle-labels-btn" class="action-button">🏷️ Masquer les étiquettes</button>
-                <button id="measure-distance-btn" class="action-button">📏 Mesurer</button>
-            </div>
+      <div class="search-controls">
+        <div class="search-group address-group">
+          <input
+            type="text"
+            id="address-input"
+            placeholder="Saisir une adresse, une ville, un lieu..."
+          />
+          <button id="search-address-btn" class="action-button">🔍 Rechercher</button>
         </div>
-
-        <div id="status" class="status-container"></div>
-
-        <div id="map">
-            <div id="crosshair" style="display:none;"></div>
-            <div id="profile-container">
-                <canvas id="profile-canvas" width="280" height="100"></canvas>
-                <div id="profile-info"></div>
-            </div>
+        <div class="button-grid">
+          <button id="use-geolocation-btn" class="action-button">📍 Ma position</button>
+          <button id="draw-polygon-btn" class="action-button">🔶 Zone personnalisée</button>
+          <button id="toggle-tracking-btn" class="action-button">⭐ Suivi de position</button>
+          <button id="toggle-labels-btn" class="action-button">🏷️ Masquer les étiquettes</button>
+          <button id="measure-distance-btn" class="action-button">📏 Mesurer</button>
         </div>
+      </div>
 
-        <div id="download-container" style="text-align:center; display:none; margin-bottom:1rem;">
-            <button id="download-shapefile-btn" class="action-button">⬇️ Shapefile</button>
+      <div id="status" class="status-container"></div>
+      <div id="progress-container" class="progress-container">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+
+      <div id="map">
+        <div id="crosshair" style="display: none"></div>
+        <div id="profile-container">
+          <canvas id="profile-canvas" width="280" height="100"></canvas>
+          <div id="profile-info"></div>
         </div>
+      </div>
 
-        <div id="results" class="results-container"></div>
+      <div id="download-container" style="text-align: center; display: none; margin-bottom: 1rem">
+        <button id="download-shapefile-btn" class="action-button">⬇️ Shapefile</button>
+      </div>
+
+      <div id="results" class="results-container"></div>
     </div>
-</body>
+  </body>
 </html>
