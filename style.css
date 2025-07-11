@@ -171,6 +171,11 @@ h1 {
     align-items: center;
     gap: 0.25rem;
 }
+/* Progress bar inside status messages */
+.status-line progress {
+    width: 100px;
+    height: 0.75rem;
+}
 
 /* Animation d'un robot au travail pour patienter pendant l'analyse */
 .robot-working {
