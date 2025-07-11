@@ -1029,6 +1029,7 @@ const initializeSelectionMap = (coords) => {
                 let pagesToFetch = Infinity;
                 let batchSize = 20;
                 cancelAnalysisRequest = false;
+                const occurrenceBatches = [];
                 const cancelBtn = document.createElement('button');
                 cancelBtn.textContent = 'Annuler';
                 cancelBtn.className = 'action-button';
@@ -1039,7 +1040,7 @@ const initializeSelectionMap = (coords) => {
                 const firstResp = await fetchWithRetry(firstUrl);
                 if (!firstResp.ok) throw new Error("L'API GBIF est indisponible.");
                 const firstData = await firstResp.json();
-                if (firstData.results?.length > 0) allOccurrences = allOccurrences.concat(firstData.results);
+                if (firstData.results?.length > 0) occurrenceBatches.push(firstData.results);
                 totalPages = Math.ceil((firstData.count || firstData.results.length) / limit);
                 pagesToFetch = totalPages;
                 let currentPage = 1;
@@ -1049,16 +1050,19 @@ const initializeSelectionMap = (coords) => {
                     const start = currentPage + 1;
                     const end = currentPage + pagesThisBatch;
                     updateStatusWithCancel(`Étape 2/4: Inventaire de la flore locale via GBIF... (Pages ${start}-${end}/${pagesToFetch})`);
-                    for (let i = 0; i < pagesThisBatch && !cancelAnalysisRequest; i++) {
-                        const offset = (currentPage + i) * limit;
+                    let fetchedInBatch = 0;
+                    while (fetchedInBatch < pagesThisBatch && !cancelAnalysisRequest) {
+                        const offset = currentPage * limit;
                         const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
                         try {
                             const gbifResp = await fetchWithRetry(gbifUrl);
                             if (!gbifResp.ok) throw new Error("L'API GBIF est indisponible.");
                             const pageData = await gbifResp.json();
                             if (pageData.results?.length > 0) {
-                                allOccurrences = allOccurrences.concat(pageData.results);
+                                occurrenceBatches.push(pageData.results);
                             }
+                            currentPage++;
+                            fetchedInBatch++;
                         } catch (err) {
                             if (/failed to fetch/i.test(err.message) && batchSize > 10) {
                                 batchSize = 10;
@@ -1068,7 +1072,6 @@ const initializeSelectionMap = (coords) => {
                             }
                         }
                     }
-                    currentPage += pagesThisBatch;
                     if (currentPage < pagesToFetch && !cancelAnalysisRequest) {
                         await new Promise(res => setTimeout(res, 500));
                     }
@@ -1076,6 +1079,7 @@ const initializeSelectionMap = (coords) => {
 
                 if (cancelAnalysisRequest) { setStatus('Analyse annulée'); return; }
 
+                allOccurrences = occurrenceBatches.flat();
                 retrievedPages = Math.ceil(allOccurrences.length / limit);
             }
             if (typeof showNotification === 'function' && totalPages) {
