@@ -391,6 +391,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         patrBtn.textContent = 'Flore Patri';
         const patrZnieffBtn = L.DomUtil.create('button', 'action-button', container);
         patrZnieffBtn.textContent = 'Flore Patri & ZNIEFF';
+        const patrFullBtn = L.DomUtil.create('button', 'action-button', container);
+        patrFullBtn.textContent = 'Flore Patri approfondie';
         const obsBtn = L.DomUtil.create('button', 'action-button', container);
         obsBtn.textContent = 'Flore commune';
         L.DomEvent.on(patrBtn, 'click', () => {
@@ -402,6 +404,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             map.closePopup();
             showNavigation();
             runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, false);
+        });
+        L.DomEvent.on(patrFullBtn, 'click', () => {
+            map.closePopup();
+            showNavigation();
+            runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, true, true);
         });
         L.DomEvent.on(obsBtn, 'click', () => {
             map.closePopup();
@@ -431,6 +438,8 @@ let znieffOnlySpecies = new Set();
 let hideZnieffOnly = false;
 let excludeZnieffAnalysis = false;
 let rulesByTaxonIndex = new Map();
+let cancelBtn = null;
+let cancelRequested = false;
     let trackingWatchId = null;
     let trackingMarker = null;
     let trackingActive = false;
@@ -505,6 +514,20 @@ let rulesByTaxonIndex = new Map();
         }
 
         statusDiv.appendChild(container);
+    };
+
+    const showCancel = () => {
+        if (cancelBtn || !statusDiv) return;
+        cancelBtn = document.createElement('button');
+        cancelBtn.textContent = 'Annuler';
+        cancelBtn.className = 'action-button';
+        cancelBtn.addEventListener('click', () => { cancelRequested = true; });
+        statusDiv.appendChild(cancelBtn);
+    };
+
+    const hideCancel = () => {
+        if (cancelBtn && statusDiv) statusDiv.removeChild(cancelBtn);
+        cancelBtn = null;
     };
 
     // Prefetch OpenTopoMap tiles near a center to improve map rendering speed
@@ -977,8 +1000,9 @@ const initializeSelectionMap = (coords) => {
         fetchAndDisplayAllPatrimonialOccurrences(patrimonialMap, wkt, occurrences);
     };
 
-    const runAnalysis = async (params, excludeZnieff = false) => {
+    const runAnalysis = async (params, excludeZnieff = false, fetchAll = false) => {
         excludeZnieffAnalysis = excludeZnieff;
+        cancelRequested = false;
         try {
             lastAnalysisCoords = { latitude: params.latitude, longitude: params.longitude };
             resultsContainer.innerHTML = '';
@@ -990,32 +1014,67 @@ const initializeSelectionMap = (coords) => {
                 wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
             }
             let allOccurrences = [];
-            const maxPages = 20;
             const limit = 300; // GBIF API maximum
             let totalPages = null;
-            let pagesToFetch = maxPages;
-
-            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${pagesToFetch})`, true);
-            for (let page = 0; page < pagesToFetch; page++) {
-                const offset = page * limit;
-                setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${pagesToFetch})`, true);
-                const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
-                const gbifResp = await fetchWithRetry(gbifUrl);
-                if (!gbifResp.ok) throw new Error("L'API GBIF est indisponible.");
-                const pageData = await gbifResp.json();
-
-                if (totalPages === null && typeof pageData.count === 'number') {
-                    totalPages = Math.ceil(pageData.count / limit);
-                    pagesToFetch = Math.min(maxPages, totalPages);
+            if (fetchAll) {
+                showCancel();
+                setStatus('Étape 2/4: Chargement pages 1/?', true);
+                const firstUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=0&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
+                const firstResp = await fetchWithRetry(firstUrl);
+                if (!firstResp.ok) throw new Error("L'API GBIF est indisponible.");
+                const firstData = await firstResp.json();
+                totalPages = Math.ceil(firstData.count / limit);
+                if (firstData.results?.length) allOccurrences = firstData.results;
+                let page = 1;
+                let batchSize = 20;
+                while (page < totalPages && !cancelRequested) {
+                    const remaining = totalPages - page;
+                    const thisBatch = Math.min(batchSize, remaining);
+                    setStatus(`Étape 2/4: Chargement pages ${page + 1}-${page + thisBatch}/${totalPages}`, true);
+                    try {
+                        for (let i = 0; i < thisBatch && !cancelRequested; i++) {
+                            const offset = (page + i) * limit;
+                            const url = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
+                            const resp = await fetchWithRetry(url);
+                            if (!resp.ok) throw new Error("L'API GBIF est indisponible.");
+                            const data = await resp.json();
+                            if (data.results?.length) allOccurrences = allOccurrences.concat(data.results);
+                        }
+                        page += thisBatch;
+                        await new Promise(res => setTimeout(res, 500));
+                    } catch (err) {
+                        if (err.message && err.message.includes('failed to fetch') && batchSize > 10) {
+                            batchSize = 10;
+                        } else {
+                            hideCancel();
+                            throw err;
+                        }
+                    }
                 }
-
-                if (pageData.results?.length > 0) {
-                    allOccurrences = allOccurrences.concat(pageData.results);
-                }
-
-                if (pageData.endOfRecords) {
-                    totalPages = totalPages || page + 1;
-                    break;
+                hideCancel();
+                if (cancelRequested) throw new Error('Analyse annulée');
+            } else {
+                const maxPages = 20;
+                let pagesToFetch = maxPages;
+                setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${pagesToFetch})`, true);
+                for (let page = 0; page < pagesToFetch; page++) {
+                    const offset = page * limit;
+                    setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${pagesToFetch})`, true);
+                    const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
+                    const gbifResp = await fetchWithRetry(gbifUrl);
+                    if (!gbifResp.ok) throw new Error("L'API GBIF est indisponible.");
+                    const pageData = await gbifResp.json();
+                    if (totalPages === null && typeof pageData.count === 'number') {
+                        totalPages = Math.ceil(pageData.count / limit);
+                        pagesToFetch = Math.min(maxPages, totalPages);
+                    }
+                    if (pageData.results?.length > 0) {
+                        allOccurrences = allOccurrences.concat(pageData.results);
+                    }
+                    if (pageData.endOfRecords) {
+                        totalPages = totalPages || page + 1;
+                        break;
+                    }
                 }
             }
             const retrievedPages = Math.ceil(allOccurrences.length / limit);
