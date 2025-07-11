@@ -389,6 +389,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         const container = L.DomUtil.create('div', 'popup-button-container');
         const patrBtn = L.DomUtil.create('button', 'action-button', container);
         patrBtn.textContent = 'Flore Patri';
+        const deepBtn = L.DomUtil.create('button', 'action-button', container);
+        deepBtn.textContent = 'Flore patri approfondie';
         const patrZnieffBtn = L.DomUtil.create('button', 'action-button', container);
         patrZnieffBtn.textContent = 'Flore Patri & ZNIEFF';
         const obsBtn = L.DomUtil.create('button', 'action-button', container);
@@ -397,6 +399,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             map.closePopup();
             showNavigation();
             runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, true);
+        });
+        L.DomEvent.on(deepBtn, 'click', () => {
+            map.closePopup();
+            showNavigation();
+            runDeepAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, true);
         });
         L.DomEvent.on(patrZnieffBtn, 'click', () => {
             map.closePopup();
@@ -977,6 +984,71 @@ const initializeSelectionMap = (coords) => {
         fetchAndDisplayAllPatrimonialOccurrences(patrimonialMap, wkt, occurrences);
     };
 
+    const analyzeOccurrences = async (allOccurrences, params, wkt) => {
+        if (allOccurrences.length === 0) {
+            throw new Error("Aucune occurrence de plante trouvée à proximité.");
+        }
+        setStatus("Étape 3/4: Analyse des données...", true);
+        const uniqueSpeciesNames = [...new Set(allOccurrences.map(o => o.species).filter(Boolean))];
+        const relevantRules = new Map();
+        const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${params.latitude}&lon=${params.longitude}&fields=departement,region`)).json())[0];
+        for (const speciesName of uniqueSpeciesNames) {
+            const rulesForThisTaxon = rulesByTaxonIndex.get(speciesName);
+            if (rulesForThisTaxon) {
+                for (const row of rulesForThisTaxon) {
+                    let ruleApplies = false;
+                    const type = row.type.toLowerCase();
+                    const admNorm = normAdmin(row.adm);
+                    const isHabitatsDirective = type.includes('directive habitat') && HABITATS_DIRECTIVE_CODES.has(row.code);
+                    if (isHabitatsDirective) {
+                        ruleApplies = true;
+                    } else if (NORMALIZED_ADMIN_CODE_MAP[admNorm] === 'FR' || type.includes('nationale')) {
+                        ruleApplies = true;
+                    } else if (NORMALIZED_OLD_REGIONS[admNorm]?.includes(departement.code)) {
+                        ruleApplies = true;
+                    } else {
+                        const adminCode = NORMALIZED_ADMIN_CODE_MAP[admNorm];
+                        if (adminCode === departement.code || adminCode === region.code) { ruleApplies = true; }
+                    }
+                    if (ruleApplies) {
+                        if (nonPatrimonialLabels.has(row.label)) { continue; }
+                        const isRedList = type.includes('liste rouge');
+                        if (isRedList && nonPatrimonialRedlistCodes.has(row.code)) { continue; }
+                        const ruleKey = `${row.nom}|${row.type}|${row.adm}`;
+                        if (!relevantRules.has(ruleKey)) {
+                            const descriptiveStatus = isRedList ? `${row.type} (${row.code}) (${row.adm})` : row.label;
+                            relevantRules.set(ruleKey, { species: row.nom, status: descriptiveStatus });
+                        }
+                    }
+                }
+            }
+        }
+        let analysisResp;
+        for (let attempt = 1; attempt <= ANALYSIS_MAX_RETRIES; attempt++) {
+            try {
+                analysisResp = await fetch('/.netlify/functions/analyze-patrimonial-status', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        relevantRules: Array.from(relevantRules.values()),
+                        uniqueSpeciesNames,
+                        coords: { latitude: params.latitude, longitude: params.longitude }
+                    })
+                });
+                if (!analysisResp.ok) {
+                    const errBody = await analysisResp.text();
+                    throw new Error(`Le service d'analyse a échoué: ${errBody}`);
+                }
+                break;
+            } catch (err) {
+                if (attempt === ANALYSIS_MAX_RETRIES) throw err;
+                setStatus(`Erreur : ${err.message}. Nouvelle tentative (${ANALYSIS_MAX_RETRIES - attempt} restante(s))...`, true);
+                await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
+            }
+        }
+        const patrimonialMap = await analysisResp.json();
+        displayResults(allOccurrences, patrimonialMap, wkt);
+    };
+
     const runAnalysis = async (params, excludeZnieff = false) => {
         excludeZnieffAnalysis = excludeZnieff;
         try {
@@ -1026,66 +1098,63 @@ const initializeSelectionMap = (coords) => {
                     showNotification(`Résultats complets : ${retrievedPages} pages récupérées sur ${totalPages}`);
                 }
             }
-            if (allOccurrences.length === 0) { throw new Error("Aucune occurrence de plante trouvée à proximité."); }
-            setStatus("Étape 3/4: Analyse des données...", true);
-            const uniqueSpeciesNames = [...new Set(allOccurrences.map(o => o.species).filter(Boolean))];
-            const relevantRules = new Map();
-            const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${params.latitude}&lon=${params.longitude}&fields=departement,region`)).json())[0];
-            for (const speciesName of uniqueSpeciesNames) {
-                const rulesForThisTaxon = rulesByTaxonIndex.get(speciesName);
-                if (rulesForThisTaxon) {
-                    for (const row of rulesForThisTaxon) {
-                        let ruleApplies = false;
-                        const type = row.type.toLowerCase();
-                        const admNorm = normAdmin(row.adm);
-                        const isHabitatsDirective = type.includes('directive habitat') && HABITATS_DIRECTIVE_CODES.has(row.code);
-                        if (isHabitatsDirective) {
-                            ruleApplies = true;
-                        } else if (NORMALIZED_ADMIN_CODE_MAP[admNorm] === 'FR' || type.includes('nationale')) {
-                            ruleApplies = true;
-                        } else if (NORMALIZED_OLD_REGIONS[admNorm]?.includes(departement.code)) {
-                            ruleApplies = true;
-                        } else {
-                            const adminCode = NORMALIZED_ADMIN_CODE_MAP[admNorm];
-                            if (adminCode === departement.code || adminCode === region.code) { ruleApplies = true; }
-                        }
-                        if (ruleApplies) {
-                            if (nonPatrimonialLabels.has(row.label)) { continue; }
-                            const isRedList = type.includes('liste rouge');
-                            if (isRedList && nonPatrimonialRedlistCodes.has(row.code)) { continue; }
-                            const ruleKey = `${row.nom}|${row.type}|${row.adm}`;
-                            if (!relevantRules.has(ruleKey)) {
-                                const descriptiveStatus = isRedList ? `${row.type} (${row.code}) (${row.adm})` : row.label;
-                                relevantRules.set(ruleKey, { species: row.nom, status: descriptiveStatus });
-                            }
-                        }
-                    }
+            await analyzeOccurrences(allOccurrences, params, wkt);
+        } catch (error) {
+            console.error("Erreur durant l'analyse:", error);
+            setStatus(`Erreur : ${error.message}`);
+            if (mapContainer) mapContainer.style.display = 'none';
+        }
+    };
+
+    const runDeepAnalysis = async (params, excludeZnieff = false) => {
+        excludeZnieffAnalysis = excludeZnieff;
+        try {
+            lastAnalysisCoords = { latitude: params.latitude, longitude: params.longitude };
+            resultsContainer.innerHTML = '';
+            mapContainer.style.display = 'none';
+            initializeMap(params);
+            setStatus("Étape 1/4: Initialisation de la carte...", true);
+            let wkt = params.wkt;
+            if (!wkt) {
+                wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
+            }
+            const limit = 300;
+            const firstUrl = `https://api.gbif.org/v1/occurrence/search?limit=1&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
+            const firstResp = await fetchWithRetry(firstUrl);
+            if (!firstResp.ok) throw new Error("L'API GBIF est indisponible.");
+            const firstData = await firstResp.json();
+            const count = firstData.count || 0;
+            const totalPages = Math.ceil(count / limit);
+            const batchSize = 20;
+            const cache = await caches.open('gbif-batch-cache');
+            const keys = [];
+            for (let start = 0; start < totalPages; start += batchSize) {
+                const end = Math.min(start + batchSize, totalPages);
+                setStatus(`Chargement du lot ${Math.floor(start/batchSize)+1} sur ${Math.ceil(totalPages/batchSize)} (pages ${start+1} à ${end})...`, true);
+                let batch = [];
+                for (let page = start; page < end; page++) {
+                    const offset = page * limit;
+                    const url = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
+                    const resp = await fetchWithRetry(url);
+                    if (!resp.ok) throw new Error("L'API GBIF est indisponible.");
+                    const data = await resp.json();
+                    if (data.results?.length) batch = batch.concat(data.results);
+                }
+                const key = `/gbif_batch_${keys.length+1}.json`;
+                await cache.put(key, new Response(JSON.stringify(batch)));
+                keys.push(key);
+                batch = null;
+            }
+            let allOccurrences = [];
+            for (const key of keys) {
+                const resp = await cache.match(key);
+                if (resp) {
+                    const data = await resp.json();
+                    allOccurrences = allOccurrences.concat(data);
+                    await cache.delete(key);
                 }
             }
-            let analysisResp;
-            for (let attempt = 1; attempt <= ANALYSIS_MAX_RETRIES; attempt++) {
-                try {
-                    analysisResp = await fetch('/.netlify/functions/analyze-patrimonial-status', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            relevantRules: Array.from(relevantRules.values()),
-                            uniqueSpeciesNames,
-                            coords: { latitude: params.latitude, longitude: params.longitude }
-                        })
-                    });
-                    if (!analysisResp.ok) {
-                        const errBody = await analysisResp.text();
-                        throw new Error(`Le service d'analyse a échoué: ${errBody}`);
-                    }
-                    break;
-                } catch (err) {
-                    if (attempt === ANALYSIS_MAX_RETRIES) throw err;
-                    setStatus(`Erreur : ${err.message}. Nouvelle tentative (${ANALYSIS_MAX_RETRIES - attempt} restante(s))...`, true);
-                    await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
-                }
-            }
-            const patrimonialMap = await analysisResp.json();
-            displayResults(allOccurrences, patrimonialMap, wkt);
+            await analyzeOccurrences(allOccurrences, params, wkt);
         } catch (error) {
             console.error("Erreur durant l'analyse:", error);
             setStatus(`Erreur : ${error.message}`);
