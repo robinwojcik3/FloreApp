@@ -16,6 +16,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     // --- 2. Déclaration des variables et constantes globales ---
     const statusDiv = document.getElementById('status');
+    const statusMessage = document.getElementById('status-message');
+    const progressBar = document.getElementById('progress-bar');
     const resultsContainer = document.getElementById('results');
     const mapContainer = document.getElementById('map');
     const crosshair = document.getElementById('crosshair');
@@ -486,25 +488,12 @@ let rulesByTaxonIndex = new Map();
     Object.entries(OLD_REGIONS_TO_DEPARTMENTS).forEach(([name, depts]) => {
         NORMALIZED_OLD_REGIONS[normAdmin(name)] = depts;
     });
-    const setStatus = (message = '', showIcons = false) => {
-        statusDiv.innerHTML = '';
-        if (!message) return;
+    const setStatus = (message = '') => {
+        if (statusMessage) statusMessage.textContent = message;
+    };
 
-        const container = document.createElement('span');
-        container.className = 'status-line';
-
-        const text = document.createElement('span');
-        text.textContent = message;
-        container.appendChild(text);
-
-        if (showIcons) {
-            const worker = document.createElement('span');
-            worker.className = 'robot-working';
-            worker.innerHTML = '<span class="robot">🤖</span><span class="gear">⚙️</span>';
-            container.appendChild(worker);
-        }
-
-        statusDiv.appendChild(container);
+    const updateProgress = (value = 0) => {
+        if (progressBar) progressBar.style.width = `${Math.min(100, Math.max(0, value))}%`;
     };
 
     // Prefetch OpenTopoMap tiles near a center to improve map rendering speed
@@ -539,7 +528,7 @@ let rulesByTaxonIndex = new Map();
             } catch (err) {
                 clearTimeout(timeoutId);
                 if (attempt === maxRetries) throw err;
-                setStatus(`Erreur : ${err.message}. Nouvelle tentative (${maxRetries - attempt} restante(s))...`, true);
+                setStatus(`Erreur : ${err.message}. Nouvelle tentative (${maxRetries - attempt} restante(s))...`);
                 await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
             }
         }
@@ -568,7 +557,7 @@ let rulesByTaxonIndex = new Map();
 
     const initializeApp = async () => {
         try {
-            setStatus("Chargement des données...", true);
+            setStatus("Chargement des données...");
             const [bdcResp, ecoResp, faResp] = await Promise.all([
                 fetch('BDCstatut.csv'),
                 fetch('ecology.json'),
@@ -730,7 +719,8 @@ const initializeSelectionMap = (coords) => {
     const fetchAndDisplayAllPatrimonialOccurrences = async (patrimonialMap, wkt, initialOccurrences) => {
         const speciesNames = Object.keys(patrimonialMap);
         if (speciesNames.length === 0) return;
-        setStatus(`Étape 4/4: Cartographie détaillée des espèces patrimoniales... (0/${speciesNames.length})`, true);
+        setStatus(`Étape 4/4: Cartographie détaillée des espèces patrimoniales... (0/${speciesNames.length})`);
+        updateProgress(60);
         let allOccurrencesWithContext = [];
         const taxonKeyMap = new Map();
         initialOccurrences.forEach(occ => {
@@ -739,7 +729,8 @@ const initializeSelectionMap = (coords) => {
             }
         });
         for (const [index, speciesName] of speciesNames.entries()) {
-            setStatus(`Étape 4/4: Cartographie détaillée des espèces patrimoniales... (${index + 1}/${speciesNames.length})`, true);
+            setStatus(`Étape 4/4: Cartographie détaillée des espèces patrimoniales... (${index + 1}/${speciesNames.length})`);
+            updateProgress(60 + ((index + 1) / speciesNames.length) * 40);
             const taxonKey = taxonKeyMap.get(speciesName);
             if (!taxonKey) continue;
             const color = SPECIES_COLORS[index % SPECIES_COLORS.length];
@@ -834,7 +825,8 @@ const initializeSelectionMap = (coords) => {
         if(!map.hasLayer(patrimonialLayerGroup)) {
             patrimonialLayerGroup.addTo(map);
         }
-        setStatus(`${selectedSpecies.size} espèce(s) patrimoniale(s) cartographiée(s) sur ${pointCount} points.`, false);
+        setStatus(`${selectedSpecies.size} espèce(s) patrimoniale(s) cartographiée(s) sur ${pointCount} points.`);
+        updateProgress(100);
     };
 
     const displayResults = (occurrences, patrimonialMap, wkt) => {
@@ -983,8 +975,10 @@ const initializeSelectionMap = (coords) => {
             lastAnalysisCoords = { latitude: params.latitude, longitude: params.longitude };
             resultsContainer.innerHTML = '';
             mapContainer.style.display = 'none';
+            updateProgress(0);
             initializeMap(params);
-            setStatus("Étape 1/4: Initialisation de la carte...", true);
+            setStatus("Étape 1/4: Initialisation de la carte...");
+            updateProgress(10);
             let wkt = params.wkt;
             if (!wkt) {
                 wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
@@ -995,10 +989,11 @@ const initializeSelectionMap = (coords) => {
             let totalPages = null;
             let pagesToFetch = maxPages;
 
-            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${pagesToFetch})`, true);
+            setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${pagesToFetch})`);
             for (let page = 0; page < pagesToFetch; page++) {
                 const offset = page * limit;
-                setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${pagesToFetch})`, true);
+                setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${pagesToFetch})`);
+                updateProgress(10 + ((page + 1) / pagesToFetch) * 30);
                 const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
                 const gbifResp = await fetchWithRetry(gbifUrl);
                 if (!gbifResp.ok) throw new Error("L'API GBIF est indisponible.");
@@ -1027,7 +1022,8 @@ const initializeSelectionMap = (coords) => {
                 }
             }
             if (allOccurrences.length === 0) { throw new Error("Aucune occurrence de plante trouvée à proximité."); }
-            setStatus("Étape 3/4: Analyse des données...", true);
+            setStatus("Étape 3/4: Analyse des données...");
+            updateProgress(40);
             const uniqueSpeciesNames = [...new Set(allOccurrences.map(o => o.species).filter(Boolean))];
             const relevantRules = new Map();
             const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${params.latitude}&lon=${params.longitude}&fields=departement,region`)).json())[0];
@@ -1080,11 +1076,12 @@ const initializeSelectionMap = (coords) => {
                     break;
                 } catch (err) {
                     if (attempt === ANALYSIS_MAX_RETRIES) throw err;
-                    setStatus(`Erreur : ${err.message}. Nouvelle tentative (${ANALYSIS_MAX_RETRIES - attempt} restante(s))...`, true);
+                    setStatus(`Erreur : ${err.message}. Nouvelle tentative (${ANALYSIS_MAX_RETRIES - attempt} restante(s))...`);
                     await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
                 }
             }
             const patrimonialMap = await analysisResp.json();
+            updateProgress(60);
             displayResults(allOccurrences, patrimonialMap, wkt);
         } catch (error) {
             console.error("Erreur durant l'analyse:", error);
@@ -1097,7 +1094,7 @@ const initializeSelectionMap = (coords) => {
         const address = addressInput.value.trim();
         if (!address) return alert("Veuillez saisir une adresse.");
         try {
-            setStatus(`Géocodage de l'adresse...`, true);
+            setStatus(`Géocodage de l'adresse...`);
             const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`);
             if (!resp.ok) throw new Error("Service de géocodage indisponible.");
             const data = await resp.json();
@@ -1110,7 +1107,7 @@ const initializeSelectionMap = (coords) => {
     
     const handleGeolocationSearch = async (showPopup = true) => {
         try {
-            setStatus("Récupération de votre position...", true);
+            setStatus("Récupération de votre position...");
             const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 10000 }));
             initializeSelectionMap(coords);
             if (showPopup) {
@@ -1209,7 +1206,7 @@ const initializeSelectionMap = (coords) => {
             const wkt = polygonToWkt(latlngs);
             showChoicePopup(L.latLng(centroid.latitude, centroid.longitude), { wkt, polygon: latlngs });
         } else {
-            setStatus('Polygone non valide', true);
+            setStatus('Polygone non valide');
         }
         polygonPoints = [];
     };
@@ -1233,7 +1230,7 @@ const initializeSelectionMap = (coords) => {
         initializeSelectionMap(center);
         polygonDrawing = true;
         polygonPoints = [];
-        setStatus('Placez la cible et appuyez sur Volume + pour ajouter un point.', false);
+        setStatus('Placez la cible et appuyez sur Volume + pour ajouter un point.');
         if (crosshair) crosshair.style.display = 'block';
         if (drawPolygonBtn) drawPolygonBtn.textContent = '✔️ Terminer';
         window.addEventListener('keydown', onVolumeKey);
@@ -1258,7 +1255,7 @@ const initializeSelectionMap = (coords) => {
                 observationsLayerGroup.addLayer(m);
             }
         });
-        setStatus(`${floraOccs.length} observation(s) de flore trouvée(s).`, true);
+        setStatus(`${floraOccs.length} observation(s) de flore trouvée(s).`);
     };
 
     const triggerShapefileDownload = async () => {
@@ -1310,7 +1307,7 @@ const initializeSelectionMap = (coords) => {
                 wkt = 'POLYGON((' + Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return `${(params.longitude+OBS_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+OBS_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`;}).join(', ') + '))';
                 map.fitBounds(obsSearchCircle.getBounds());
             }
-            setStatus('Recherche des occurrences GBIF...', true);
+            setStatus('Recherche des occurrences GBIF...');
 
             const limit = 300;
             let offset = 0;
