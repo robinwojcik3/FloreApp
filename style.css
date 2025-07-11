@@ -172,6 +172,23 @@ h1 {
     gap: 0.25rem;
 }
 
+/* Barre de progression pour l'analyse patrimoniale */
+.progress-container {
+    width: 100%;
+    background: var(--border);
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0.5rem 0;
+    display: none;
+}
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    background: var(--primary);
+    transition: width 0.3s ease;
+}
+
 /* Animation d'un robot au travail pour patienter pendant l'analyse */
 .robot-working {
     display: inline-flex;
