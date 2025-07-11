@@ -232,7 +232,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             return 5 * pow;
         };
 
-        const distSpacing = niceStep(totalDist / 5);
+        const maxDistTicks = 5;
+        let distSpacing = niceStep(totalDist / (maxDistTicks - 1));
+        let distTicks = Math.floor(totalDist / distSpacing) + 1;
+        if (distTicks > maxDistTicks) {
+            distSpacing = niceStep(totalDist / maxDistTicks);
+            distTicks = Math.floor(totalDist / distSpacing) + 1;
+            while (distTicks > maxDistTicks) {
+                distSpacing *= 2;
+                distTicks = Math.floor(totalDist / distSpacing) + 1;
+            }
+        }
         const altRange = maxAlt - minAlt;
         let altSpacing = niceStep(altRange / 4);
         let altTicks = Math.floor(altRange / altSpacing) + 1;
