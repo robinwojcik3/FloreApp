@@ -1116,44 +1116,12 @@ const initializeSelectionMap = (coords) => {
             setStatus("Étape 1/4: Initialisation de la carte...", true);
             let wkt = params.wkt;
             if (!wkt) {
-                wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
+                wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return\`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}\`}).join(', ')}))`;
             }
-            const limit = 300;
-            const firstUrl = `https://api.gbif.org/v1/occurrence/search?limit=1&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
-            const firstResp = await fetchWithRetry(firstUrl);
-            if (!firstResp.ok) throw new Error("L'API GBIF est indisponible.");
-            const firstData = await firstResp.json();
-            const count = firstData.count || 0;
-            const totalPages = Math.ceil(count / limit);
-            const batchSize = 20;
-            const cache = await caches.open('gbif-batch-cache');
-            const keys = [];
-            for (let start = 0; start < totalPages; start += batchSize) {
-                const end = Math.min(start + batchSize, totalPages);
-                setStatus(`Chargement du lot ${Math.floor(start/batchSize)+1} sur ${Math.ceil(totalPages/batchSize)} (pages ${start+1} à ${end})...`, true);
-                let batch = [];
-                for (let page = start; page < end; page++) {
-                    const offset = page * limit;
-                    const url = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
-                    const resp = await fetchWithRetry(url);
-                    if (!resp.ok) throw new Error("L'API GBIF est indisponible.");
-                    const data = await resp.json();
-                    if (data.results?.length) batch = batch.concat(data.results);
-                }
-                const key = `/gbif_batch_${keys.length+1}.json`;
-                await cache.put(key, new Response(JSON.stringify(batch)));
-                keys.push(key);
-                batch = null;
-            }
-            let allOccurrences = [];
-            for (const key of keys) {
-                const resp = await cache.match(key);
-                if (resp) {
-                    const data = await resp.json();
-                    allOccurrences = allOccurrences.concat(data);
-                    await cache.delete(key);
-                }
-            }
+            setStatus("Étape 2/4: Récupération exhaustive des occurrences...", true);
+            const resp = await fetchWithRetry(`/.netlify/functions/deep-gbif-search?geometry=${encodeURIComponent(wkt)}`);
+            if (!resp.ok) throw new Error("L'API GBIF est indisponible.");
+            const allOccurrences = await resp.json();
             await analyzeOccurrences(allOccurrences, params, wkt);
         } catch (error) {
             console.error("Erreur durant l'analyse:", error);
