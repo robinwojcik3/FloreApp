@@ -37,6 +37,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const scrollTableBtn = document.getElementById('scroll-table-btn');
     const addressGroup = document.querySelector('.address-group');
     const searchControls = document.querySelector('.search-controls');
+    const progressBar = document.getElementById('progress-bar');
+
+    const setProgress = (percent) => {
+        if (!progressBar) return;
+        const clamped = Math.min(100, Math.max(0, percent));
+        progressBar.style.width = clamped + '%';
+    };
 
     const updateSecondaryNav = () => {
         if (navContainer && mainTabs) {
@@ -739,6 +746,7 @@ const initializeSelectionMap = (coords) => {
         const speciesNames = Object.keys(patrimonialMap);
         if (speciesNames.length === 0) return;
         setStatus(`Étape 4/4: Cartographie détaillée des espèces patrimoniales... (0/${speciesNames.length})`, true);
+        setProgress(80);
         let allOccurrencesWithContext = [];
         const taxonKeyMap = new Map();
         initialOccurrences.forEach(occ => {
@@ -748,6 +756,7 @@ const initializeSelectionMap = (coords) => {
         });
         for (const [index, speciesName] of speciesNames.entries()) {
             setStatus(`Étape 4/4: Cartographie détaillée des espèces patrimoniales... (${index + 1}/${speciesNames.length})`, true);
+            setProgress(80 + (index / speciesNames.length) * 20);
             const taxonKey = taxonKeyMap.get(speciesName);
             if (!taxonKey) continue;
             const color = SPECIES_COLORS[index % SPECIES_COLORS.length];
@@ -796,6 +805,7 @@ const initializeSelectionMap = (coords) => {
             selectedSpecies = new Set(allPatrimonialSpecies);
         }
         renderPatrimonialLocations();
+        setProgress(100);
     };
 
     const renderPatrimonialLocations = () => {
@@ -993,6 +1003,7 @@ const initializeSelectionMap = (coords) => {
             mapContainer.style.display = 'none';
             initializeMap(params);
             setStatus("Étape 1/4: Initialisation de la carte...", true);
+            setProgress(10);
             let wkt = params.wkt;
             if (!wkt) {
                 wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
@@ -1005,6 +1016,7 @@ const initializeSelectionMap = (coords) => {
                 const maxPages = 20;
                 let pagesToFetch = maxPages;
                 setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${pagesToFetch})`, true);
+                setProgress(10);
                 for (let page = 0; page < pagesToFetch; page++) {
                     const offset = page * limit;
                     setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${pagesToFetch})`, true);
@@ -1021,8 +1033,10 @@ const initializeSelectionMap = (coords) => {
                     }
                     if (pageData.endOfRecords) {
                         totalPages = totalPages || page + 1;
+                        setProgress(60);
                         break;
                     }
+                    setProgress(10 + ((page + 1) / pagesToFetch) * 50);
                 }
                 retrievedPages = Math.ceil(allOccurrences.length / limit);
             } else {
@@ -1036,6 +1050,7 @@ const initializeSelectionMap = (coords) => {
                 cancelBtn.addEventListener('click', () => { cancelAnalysisRequest = true; cancelBtn.disabled = true; });
                 const updateStatusWithCancel = (msg) => { setStatus(msg, true); statusDiv.appendChild(cancelBtn); };
                 updateStatusWithCancel(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 1/?)`);
+                setProgress(10);
                 const firstUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=0&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
                 const firstResp = await fetchWithRetry(firstUrl);
                 if (!firstResp.ok) throw new Error("L'API GBIF est indisponible.");
@@ -1063,6 +1078,7 @@ const initializeSelectionMap = (coords) => {
                             }
                             currentPage++;
                             fetchedInBatch++;
+                            setProgress(10 + (currentPage / pagesToFetch) * 50);
                         } catch (err) {
                             if (/failed to fetch/i.test(err.message) && batchSize > 10) {
                                 batchSize = 10;
@@ -1081,6 +1097,7 @@ const initializeSelectionMap = (coords) => {
 
                 allOccurrences = occurrenceBatches.flat();
                 retrievedPages = Math.ceil(allOccurrences.length / limit);
+                setProgress(60);
             }
             if (typeof showNotification === 'function' && totalPages) {
                 if (retrievedPages < totalPages) {
@@ -1091,6 +1108,7 @@ const initializeSelectionMap = (coords) => {
             }
             if (allOccurrences.length === 0) { throw new Error("Aucune occurrence de plante trouvée à proximité."); }
             setStatus("Étape 3/4: Analyse des données...", true);
+            setProgress(60);
             const uniqueSpeciesNames = [...new Set(allOccurrences.map(o => o.species).filter(Boolean))];
             const relevantRules = new Map();
             const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${params.latitude}&lon=${params.longitude}&fields=departement,region`)).json())[0];
@@ -1148,6 +1166,7 @@ const initializeSelectionMap = (coords) => {
                 }
             }
             const patrimonialMap = await analysisResp.json();
+            setProgress(80);
             displayResults(allOccurrences, patrimonialMap, wkt);
         } catch (error) {
             console.error("Erreur durant l'analyse:", error);
