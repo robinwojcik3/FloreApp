@@ -1013,9 +1013,17 @@ const initializeSelectionMap = (coords) => {
             if (!wkt) {
                 wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
             }
-            let allOccurrences = [];
             const limit = 300; // GBIF API maximum
             let totalPages = null;
+            const sampleBySpecies = new Map();
+            const addResults = (list = []) => {
+                list.forEach(occ => {
+                    if (occ.species && occ.speciesKey && !sampleBySpecies.has(occ.species)) {
+                        sampleBySpecies.set(occ.species, { species: occ.species, speciesKey: occ.speciesKey });
+                    }
+                });
+            };
+            let pagesFetched = 0;
             if (fetchAll) {
                 showCancel();
                 setStatus('Étape 2/4: Chargement pages 1/?', true);
@@ -1024,7 +1032,8 @@ const initializeSelectionMap = (coords) => {
                 if (!firstResp.ok) throw new Error("L'API GBIF est indisponible.");
                 const firstData = await firstResp.json();
                 totalPages = Math.ceil(firstData.count / limit);
-                if (firstData.results?.length) allOccurrences = firstData.results;
+                addResults(firstData.results);
+                pagesFetched = 1;
                 let page = 1;
                 let batchSize = 20;
                 while (page < totalPages && !cancelRequested) {
@@ -1038,9 +1047,10 @@ const initializeSelectionMap = (coords) => {
                             const resp = await fetchWithRetry(url);
                             if (!resp.ok) throw new Error("L'API GBIF est indisponible.");
                             const data = await resp.json();
-                            if (data.results?.length) allOccurrences = allOccurrences.concat(data.results);
+                            addResults(data.results);
                         }
                         page += thisBatch;
+                        pagesFetched += thisBatch;
                         await new Promise(res => setTimeout(res, 500));
                     } catch (err) {
                         if (err.message && err.message.includes('failed to fetch') && batchSize > 10) {
@@ -1068,16 +1078,15 @@ const initializeSelectionMap = (coords) => {
                         totalPages = Math.ceil(pageData.count / limit);
                         pagesToFetch = Math.min(maxPages, totalPages);
                     }
-                    if (pageData.results?.length > 0) {
-                        allOccurrences = allOccurrences.concat(pageData.results);
-                    }
+                    addResults(pageData.results);
+                    pagesFetched = page + 1;
                     if (pageData.endOfRecords) {
                         totalPages = totalPages || page + 1;
                         break;
                     }
                 }
             }
-            const retrievedPages = Math.ceil(allOccurrences.length / limit);
+            const retrievedPages = pagesFetched;
             if (typeof showNotification === 'function' && totalPages) {
                 if (retrievedPages < totalPages) {
                     showNotification(`Résultats partiels : ${retrievedPages} pages récupérées sur ${totalPages} disponibles`, 'warning');
@@ -1085,9 +1094,9 @@ const initializeSelectionMap = (coords) => {
                     showNotification(`Résultats complets : ${retrievedPages} pages récupérées sur ${totalPages}`);
                 }
             }
-            if (allOccurrences.length === 0) { throw new Error("Aucune occurrence de plante trouvée à proximité."); }
+            if (sampleBySpecies.size === 0) { throw new Error("Aucune occurrence de plante trouvée à proximité."); }
             setStatus("Étape 3/4: Analyse des données...", true);
-            const uniqueSpeciesNames = [...new Set(allOccurrences.map(o => o.species).filter(Boolean))];
+            const uniqueSpeciesNames = Array.from(sampleBySpecies.keys());
             const relevantRules = new Map();
             const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${params.latitude}&lon=${params.longitude}&fields=departement,region`)).json())[0];
             for (const speciesName of uniqueSpeciesNames) {
@@ -1144,7 +1153,7 @@ const initializeSelectionMap = (coords) => {
                 }
             }
             const patrimonialMap = await analysisResp.json();
-            displayResults(allOccurrences, patrimonialMap, wkt);
+            displayResults(Array.from(sampleBySpecies.values()), patrimonialMap, wkt);
         } catch (error) {
             console.error("Erreur durant l'analyse:", error);
             setStatus(`Erreur : ${error.message}`);
