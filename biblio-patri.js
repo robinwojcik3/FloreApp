@@ -1039,43 +1039,52 @@ const initializeSelectionMap = (coords) => {
             }
 
             // --- Étape 2 : chargement par lots ---
-            for (let page = 1; page < pagesToFetch && !cancelGbifFetch; ) {
-                const endPage = Math.min(page + batchSize, pagesToFetch);
-                updateStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Pages ${page + 1}-${endPage}/${pagesToFetch})`);
-                for (; page < endPage && !cancelGbifFetch; page++) {
-                    const offset = page * limit;
-                    const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
-                    try {
-                        const gbifResp = await fetchWithRetry(gbifUrl);
-                        if (!gbifResp.ok) throw new Error('API');
-                        const pageData = await gbifResp.json();
-                        if (pageData.results?.length) {
-                            allOccurrences = allOccurrences.concat(pageData.results);
-                        }
-                    } catch (e) {
-                        if (e.message.includes('Failed to fetch') && batchSize > 10) {
-                            batchSize = 10;
-                            page -= (page % batchSize);
-                            updateStatus('Erreur de connexion, réduction de la taille des lots...');
-                            break;
-                        } else {
-                            throw e;
+            const fetchRestPages = async () => {
+                for (let page = 1; page < pagesToFetch && !cancelGbifFetch; ) {
+                    const endPage = Math.min(page + batchSize, pagesToFetch);
+                    updateStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Pages ${page + 1}-${endPage}/${pagesToFetch})`);
+                    const batchResults = [];
+                    for (; page < endPage && !cancelGbifFetch; page++) {
+                        const offset = page * limit;
+                        const gbifUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
+                        try {
+                            const gbifResp = await fetchWithRetry(gbifUrl);
+                            if (!gbifResp.ok) throw new Error('API');
+                            const pageData = await gbifResp.json();
+                            if (pageData.results?.length) {
+                                batchResults.push(...pageData.results);
+                            }
+                        } catch (e) {
+                            if (e.message.includes('Failed to fetch') && batchSize > 10) {
+                                batchSize = 10;
+                                page -= (page % batchSize);
+                                updateStatus('Erreur de connexion, réduction de la taille des lots...');
+                                break;
+                            } else {
+                                throw e;
+                            }
                         }
                     }
+                    if (batchResults.length) {
+                        allOccurrences = allOccurrences.concat(batchResults);
+                    }
+                    if (!cancelGbifFetch) {
+                        await new Promise(res => setTimeout(res, 500));
+                    }
                 }
-                if (!cancelGbifFetch) {
-                    await new Promise(res => setTimeout(res, 500));
-                }
-            }
+            };
+
+            await fetchRestPages();
 
             if (cancelBtn) cancelBtn.remove();
 
             const retrievedPages = Math.ceil(allOccurrences.length / limit);
             if (typeof showNotification === 'function' && totalPages) {
+                const occMsg = `${allOccurrences.length} occurrences traitées`;
                 if (retrievedPages < totalPages) {
-                    showNotification(`Résultats partiels : ${retrievedPages} pages récupérées sur ${totalPages} disponibles`, 'warning');
+                    showNotification(`Résultats partiels : ${retrievedPages} pages récupérées sur ${totalPages} disponibles – ${occMsg}`, 'warning');
                 } else {
-                    showNotification(`Résultats complets : ${retrievedPages} pages récupérées sur ${totalPages}`);
+                    showNotification(`Résultats complets : ${retrievedPages} pages récupérées sur ${totalPages} – ${occMsg}`);
                 }
             }
             if (allOccurrences.length === 0) { throw new Error("Aucune occurrence de plante trouvée à proximité."); }
