@@ -1070,7 +1070,11 @@ const initializeSelectionMap = (coords) => {
                         })
                     });
                     if (!analysisResp.ok) {
-                        const errBody = await analysisResp.text();
+                        let errBody = await analysisResp.text();
+                        try {
+                            const json = JSON.parse(errBody);
+                            if (json.error) errBody = json.error;
+                        } catch { /* ignore */ }
                         throw new Error(`Le service d'analyse a échoué: ${errBody}`);
                     }
                     break;

@@ -18,7 +18,13 @@ exports.handler = async function(event) {
     try {
         if (!relevantRules || !uniqueSpeciesNames || !coords) return { statusCode: 400, body: 'Données d\'entrée invalides.' };
 
-        const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${coords.latitude}&lon=${coords.longitude}&fields=departement,region`)).json())[0];
+        const geoResp = await fetch(`https://geo.api.gouv.fr/communes?lat=${coords.latitude}&lon=${coords.longitude}&fields=departement,region`);
+        if (!geoResp.ok) throw new Error('Service GeoAPI indisponible');
+        const geoData = await geoResp.json();
+        if (!Array.isArray(geoData) || !geoData[0]) {
+            throw new Error('Commune introuvable pour ces coordonnées');
+        }
+        const { departement, region } = geoData[0];
         
         const patrimonialityRules = relevantRules.length > 0 
             ? relevantRules.map(rule => `- ${rule.species}: ${rule.status}`).join('\n') 
