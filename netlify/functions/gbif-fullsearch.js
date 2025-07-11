@@ -3,6 +3,18 @@ const fs = require('fs').promises;
 const os = require('os');
 const path = require('path');
 
+async function fetchWithRetry(url, retries = 3) {
+  for (let attempt = 1; attempt <= retries; attempt++) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(res.statusText || 'Request failed');
+      return res;
+    } catch (err) {
+      if (attempt === retries) throw err;
+    }
+  }
+}
+
 exports.handler = async function(event) {
   const params = event.queryStringParameters || {};
   const geometry = params.geometry;
@@ -13,7 +25,7 @@ exports.handler = async function(event) {
   const limit = 300;
   const baseUrl = 'https://api.gbif.org/v1/occurrence/search';
   try {
-    const metaResp = await fetch(`${baseUrl}?limit=1&geometry=${encodeURIComponent(geometry)}&kingdomKey=6`);
+    const metaResp = await fetchWithRetry(`${baseUrl}?limit=1&geometry=${encodeURIComponent(geometry)}&kingdomKey=6`);
     if (!metaResp.ok) throw new Error('Failed to fetch count');
     const meta = await metaResp.json();
     const totalPages = Math.ceil(meta.count / limit);
@@ -26,7 +38,7 @@ exports.handler = async function(event) {
       for (let page = start; page < end; page++) {
         const offset = page * limit;
         const url = `${baseUrl}?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(geometry)}&kingdomKey=6`;
-        const resp = await fetch(url);
+        const resp = await fetchWithRetry(url);
         if (!resp.ok) throw new Error('Failed to fetch page');
         const data = await resp.json();
         if (Array.isArray(data.results)) batchResults.push(...data.results);
