@@ -70,6 +70,16 @@ function loadGbifHandler(mockFetch) {
   vm.runInContext(patched, context);
   return context.exports.handler;
 }
+function loadGbifFullHandler(mockFetch) {
+  const code = fs.readFileSync("netlify/functions/gbif-fullsearch.js", "utf-8");
+  const patched = code.replace(/const fetch = require(./utils/fetch);/, "const fetch = (...args) => global.__fetch(...args);");
+  const context = { require, console, exports: {}, __fetch: mockFetch, fs, os: { tmpdir: () => "/tmp" }, path: require("path") };
+  context.global = context;
+  vm.createContext(context);
+  vm.runInContext(patched, context);
+  return context.exports.handler;
+}
+
 
 function mockFetch(html) {
   return jest.fn().mockResolvedValue({
@@ -103,4 +113,4 @@ function loadAnalyzeHandler(mockFetch, env = {}) {
   return context.exports.handler;
 }
 
-module.exports = { loadApp, loadHandler, loadAuraHandler, loadGbifHandler, loadApiProxyHandler, loadAnalyzeHandler, mockFetch };
+module.exports = { loadApp, loadHandler, loadAuraHandler, loadGbifHandler, loadGbifFullHandler, loadApiProxyHandler, loadAnalyzeHandler, mockFetch };

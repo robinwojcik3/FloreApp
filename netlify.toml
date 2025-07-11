@@ -38,3 +38,8 @@
   to = "/.netlify/functions/gbif-proxy"
   status = 200
   force = true
+[[redirects]]
+  from = "/api/gbif-full"
+  to = "/.netlify/functions/gbif-fullsearch"
+  status = 200
+  force = true
