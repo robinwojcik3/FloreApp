@@ -391,6 +391,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         patrBtn.textContent = 'Flore Patri';
         const patrZnieffBtn = L.DomUtil.create('button', 'action-button', container);
         patrZnieffBtn.textContent = 'Flore Patri & ZNIEFF';
+        const deepBtn = L.DomUtil.create('button', 'action-button', container);
+        deepBtn.textContent = 'Flore Patri approfondie';
         const obsBtn = L.DomUtil.create('button', 'action-button', container);
         obsBtn.textContent = 'Flore commune';
         L.DomEvent.on(patrBtn, 'click', () => {
@@ -402,6 +404,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             map.closePopup();
             showNavigation();
             runAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, false);
+        });
+        L.DomEvent.on(deepBtn, 'click', () => {
+            map.closePopup();
+            showNavigation();
+            runDeepAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra }, true);
         });
         L.DomEvent.on(obsBtn, 'click', () => {
             map.closePopup();
@@ -541,6 +548,25 @@ let rulesByTaxonIndex = new Map();
                 if (attempt === maxRetries) throw err;
                 setStatus(`Erreur : ${err.message}. Nouvelle tentative (${maxRetries - attempt} restante(s))...`, true);
                 await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
+            }
+        }
+    };
+
+    // Variante avec délais exponentiels (1s, 2s, 4s)
+    const fetchWithExponentialRetry = async (url, options = {}, maxRetries = 3) => {
+        const delays = [1000, 2000, 4000];
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+            try {
+                const resp = await fetch(url, { ...options, signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (!resp.ok) throw new Error(resp.statusText || 'Request failed');
+                return resp;
+            } catch (err) {
+                clearTimeout(timeoutId);
+                if (attempt === maxRetries) throw err;
+                await new Promise(res => setTimeout(res, delays[attempt - 1] || 4000));
             }
         }
     };
@@ -1090,6 +1116,186 @@ const initializeSelectionMap = (coords) => {
             console.error("Erreur durant l'analyse:", error);
             setStatus(`Erreur : ${error.message}`);
             if (mapContainer) mapContainer.style.display = 'none';
+        }
+    };
+
+    const runDeepAnalysis = async (params, excludeZnieff = false, blockSize = 20) => {
+        excludeZnieffAnalysis = excludeZnieff;
+        try {
+            lastAnalysisCoords = { latitude: params.latitude, longitude: params.longitude };
+            resultsContainer.innerHTML = '';
+            mapContainer.style.display = 'none';
+            initializeMap(params);
+            setStatus("Étape 1/4: Initialisation de la carte...", true);
+            let wkt = params.wkt;
+            if (!wkt) {
+                wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
+            }
+
+            const limit = 300;
+            const firstUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=0&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
+            setStatus("Étape 2/4: Inventaire de la flore locale via GBIF...", true);
+            const firstResp = await fetchWithExponentialRetry(firstUrl);
+            if (!firstResp.ok) throw new Error("L'API GBIF est indisponible.");
+            const firstData = await firstResp.json();
+            if (!firstData.results?.length) throw new Error("Aucune occurrence de plante trouvée à proximité.");
+            const count = typeof firstData.count === 'number' ? firstData.count : firstData.results.length;
+            const totalPages = Math.ceil(count / limit);
+
+            let currentPage = 0;
+            const uniqueSpecies = new Set();
+            const taxonKeyMap = new Map();
+
+            const updateProgress = () => {
+                let bar = document.getElementById('progress-bar');
+                if (!bar) {
+                    bar = document.createElement('progress');
+                    bar.id = 'progress-bar';
+                    statusDiv.appendChild(bar);
+                }
+                bar.max = totalPages;
+                bar.value = currentPage;
+            };
+
+            const processResults = (results) => {
+                results.forEach(o => {
+                    if (o.species) {
+                        uniqueSpecies.add(o.species);
+                        if (o.speciesKey && !taxonKeyMap.has(o.species)) {
+                            taxonKeyMap.set(o.species, o.speciesKey);
+                        }
+                    }
+                });
+            };
+
+            processResults(firstData.results);
+            currentPage = 1;
+            updateProgress();
+
+            for (let blockStart = 1; blockStart < totalPages; blockStart += blockSize) {
+                const blockEnd = Math.min(blockStart + blockSize - 1, totalPages - 1);
+                const blockResults = [];
+                for (let page = blockStart; page <= blockEnd; page++) {
+                    const offset = page * limit;
+                    setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${totalPages})`, true);
+                    const url = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
+                    const resp = await fetchWithExponentialRetry(url);
+                    if (!resp.ok) throw new Error("L'API GBIF est indisponible.");
+                    const data = await resp.json();
+                    if (data.results?.length) blockResults.push(...data.results);
+                    currentPage++;
+                    updateProgress();
+                }
+                await new Promise((res, rej) => {
+                    const openReq = indexedDB.open('gbif-cache', 1);
+                    openReq.onupgradeneeded = (e) => { e.target.result.createObjectStore('blocks'); };
+                    openReq.onsuccess = () => {
+                        const db = openReq.result;
+                        const tx = db.transaction('blocks', 'readwrite');
+                        tx.objectStore('blocks').put(blockResults, blockStart);
+                        tx.oncomplete = () => { db.close(); res(); };
+                        tx.onerror = () => { db.close(); rej(tx.error); };
+                    };
+                    openReq.onerror = () => rej(openReq.error);
+                });
+
+                const cachedData = await new Promise((res, rej) => {
+                    const openReq = indexedDB.open('gbif-cache', 1);
+                    openReq.onsuccess = () => {
+                        const db = openReq.result;
+                        const tx = db.transaction('blocks');
+                        tx.objectStore('blocks').get(blockStart).onsuccess = (ev) => {
+                            const val = ev.target.result;
+                            db.close();
+                            res(val || []);
+                        };
+                        tx.onerror = () => { db.close(); rej(tx.error); };
+                    };
+                    openReq.onerror = () => rej(openReq.error);
+                });
+                processResults(cachedData);
+                await new Promise((res, rej) => {
+                    const openReq = indexedDB.open('gbif-cache', 1);
+                    openReq.onsuccess = () => {
+                        const db = openReq.result;
+                        const tx = db.transaction('blocks', 'readwrite');
+                        tx.objectStore('blocks').delete(blockStart);
+                        tx.oncomplete = () => { db.close(); res(); };
+                        tx.onerror = () => { db.close(); rej(tx.error); };
+                    };
+                    openReq.onerror = () => rej(openReq.error);
+                });
+            }
+
+            const uniqueSpeciesNames = Array.from(uniqueSpecies);
+
+            setStatus("Étape 3/4: Analyse des données...", true);
+            const relevantRules = new Map();
+            const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${params.latitude}&lon=${params.longitude}&fields=departement,region`)).json())[0];
+            for (const speciesName of uniqueSpeciesNames) {
+                const rulesForThisTaxon = rulesByTaxonIndex.get(speciesName);
+                if (rulesForThisTaxon) {
+                    for (const row of rulesForThisTaxon) {
+                        let ruleApplies = false;
+                        const type = row.type.toLowerCase();
+                        const admNorm = normAdmin(row.adm);
+                        const isHabitatsDirective = type.includes('directive habitat') && HABITATS_DIRECTIVE_CODES.has(row.code);
+                        if (isHabitatsDirective) {
+                            ruleApplies = true;
+                        } else if (NORMALIZED_ADMIN_CODE_MAP[admNorm] === 'FR' || type.includes('nationale')) {
+                            ruleApplies = true;
+                        } else if (NORMALIZED_OLD_REGIONS[admNorm]?.includes(departement.code)) {
+                            ruleApplies = true;
+                        } else {
+                            const adminCode = NORMALIZED_ADMIN_CODE_MAP[admNorm];
+                            if (adminCode === departement.code || adminCode === region.code) { ruleApplies = true; }
+                        }
+                        if (ruleApplies) {
+                            if (nonPatrimonialLabels.has(row.label)) { continue; }
+                            const isRedList = type.includes('liste rouge');
+                            if (isRedList && nonPatrimonialRedlistCodes.has(row.code)) { continue; }
+                            const ruleKey = `${row.nom}|${row.type}|${row.adm}`;
+                            if (!relevantRules.has(ruleKey)) {
+                                const descriptiveStatus = isRedList ? `${row.type} (${row.code}) (${row.adm})` : row.label;
+                                relevantRules.set(ruleKey, { species: row.nom, status: descriptiveStatus });
+                            }
+                        }
+                    }
+                }
+            }
+            let analysisResp;
+            for (let attempt = 1; attempt <= ANALYSIS_MAX_RETRIES; attempt++) {
+                try {
+                    analysisResp = await fetch('/.netlify/functions/analyze-patrimonial-status', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            relevantRules: Array.from(relevantRules.values()),
+                            uniqueSpeciesNames,
+                            coords: { latitude: params.latitude, longitude: params.longitude }
+                        })
+                    });
+                    if (!analysisResp.ok) {
+                        const errBody = await analysisResp.text();
+                        throw new Error(`Le service d'analyse a échoué: ${errBody}`);
+                    }
+                    break;
+                } catch (err) {
+                    if (attempt === ANALYSIS_MAX_RETRIES) throw err;
+                    setStatus(`Erreur : ${err.message}. Nouvelle tentative (${ANALYSIS_MAX_RETRIES - attempt} restante(s))...`, true);
+                    await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
+                }
+            }
+            const patrimonialMap = await analysisResp.json();
+            const speciesKeys = Array.from(taxonKeyMap.entries()).map(([species, key]) => ({ species, speciesKey: key }));
+            displayResults(speciesKeys, patrimonialMap, wkt);
+            const bar = document.getElementById('progress-bar');
+            if (bar) bar.remove();
+        } catch (error) {
+            console.error("Erreur durant l'analyse approfondie:", error);
+            setStatus(`Erreur : ${error.message}`);
+            if (mapContainer) mapContainer.style.display = 'none';
+        } finally {
+            indexedDB.deleteDatabase('gbif-cache');
         }
     };
     
