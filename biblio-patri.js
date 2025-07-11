@@ -321,21 +321,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             profileInfo.innerHTML =
                 `Distance : ${textDist}<br>D+ total : ${dPlus} m<br>D- total : ${dMinus} m`;
         }
-        const elevTextParts = [];
-        if (dPlus > 0) elevTextParts.push(`+${dPlus} m`);
-        if (dMinus > 0) elevTextParts.push(`-${dMinus} m`);
-        const elevText = elevTextParts.join(' ');
-        const text = elevText ? `${textDist} (${elevText})` : textDist;
-        if (!measureTooltip) {
-            measureTooltip = L.marker(latlng, {
-                interactive: false,
-                icon: L.divIcon({ className: 'measure-tooltip', html: text })
-            }).addTo(map);
-        } else {
-            measureTooltip.setLatLng(latlng);
-            const el = measureTooltip.getElement();
-            if (el) el.innerHTML = text;
-        }
         drawElevationProfile();
     };
 
