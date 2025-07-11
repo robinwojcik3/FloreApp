@@ -165,6 +165,21 @@ h1 {
     min-height: 24px;
 }
 
+#progress-container {
+    width: 100%;
+    height: 6px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    display: none;
+}
+#progress-bar {
+    height: 100%;
+    width: 0;
+    background: var(--primary);
+    transition: width 0.3s;
+}
+
 /* Icons and text horizontally aligned for status messages */
 .status-line {
     display: inline-flex;
