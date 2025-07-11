@@ -89,7 +89,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     let measurePoints = [];
     let profileSamples = [];
     let measureLine = null;
-    let measureTooltip = null;
 
     const ALTITUDES_URL = 'assets/altitudes_fr.json';
     let altitudeDataPromise = null;
@@ -298,7 +297,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         ctx.strokeStyle = '#c62828';
         ctx.lineWidth = 2;
         ctx.stroke();
-        profileContainer.style.display = 'block';
+        profileContainer.style.display = 'flex';
     };
 
     const updateMeasureDisplay = async (latlng) => {
@@ -320,21 +319,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (profileInfo) {
             profileInfo.innerHTML =
                 `Distance : ${textDist}<br>D+ total : ${dPlus} m<br>D- total : ${dMinus} m`;
-        }
-        const elevTextParts = [];
-        if (dPlus > 0) elevTextParts.push(`+${dPlus} m`);
-        if (dMinus > 0) elevTextParts.push(`-${dMinus} m`);
-        const elevText = elevTextParts.join(' ');
-        const text = elevText ? `${textDist} (${elevText})` : textDist;
-        if (!measureTooltip) {
-            measureTooltip = L.marker(latlng, {
-                interactive: false,
-                icon: L.divIcon({ className: 'measure-tooltip', html: text })
-            }).addTo(map);
-        } else {
-            measureTooltip.setLatLng(latlng);
-            const el = measureTooltip.getElement();
-            if (el) el.innerHTML = text;
         }
         drawElevationProfile();
     };
@@ -367,7 +351,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             measurePoints = [];
             profileSamples = [];
             if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
-            if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
             if (profileCanvas) {
                 const ctx = profileCanvas.getContext('2d');
                 ctx && ctx.clearRect(0, 0, profileCanvas.width, profileCanvas.height);
@@ -378,7 +361,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             measureDistanceBtn.textContent = '🛑 Fin mesure';
         } else {
             if (measureLine) { map.removeLayer(measureLine); measureLine = null; }
-            if (measureTooltip) { map.removeLayer(measureTooltip); measureTooltip = null; }
             measurePoints = [];
             profileSamples = [];
             if (profileContainer) profileContainer.style.display = 'none';
