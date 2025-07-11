@@ -477,6 +477,7 @@ let rulesByTaxonIndex = new Map();
     const ANALYSIS_MAX_RETRIES = 3;
     const RETRY_DELAY_MS = 3000;
     const FETCH_TIMEOUT_MS = 10000;
+    const GBIF_MAX_RECORDS = 10000; // limite pratique de l'API pour l'offset
     const TRACHEOPHYTA_TAXON_KEY = 7707728; // GBIF taxonKey for vascular plants
     const SPECIES_COLORS = ['#E6194B', '#3CB44B', '#FFE119', '#4363D8', '#F58231', '#911EB4', '#46F0F0', '#F032E6', '#BCF60C', '#FABEBE', '#800000', '#AA6E28', '#000075', '#A9A9A9'];
     const nonPatrimonialLabels = new Set(["Liste des espèces végétales sauvages pouvant faire l'objet d'une réglementation préfectorale dans les départements d'outre-mer : Article 1"]);
@@ -1193,7 +1194,14 @@ const initializeSelectionMap = (coords) => {
             const firstData = await resp.json();
             await storePage(db, 0, firstData.results || []);
             pagesLoaded++;
-            totalPages = Math.ceil((firstData.count || 0) / limit);
+            const count = firstData.count || 0;
+            totalPages = Math.ceil(count / limit);
+            if (count > GBIF_MAX_RECORDS) {
+                totalPages = Math.ceil(GBIF_MAX_RECORDS / limit);
+                if (typeof showNotification === 'function') {
+                    showNotification('Résultats limités à 10\u202f000 occurrences', 'warning');
+                }
+            }
             showProgressBar(totalPages);
             updateProgressBar(pagesLoaded);
 
@@ -1229,6 +1237,7 @@ const initializeSelectionMap = (coords) => {
                 await processBlock();
             }
             await processBlock();
+            db.close();
             removeProgressBar();
             if (uniqueSpecies.size === 0) { throw new Error("Aucune occurrence de plante trouvée à proximité."); }
             setStatus("Étape 3/4: Analyse des données...", true);
