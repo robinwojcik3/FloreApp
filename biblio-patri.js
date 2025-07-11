@@ -37,6 +37,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     const scrollTableBtn = document.getElementById('scroll-table-btn');
     const addressGroup = document.querySelector('.address-group');
     const searchControls = document.querySelector('.search-controls');
+    const progressContainer = document.getElementById('progress-container');
+    const progressBar = document.getElementById('progress-bar');
 
     const updateSecondaryNav = () => {
         if (navContainer && mainTabs) {
@@ -514,6 +516,18 @@ let cancelRequested = false;
         }
 
         statusDiv.appendChild(container);
+    };
+
+    const setProgress = (percent) => {
+        if (!progressBar || !progressContainer) return;
+        progressBar.style.width = `${percent}%`;
+        progressContainer.style.display = 'block';
+    };
+
+    const resetProgress = () => {
+        if (!progressBar || !progressContainer) return;
+        progressBar.style.width = '0%';
+        progressContainer.style.display = 'none';
     };
 
     const showCancel = () => {
@@ -1004,11 +1018,13 @@ const initializeSelectionMap = (coords) => {
         excludeZnieffAnalysis = excludeZnieff;
         cancelRequested = false;
         try {
+            setProgress(0);
             lastAnalysisCoords = { latitude: params.latitude, longitude: params.longitude };
             resultsContainer.innerHTML = '';
             mapContainer.style.display = 'none';
             initializeMap(params);
             setStatus("Étape 1/4: Initialisation de la carte...", true);
+            setProgress(10);
             let wkt = params.wkt;
             if (!wkt) {
                 wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
@@ -1034,6 +1050,7 @@ const initializeSelectionMap = (coords) => {
                 totalPages = Math.ceil(firstData.count / limit);
                 addResults(firstData.results);
                 pagesFetched = 1;
+                setProgress(10 + (pagesFetched / totalPages) * 60);
                 let page = 1;
                 let batchSize = 20;
                 while (page < totalPages && !cancelRequested) {
@@ -1051,6 +1068,7 @@ const initializeSelectionMap = (coords) => {
                         }
                         page += thisBatch;
                         pagesFetched += thisBatch;
+                        setProgress(10 + (pagesFetched / totalPages) * 60);
                         await new Promise(res => setTimeout(res, 500));
                     } catch (err) {
                         if (err.message && err.message.includes('failed to fetch') && batchSize > 10) {
@@ -1063,6 +1081,7 @@ const initializeSelectionMap = (coords) => {
                 }
                 hideCancel();
                 if (cancelRequested) throw new Error('Analyse annulée');
+                setProgress(70);
             } else {
                 const maxPages = 20;
                 let pagesToFetch = maxPages;
@@ -1080,11 +1099,13 @@ const initializeSelectionMap = (coords) => {
                     }
                     addResults(pageData.results);
                     pagesFetched = page + 1;
+                    if (totalPages) setProgress(10 + (pagesFetched / totalPages) * 60);
                     if (pageData.endOfRecords) {
                         totalPages = totalPages || page + 1;
                         break;
                     }
                 }
+                setProgress(70);
             }
             const retrievedPages = pagesFetched;
             if (typeof showNotification === 'function' && totalPages) {
@@ -1096,6 +1117,7 @@ const initializeSelectionMap = (coords) => {
             }
             if (sampleBySpecies.size === 0) { throw new Error("Aucune occurrence de plante trouvée à proximité."); }
             setStatus("Étape 3/4: Analyse des données...", true);
+            setProgress(80);
             const uniqueSpeciesNames = Array.from(sampleBySpecies.keys());
             const relevantRules = new Map();
             const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${params.latitude}&lon=${params.longitude}&fields=departement,region`)).json())[0];
@@ -1154,10 +1176,13 @@ const initializeSelectionMap = (coords) => {
             }
             const patrimonialMap = await analysisResp.json();
             displayResults(Array.from(sampleBySpecies.values()), patrimonialMap, wkt);
+            setProgress(100);
+            setTimeout(resetProgress, 1000);
         } catch (error) {
             console.error("Erreur durant l'analyse:", error);
             setStatus(`Erreur : ${error.message}`);
             if (mapContainer) mapContainer.style.display = 'none';
+            resetProgress();
         }
     };
     
