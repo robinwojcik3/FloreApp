@@ -233,7 +233,17 @@ document.addEventListener('DOMContentLoaded', async () => {
         };
 
         const distSpacing = niceStep(totalDist / 5);
-        const altSpacing = niceStep((maxAlt - minAlt) / 5);
+        const altRange = maxAlt - minAlt;
+        let altSpacing = niceStep(altRange / 4);
+        let altTicks = Math.floor(altRange / altSpacing) + 1;
+        if (altTicks > 5) {
+            altSpacing = niceStep(altRange / 5);
+            altTicks = Math.floor(altRange / altSpacing) + 1;
+            while (altTicks > 5) {
+                altSpacing *= 2;
+                altTicks = Math.floor(altRange / altSpacing) + 1;
+            }
+        }
 
         ctx.strokeStyle = '#cccccc';
         ctx.lineWidth = 1;
