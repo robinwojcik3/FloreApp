@@ -38,6 +38,20 @@ document.addEventListener('DOMContentLoaded', async () => {
     const addressGroup = document.querySelector('.address-group');
     const searchControls = document.querySelector('.search-controls');
 
+    const progressContainer = document.getElementById('progress-container');
+    const progressBar = document.getElementById('progress-bar');
+
+    const setProgress = (p) => {
+        if (progressBar) progressBar.style.width = `${Math.min(100, Math.max(0, p))}%`;
+    };
+    const showProgress = () => {
+        if (progressContainer) progressContainer.style.display = 'block';
+        setProgress(0);
+    };
+    const hideProgress = () => {
+        if (progressContainer) progressContainer.style.display = 'none';
+    };
+
     const updateSecondaryNav = () => {
         if (navContainer && mainTabs) {
             navContainer.style.top = mainTabs.offsetHeight + 'px';
@@ -729,8 +743,12 @@ const initializeSelectionMap = (coords) => {
     
     const fetchAndDisplayAllPatrimonialOccurrences = async (patrimonialMap, wkt, initialOccurrences) => {
         const speciesNames = Object.keys(patrimonialMap);
-        if (speciesNames.length === 0) return;
+        if (speciesNames.length === 0) {
+            hideProgress();
+            return;
+        }
         setStatus(`Étape 4/4: Cartographie détaillée des espèces patrimoniales... (0/${speciesNames.length})`, true);
+        setProgress(75);
         let allOccurrencesWithContext = [];
         const taxonKeyMap = new Map();
         initialOccurrences.forEach(occ => {
@@ -740,6 +758,7 @@ const initializeSelectionMap = (coords) => {
         });
         for (const [index, speciesName] of speciesNames.entries()) {
             setStatus(`Étape 4/4: Cartographie détaillée des espèces patrimoniales... (${index + 1}/${speciesNames.length})`, true);
+            setProgress(75 + (25 * (index) / speciesNames.length));
             const taxonKey = taxonKeyMap.get(speciesName);
             if (!taxonKey) continue;
             const color = SPECIES_COLORS[index % SPECIES_COLORS.length];
@@ -788,6 +807,8 @@ const initializeSelectionMap = (coords) => {
             selectedSpecies = new Set(allPatrimonialSpecies);
         }
         renderPatrimonialLocations();
+        setProgress(100);
+        hideProgress();
     };
 
     const renderPatrimonialLocations = () => {
@@ -843,6 +864,7 @@ const initializeSelectionMap = (coords) => {
         hideZnieffOnly = false;
         if (Object.keys(patrimonialMap).length === 0) {
             setStatus(`Aucune occurrence d'espèce patrimoniale trouvée dans ce rayon de ${SEARCH_RADIUS_KM} km.`);
+            hideProgress();
             return;
         }
 
@@ -858,6 +880,7 @@ const initializeSelectionMap = (coords) => {
         }
         if (allSpeciesList.length === 0) {
             setStatus(`Aucune occurrence d'espèce patrimoniale trouvée dans ce rayon de ${SEARCH_RADIUS_KM} km.`);
+            hideProgress();
             return;
         }
         setStatus(`${allSpeciesList.length} espèce(s) patrimoniale(s) trouvée(s). Lancement de l'étape 4/4 : cartographie détaillée...`);
@@ -980,11 +1003,13 @@ const initializeSelectionMap = (coords) => {
     const runAnalysis = async (params, excludeZnieff = false) => {
         excludeZnieffAnalysis = excludeZnieff;
         try {
+            showProgress();
             lastAnalysisCoords = { latitude: params.latitude, longitude: params.longitude };
             resultsContainer.innerHTML = '';
             mapContainer.style.display = 'none';
             initializeMap(params);
             setStatus("Étape 1/4: Initialisation de la carte...", true);
+            setProgress(25);
             let wkt = params.wkt;
             if (!wkt) {
                 wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
@@ -996,6 +1021,7 @@ const initializeSelectionMap = (coords) => {
             let pagesToFetch = maxPages;
 
             setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page 0/${pagesToFetch})`, true);
+            setProgress(25);
             for (let page = 0; page < pagesToFetch; page++) {
                 const offset = page * limit;
                 setStatus(`Étape 2/4: Inventaire de la flore locale via GBIF... (Page ${page + 1}/${pagesToFetch})`, true);
@@ -1015,9 +1041,12 @@ const initializeSelectionMap = (coords) => {
 
                 if (pageData.endOfRecords) {
                     totalPages = totalPages || page + 1;
+                    setProgress(50);
                     break;
                 }
+                setProgress(25 + (25 * (page + 1) / pagesToFetch));
             }
+            setProgress(50);
             const retrievedPages = Math.ceil(allOccurrences.length / limit);
             if (typeof showNotification === 'function' && totalPages) {
                 if (retrievedPages < totalPages) {
@@ -1028,6 +1057,7 @@ const initializeSelectionMap = (coords) => {
             }
             if (allOccurrences.length === 0) { throw new Error("Aucune occurrence de plante trouvée à proximité."); }
             setStatus("Étape 3/4: Analyse des données...", true);
+            setProgress(50);
             const uniqueSpeciesNames = [...new Set(allOccurrences.map(o => o.species).filter(Boolean))];
             const relevantRules = new Map();
             const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${params.latitude}&lon=${params.longitude}&fields=departement,region`)).json())[0];
@@ -1085,11 +1115,13 @@ const initializeSelectionMap = (coords) => {
                 }
             }
             const patrimonialMap = await analysisResp.json();
+            setProgress(75);
             displayResults(allOccurrences, patrimonialMap, wkt);
         } catch (error) {
             console.error("Erreur durant l'analyse:", error);
             setStatus(`Erreur : ${error.message}`);
             if (mapContainer) mapContainer.style.display = 'none';
+            hideProgress();
         }
     };
     
