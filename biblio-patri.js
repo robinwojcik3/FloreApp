@@ -1204,7 +1204,6 @@ const initializeSelectionMap = (coords) => {
 
             for (let blockStart = 1; blockStart < totalPages; blockStart += blockSize) {
                 const blockEnd = Math.min(blockStart + blockSize, totalPages);
-                const blockResults = [];
                 for (let page = blockStart; page < blockEnd; page++) {
                     const offset = page * limit;
                     setStatus(`Étape 2/4: Inventaire approfondi via GBIF... (Page ${page + 1}/${totalPages})`, true);
@@ -1212,19 +1211,17 @@ const initializeSelectionMap = (coords) => {
                     const resp = await fetchWithExpBackoff(url);
                     if (!resp.ok) throw new Error("L'API GBIF est indisponible.");
                     const data = await resp.json();
-                    if (data.results?.length) blockResults.push(...data.results);
+                    if (data.results?.length) {
+                        data.results.forEach(o => {
+                            if (o.species && o.speciesKey && !speciesMap.has(o.species)) {
+                                speciesMap.set(o.species, o.speciesKey);
+                            }
+                        });
+                    }
                     pagesLoaded++;
                     updateProgress(pagesLoaded, totalPages);
                     if (data.endOfRecords) { page = blockEnd; break; }
                 }
-                await cachePut(blockStart, blockResults);
-                const stored = await cacheGet(blockStart);
-                stored.forEach(o => {
-                    if (o.species && o.speciesKey && !speciesMap.has(o.species)) {
-                        speciesMap.set(o.species, o.speciesKey);
-                    }
-                });
-                await cacheClear();
             }
             updateProgress(totalPages, totalPages);
 
