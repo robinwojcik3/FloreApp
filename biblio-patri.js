@@ -393,6 +393,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         patrZnieffBtn.textContent = 'Flore Patri & ZNIEFF';
         const obsBtn = L.DomUtil.create('button', 'action-button', container);
         obsBtn.textContent = 'Flore commune';
+        const deepPatrBtn = L.DomUtil.create('button', 'action-button', container);
+        deepPatrBtn.textContent = 'Flore patri approfondie';
         L.DomEvent.on(patrBtn, 'click', () => {
             map.closePopup();
             showNavigation();
@@ -407,6 +409,11 @@ document.addEventListener('DOMContentLoaded', async () => {
             map.closePopup();
             showNavigation();
             loadObservationsAt({ latitude: latlng.lat, longitude: latlng.lng, ...extra });
+        });
+        L.DomEvent.on(deepPatrBtn, 'click', () => {
+            map.closePopup();
+            showNavigation();
+            runDeepAnalysis({ latitude: latlng.lat, longitude: latlng.lng, ...extra });
         });
         L.DomEvent.disableClickPropagation(container);
         L.popup().setLatLng(latlng).setContent(container).openOn(map);
@@ -542,6 +549,75 @@ let rulesByTaxonIndex = new Map();
                 setStatus(`Erreur : ${err.message}. Nouvelle tentative (${maxRetries - attempt} restante(s))...`, true);
                 await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
             }
+        }
+    };
+
+    const fetchWithExpRetry = async (url, options = {}, maxRetries = 3) => {
+        let delay = 1000;
+        for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+                const resp = await fetch(url, options);
+                if (!resp.ok) throw new Error(resp.statusText || 'Request failed');
+                return resp;
+            } catch (err) {
+                if (attempt === maxRetries) throw err;
+                await new Promise(res => setTimeout(res, delay));
+                delay *= 2;
+            }
+        }
+    };
+
+    const openCacheDB = () => new Promise((resolve, reject) => {
+        const req = indexedDB.open('deep-gbif-cache', 1);
+        req.onupgradeneeded = () => {
+            req.result.createObjectStore('pages');
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+    });
+
+    const storePage = (db, page, data) => new Promise(res => {
+        const tx = db.transaction('pages', 'readwrite');
+        tx.objectStore('pages').put(data, page);
+        tx.oncomplete = () => res();
+    });
+
+    const getAllPages = (db) => new Promise(res => {
+        const tx = db.transaction('pages', 'readonly');
+        const store = tx.objectStore('pages');
+        const result = [];
+        store.openCursor().onsuccess = e => {
+            const cursor = e.target.result;
+            if (cursor) {
+                result.push(cursor.value);
+                cursor.continue();
+            }
+        };
+        tx.oncomplete = () => res(result);
+    });
+
+    const clearCache = (db) => new Promise(res => {
+        const tx = db.transaction('pages', 'readwrite');
+        tx.objectStore('pages').clear();
+        tx.oncomplete = () => res();
+    });
+
+    let progressBar = null;
+    const showProgressBar = (total) => {
+        removeProgressBar();
+        progressBar = document.createElement('progress');
+        progressBar.max = total;
+        progressBar.value = 0;
+        progressBar.style.width = '100%';
+        statusDiv.appendChild(progressBar);
+    };
+    const updateProgressBar = (value) => {
+        if (progressBar) progressBar.value = value;
+    };
+    const removeProgressBar = () => {
+        if (progressBar) {
+            progressBar.remove();
+            progressBar = null;
         }
     };
     
@@ -1089,6 +1165,136 @@ const initializeSelectionMap = (coords) => {
         } catch (error) {
             console.error("Erreur durant l'analyse:", error);
             setStatus(`Erreur : ${error.message}`);
+            if (mapContainer) mapContainer.style.display = 'none';
+        }
+    };
+
+    const runDeepAnalysis = async (params, blockSize = 20) => {
+        try {
+            lastAnalysisCoords = { latitude: params.latitude, longitude: params.longitude };
+            resultsContainer.innerHTML = '';
+            mapContainer.style.display = 'none';
+            initializeMap(params);
+            setStatus("Étape 1/4: Initialisation de la carte...", true);
+            let wkt = params.wkt;
+            if (!wkt) {
+                wkt = `POLYGON((${Array.from({length:33},(_,i)=>{const a=i*2*Math.PI/32,r=111.32*Math.cos(params.latitude*Math.PI/180);return`${(params.longitude+SEARCH_RADIUS_KM/r*Math.cos(a)).toFixed(5)} ${(params.latitude+SEARCH_RADIUS_KM/111.132*Math.sin(a)).toFixed(5)}`}).join(', ')}))`;
+            }
+            const limit = 300;
+            const db = await openCacheDB();
+            let totalPages = 0;
+            let pagesLoaded = 0;
+            const uniqueSpecies = new Set();
+            const taxonKeyMap = new Map();
+
+            const firstUrl = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=0&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
+            let resp = await fetchWithExpRetry(firstUrl);
+            if (!resp.ok) throw new Error("L'API GBIF est indisponible.");
+            const firstData = await resp.json();
+            await storePage(db, 0, firstData.results || []);
+            pagesLoaded++;
+            totalPages = Math.ceil((firstData.count || 0) / limit);
+            showProgressBar(totalPages);
+            updateProgressBar(pagesLoaded);
+
+            const processBlock = async () => {
+                const pages = await getAllPages(db);
+                pages.forEach(results => {
+                    results.forEach(occ => {
+                        if (occ.species && occ.speciesKey) {
+                            uniqueSpecies.add(occ.species);
+                            if (!taxonKeyMap.has(occ.species)) taxonKeyMap.set(occ.species, occ.speciesKey);
+                        }
+                    });
+                });
+                await clearCache(db);
+            };
+
+            for (let blockStart = 1; blockStart < totalPages; blockStart += blockSize) {
+                const blockEnd = Math.min(blockStart + blockSize, totalPages);
+                for (let page = blockStart; page < blockEnd; page++) {
+                    const offset = page * limit;
+                    const url = `https://api.gbif.org/v1/occurrence/search?limit=${limit}&offset=${offset}&geometry=${encodeURIComponent(wkt)}&kingdomKey=6`;
+                    resp = await fetchWithExpRetry(url);
+                    if (!resp.ok) throw new Error("L'API GBIF est indisponible.");
+                    const data = await resp.json();
+                    await storePage(db, page, data.results || []);
+                    pagesLoaded++;
+                    updateProgressBar(pagesLoaded);
+                    if (data.endOfRecords) {
+                        totalPages = page + 1;
+                        break;
+                    }
+                }
+                await processBlock();
+            }
+            await processBlock();
+            removeProgressBar();
+            if (uniqueSpecies.size === 0) { throw new Error("Aucune occurrence de plante trouvée à proximité."); }
+            setStatus("Étape 3/4: Analyse des données...", true);
+
+            const relevantRules = new Map();
+            const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${params.latitude}&lon=${params.longitude}&fields=departement,region`)).json())[0];
+            for (const speciesName of uniqueSpecies) {
+                const rulesForThisTaxon = rulesByTaxonIndex.get(speciesName);
+                if (rulesForThisTaxon) {
+                    for (const row of rulesForThisTaxon) {
+                        let ruleApplies = false;
+                        const type = row.type.toLowerCase();
+                        const admNorm = normAdmin(row.adm);
+                        const isHabitatsDirective = type.includes('directive habitat') && HABITATS_DIRECTIVE_CODES.has(row.code);
+                        if (isHabitatsDirective) {
+                            ruleApplies = true;
+                        } else if (NORMALIZED_ADMIN_CODE_MAP[admNorm] === 'FR' || type.includes('nationale')) {
+                            ruleApplies = true;
+                        } else if (NORMALIZED_OLD_REGIONS[admNorm]?.includes(departement.code)) {
+                            ruleApplies = true;
+                        } else {
+                            const adminCode = NORMALIZED_ADMIN_CODE_MAP[admNorm];
+                            if (adminCode === departement.code || adminCode === region.code) { ruleApplies = true; }
+                        }
+                        if (ruleApplies) {
+                            if (nonPatrimonialLabels.has(row.label)) { continue; }
+                            const isRedList = type.includes('liste rouge');
+                            if (isRedList && nonPatrimonialRedlistCodes.has(row.code)) { continue; }
+                            const ruleKey = `${row.nom}|${row.type}|${row.adm}`;
+                            if (!relevantRules.has(ruleKey)) {
+                                const descriptiveStatus = isRedList ? `${row.type} (${row.code}) (${row.adm})` : row.label;
+                                relevantRules.set(ruleKey, { species: row.nom, status: descriptiveStatus });
+                            }
+                        }
+                    }
+                }
+            }
+            let analysisResp;
+            for (let attempt = 1; attempt <= ANALYSIS_MAX_RETRIES; attempt++) {
+                try {
+                    analysisResp = await fetch('/.netlify/functions/analyze-patrimonial-status', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            relevantRules: Array.from(relevantRules.values()),
+                            uniqueSpeciesNames: Array.from(uniqueSpecies),
+                            coords: { latitude: params.latitude, longitude: params.longitude }
+                        })
+                    });
+                    if (!analysisResp.ok) {
+                        const errBody = await analysisResp.text();
+                        throw new Error(`Le service d'analyse a échoué: ${errBody}`);
+                    }
+                    break;
+                } catch (err) {
+                    if (attempt === ANALYSIS_MAX_RETRIES) throw err;
+                    setStatus(`Erreur : ${err.message}. Nouvelle tentative (${ANALYSIS_MAX_RETRIES - attempt} restante(s))...`, true);
+                    await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
+                }
+            }
+            const patrimonialMap = await analysisResp.json();
+            const initialOccs = Array.from(taxonKeyMap.entries()).map(([species, speciesKey]) => ({ species, speciesKey }));
+            displayResults(initialOccs, patrimonialMap, wkt);
+        } catch (error) {
+            console.error('Erreur durant l\'analyse approfondie:', error);
+            setStatus(`Erreur : ${error.message}`);
+            removeProgressBar();
             if (mapContainer) mapContainer.style.display = 'none';
         }
     };
