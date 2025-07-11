@@ -75,7 +75,7 @@ function loadDeepGbifHandler(mockFetch, fsMock) {
   const code = fs.readFileSync('netlify/functions/deep-gbif-search.js', 'utf-8');
   const patched = code
     .replace("const fetch = require('./utils/fetch');", 'const fetch = (...args) => global.__fetch(...args);')
-    .replace("const fs = require('fs');", 'const fs = global.__fs;');
+    .replace("const { promises: fs } = require('fs');", 'const fs = global.__fs;');
   const context = { require, console, exports: {}, __fetch: mockFetch, __fs: fsMock || fs, setTimeout };
   context.global = context;
   vm.createContext(context);

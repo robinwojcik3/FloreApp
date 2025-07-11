@@ -1,5 +1,5 @@
 const fetch = require('./utils/fetch');
-const fs = require('fs');
+const { promises: fs } = require('fs');
 const os = require('os');
 const path = require('path');
 
@@ -49,15 +49,15 @@ exports.handler = async function(event) {
         if (Array.isArray(pageData.results)) batchResults.push(...pageData.results);
       }
       const file = path.join(tempDir, `gbif_batch_${batchIdx}.json`);
-      fs.writeFileSync(file, JSON.stringify(batchResults));
+      await fs.writeFile(file, JSON.stringify(batchResults));
       batchFiles.push(file);
     }
     let finalResults = [];
     for (const file of batchFiles) {
       try {
-        const content = fs.readFileSync(file, 'utf-8');
+        const content = await fs.readFile(file, 'utf-8');
         finalResults = finalResults.concat(JSON.parse(content));
-        fs.unlinkSync(file);
+        await fs.unlink(file);
       } catch (e) {
         console.error('Failed to process', file, e);
       }

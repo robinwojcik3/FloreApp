@@ -14,9 +14,9 @@ describe('deep-gbif-search handler', () => {
       .mockResolvedValueOnce(responses[2]);
     const files = {};
     const fsMock = {
-      writeFileSync: (p, d) => { files[p] = d; },
-      readFileSync: p => files[p],
-      unlinkSync: p => { delete files[p]; }
+      writeFile: (p, d) => { files[p] = d; return Promise.resolve(); },
+      readFile: p => Promise.resolve(files[p]),
+      unlink: p => { delete files[p]; return Promise.resolve(); }
     };
     const handler = loadDeepGbifHandler(fetchMock, fsMock);
     const res = await handler({ queryStringParameters: { geometry: 'POLYGON()' } });
