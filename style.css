@@ -297,6 +297,44 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     opacity: 0.5;
 }
 
+@media (max-width: 599px) {
+    .table-wrapper table {
+        border: none;
+    }
+    .table-wrapper thead {
+        display: none;
+    }
+    .table-wrapper tbody,
+    .table-wrapper tr,
+    .table-wrapper td {
+        display: block;
+        width: 100%;
+    }
+    .table-wrapper tr {
+        margin-bottom: 1rem;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--card);
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    .table-wrapper td {
+        padding: 0.6rem 0.8rem;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .table-wrapper td:last-child {
+        border-bottom: none;
+    }
+    .table-wrapper td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        margin-right: 0.5rem;
+    }
+}
+
 @media (min-width: 600px) {
     .main-content { padding: 2rem; }
 }

@@ -745,6 +745,17 @@ function buildTable(items){
       <button id="compare-btn" class="action-button" style="display:none;">Comparer les espèces</button>
   </div><div class="table-wrapper"><table><thead>${headerHtml}</thead><tbody>${rows}</tbody></table></div><div id="comparison-results-container" style="display:none;"></div>`;
   enableDragScroll(wrap);
+  const setResponsiveLabels = () => {
+      const table = wrap.querySelector('table');
+      if (!table) return;
+      const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+      table.querySelectorAll('tbody tr').forEach(tr => {
+          Array.from(tr.children).forEach((td, i) => {
+              td.setAttribute('data-label', headers[i] || '');
+          });
+      });
+  };
+  setResponsiveLabels();
   const actionBar = document.getElementById('action-bar');
   const statusBtn = document.getElementById('status-analysis-btn');
   if (statusBtn) statusBtn.addEventListener('click', runStatusAnalysis);
