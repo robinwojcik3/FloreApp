@@ -291,6 +291,22 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     document.getElementById('measure-distance').addEventListener('click', toggleMeasure);
     initializeEnvMap();
+
+    const params = new URLSearchParams(window.location.search);
+    const lat = parseFloat(params.get('lat'));
+    const lon = parseFloat(params.get('lon'));
+    const action = params.get('action');
+    if (!isNaN(lat) && !isNaN(lon)) {
+        const ll = L.latLng(lat, lon);
+        envMap.setView(ll, 13);
+        if (action === 'zonage') {
+            runZonageAt(ll);
+        } else if (action === 'ressources') {
+            runResourcesAt(ll);
+        } else {
+            showChoicePopup(ll);
+        }
+    }
 });
 
 // Fonction pour utiliser la géolocalisation

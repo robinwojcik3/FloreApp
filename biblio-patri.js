@@ -396,6 +396,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         patrZnieffBtn.textContent = 'Flore Patri & ZNIEFF';
         const obsBtn = L.DomUtil.create('button', 'action-button', container);
         obsBtn.textContent = 'Flore commune';
+        const zonageBtn = L.DomUtil.create('button', 'action-button', container);
+        zonageBtn.textContent = 'Zonage';
+        const resBtn = L.DomUtil.create('button', 'action-button', container);
+        resBtn.textContent = 'Ressources';
+        const gmapsBtn = L.DomUtil.create('button', 'action-button', container);
+        gmapsBtn.textContent = 'Google Maps';
         L.DomEvent.on(patrBtn, 'click', () => {
             map.closePopup();
             showNavigation();
@@ -410,6 +416,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             map.closePopup();
             showNavigation();
             loadObservationsAt({ latitude: latlng.lat, longitude: latlng.lng, ...extra });
+        });
+        L.DomEvent.on(zonageBtn, 'click', () => {
+            map.closePopup();
+            window.open(`contexte.html?lat=${latlng.lat}&lon=${latlng.lng}&action=zonage`, '_blank');
+        });
+        L.DomEvent.on(resBtn, 'click', () => {
+            map.closePopup();
+            window.open(`contexte.html?lat=${latlng.lat}&lon=${latlng.lng}&action=ressources`, '_blank');
+        });
+        L.DomEvent.on(gmapsBtn, 'click', () => {
+            map.closePopup();
+            window.open(`https://www.google.com/maps?q=${latlng.lat},${latlng.lng}`, '_blank');
         });
         L.DomEvent.disableClickPropagation(container);
         L.popup().setLatLng(latlng).setContent(container).openOn(map);
