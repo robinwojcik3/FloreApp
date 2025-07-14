@@ -95,6 +95,13 @@
       @media (max-width:600px){
          #results::after{height:1rem;}
          body.home #main-content{padding-top:5vh;}
+         #results{overflow-x:visible;}
+         #results table{border:0;width:100%;}
+         #results thead{display:none;}
+         #results tbody tr{display:block;margin-bottom:1rem;background:var(--card);border:1px solid var(--border);border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);}
+         #results td{display:flex;justify-content:space-between;align-items:center;padding:6px;border:none;border-bottom:1px solid var(--border);}
+         #results td:last-child{border-bottom:none;}
+         #results td::before{content:attr(data-label);font-weight:600;color:var(--primary);margin-right:0.5rem;}
       }
       th,td{ padding: 8px 6px; border-bottom:1px solid var(--border); word-wrap: break-word; vertical-align: top; }
       th{background:#555555;color:#ffffff;font-weight:600;text-align:left}
