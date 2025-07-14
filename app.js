@@ -701,35 +701,35 @@ function buildTable(items){
     const escapedSci = displaySci.replace(/'/g, "\\'");
     const checkedAttr = item.autoCheck ? ' checked' : '';
     return `<tr>
-              <td class="col-checkbox">
-                <input type="checkbox" class="species-checkbox"${checkedAttr}
+              <td class="col-checkbox" data-label="Choix">
+                <input type="checkbox" class="species-checkbox"${checkedAttr}
                        data-species="${escapedSci}"
                        data-physio="${encodeURIComponent(phys)}"
                        data-eco="${encodeURIComponent(eco)}"
                        data-pheno="${encodeURIComponent(pheno)}">
               </td>
-            	 <td class="col-nom-latin" data-latin="${displaySci}">${displaySci}<br><span class="score">(${pct})</span></td>
-            <td class="col-link">${floreAlpesLink}</td>
-            <td class="col-link">${floraGallicaLink}</td>
-            <td class="col-criteres">
-            	 	 <div class="text-popup-trigger" data-title="Critères physiologiques" data-fulltext="${encodeURIComponent(crit)}">${crit}</div>
-            	 </td>
-            	 <td class="col-ecologie">
-            	 	 	 <div class="text-popup-trigger" data-title="Écologie" data-fulltext="${encodeURIComponent(eco)}">${eco}</div>
-            	 </td>
-            	 <td class="col-physionomie">
-            	 	 <div class="text-popup-trigger" data-title="Physionomie" data-fulltext="${encodeURIComponent(phys)}">${phys}</div>
-          	 	 </td>
-          	 	 <td class="col-phenologie">
-          	 	 	 <div class="text-popup-trigger" data-title="Phénologie" data-fulltext="${encodeURIComponent(pheno)}">${pheno}</div>
-          	 	 </td>
-          	 	 <td class="col-link">${linkIcon(cd && aura(cd), "Biodiv'AURA.png", "Biodiv'AURA")}</td>
-          	 	 <td class="col-link">${linkIcon(infoFlora(sci), "Info Flora.png", "Info Flora")}</td>
-                <td class="col-link"><a href="#" onclick="handleSynthesisClick(event, this, '${escapedSci}')"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA4MDAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CiAgPHBvbHlnb24gcG9pbnRzPSIxMSA1IDYgOSAyIDkgMiAxNSA2IDE1IDExIDE5IDExIDUiIC8+CiAgPHBhdGggZD0iTTE1LjU0IDguNDZhNSA1IDAgMDEwIDcuMDciIC8+CiAgPHBhdGggZD0iTTE5LjA3IDQuOTNhOSA5IDAgMDEwIDE0LjE0IiAvPgo8L3N2Zz4K" alt="Audio" class="logo-icon"></a></td>
-          	 	 <td class="col-link">${linkIcon(pfaf(sci), "PFAF.png", "PFAF")}</td>
-         <td class="col-link">${regalVegetalLink}</td>
-            <td class="col-link">${floreMedLink}</td>
-            <td class="col-link">${linkIcon(cd && inpnStatut(cd), "INPN.png", "INPN", "small-logo")}</td>
+              <td class="col-nom-latin" data-label="Nom latin" data-latin="${displaySci}">${displaySci}<br><span class="score">(${pct})</span></td>
+            <td class="col-link" data-label="FloreAlpes">${floreAlpesLink}</td>
+            <td class="col-link" data-label="Flora Gallica">${floraGallicaLink}</td>
+            <td class="col-criteres" data-label="Critères physiologiques">
+              <div class="text-popup-trigger" data-title="Critères physiologiques" data-fulltext="${encodeURIComponent(crit)}">${crit}</div>
+              </td>
+              <td class="col-ecologie" data-label="Écologie">
+                              <div class="text-popup-trigger" data-title="Écologie" data-fulltext="${encodeURIComponent(eco)}">${eco}</div>
+              </td>
+              <td class="col-physionomie" data-label="Physionomie">
+              <div class="text-popup-trigger" data-title="Physionomie" data-fulltext="${encodeURIComponent(phys)}">${phys}</div>
+                        </td>
+                        <td class="col-phenologie" data-label="Phénologie">
+                                <div class="text-popup-trigger" data-title="Phénologie" data-fulltext="${encodeURIComponent(pheno)}">${pheno}</div>
+                        </td>
+                        <td class="col-link" data-label="Biodiv'AURA">${linkIcon(cd && aura(cd), "Biodiv'AURA.png", "Biodiv'AURA")}</td>
+                        <td class="col-link" data-label="Info Flora">${linkIcon(infoFlora(sci), "Info Flora.png", "Info Flora")}</td>
+                <td class="col-link" data-label="Fiche synthèse"><a href="#" onclick="handleSynthesisClick(event, this, '${escapedSci}')"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA4MDAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CiAgPHBvbHlnb24gcG9pbnRzPSIxMSA1IDYgOSAyIDkgMiAxNSA2IDE1IDExIDE5IDExIDUiIC8+CiAgPHBhdGggZD0iTTE1LjU0IDguNDZhNSA1IDAgMDEwIDcuMDciIC8+CiAgPHBhdGggZD0iTTE5LjA3IDQuOTNhOSA5IDAgMDEwIDE0LjE0IiAvPgo8L3N2Zz4K" alt="Audio" class="logo-icon"></a></td>
+                        <td class="col-link" data-label="PFAF">${linkIcon(pfaf(sci), "PFAF.png", "PFAF")}</td>
+         <td class="col-link" data-label="Régal Végétal">${regalVegetalLink}</td>
+            <td class="col-link" data-label="Flore Méd">${floreMedLink}</td>
+            <td class="col-link" data-label="INPN statut">${linkIcon(cd && inpnStatut(cd), "INPN.png", "INPN", "small-logo")}</td>
          </tr>`;
   }).join("");
 
