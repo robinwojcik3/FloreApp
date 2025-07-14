@@ -95,6 +95,12 @@
       @media (max-width:600px){
          #results::after{height:1rem;}
          body.home #main-content{padding-top:5vh;}
+         table, thead, tbody, th, td, tr{display:block;}
+         thead{position:absolute;top:-9999px;left:-9999px;}
+         tr{margin-bottom:1rem;padding:0.5rem;border:1px solid var(--border);border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);background:var(--card);}
+         td{border:none;position:relative;padding-left:45%;text-align:left;}
+         td::before{content:attr(data-label);position:absolute;left:0;top:0;width:40%;font-weight:600;}
+         td.col-checkbox{padding-left:0;text-align:center;}
       }
       th,td{ padding: 8px 6px; border-bottom:1px solid var(--border); word-wrap: break-word; vertical-align: top; }
       th{background:#555555;color:#ffffff;font-weight:600;text-align:left}
