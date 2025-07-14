@@ -83,6 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let polygonDrawing = false;
     let polygonPoints = [];
     let polygonPreview = null;
+    let polygonPressTimer = null;
 
     // Variables pour la mesure de distance et de dénivelé
     let measuring = false;
@@ -1177,6 +1178,29 @@ const initializeSelectionMap = (coords) => {
         }
     };
 
+    const onPolygonDown = (e) => {
+        if (!polygonDrawing) return;
+        if (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches.length > 1) return;
+        polygonPressTimer = setTimeout(() => {
+            polygonPoints.push(map.getCenter());
+            updatePolygonPreview();
+        }, LONG_PRESS_MS);
+    };
+
+    const cancelPolygonDown = () => {
+        if (polygonPressTimer) {
+            clearTimeout(polygonPressTimer);
+            polygonPressTimer = null;
+        }
+    };
+
+    const onPolygonContextMenu = (e) => {
+        if (!polygonDrawing) return;
+        e.originalEvent.preventDefault();
+        polygonPoints.pop();
+        updatePolygonPreview();
+    };
+
     const onVolumeKey = (e) => {
         if (!polygonDrawing) return;
         if (e.key === 'AudioVolumeUp' || e.key === 'VolumeUp') {
@@ -1195,7 +1219,16 @@ const initializeSelectionMap = (coords) => {
         polygonDrawing = false;
         if (crosshair) crosshair.style.display = 'none';
         if (drawPolygonBtn) drawPolygonBtn.textContent = '🔶 Zone personnalisée';
-        window.removeEventListener('keydown', onVolumeKey);
+        map.off('contextmenu', onPolygonContextMenu);
+        map.off('mousedown', onPolygonDown);
+        map.off('mouseup', cancelPolygonDown);
+        map.off('mousemove', cancelPolygonDown);
+        map.off('touchstart', onPolygonDown);
+        map.off('touchend', cancelPolygonDown);
+        map.off('touchmove', cancelPolygonDown);
+        map.off('dragstart', cancelPolygonDown);
+        map.off('move', cancelPolygonDown);
+        map.off('zoomstart', cancelPolygonDown);
         if (polygonPreview) {
             map.removeLayer(polygonPreview);
             polygonPreview = null;
@@ -1230,10 +1263,19 @@ const initializeSelectionMap = (coords) => {
         initializeSelectionMap(center);
         polygonDrawing = true;
         polygonPoints = [];
-        setStatus('Placez la cible et appuyez sur Volume + pour ajouter un point.');
+        setStatus('Placez la cible puis faites un appui long pour ajouter un point (clic droit pour annuler).');
         if (crosshair) crosshair.style.display = 'block';
         if (drawPolygonBtn) drawPolygonBtn.textContent = '✔️ Terminer';
-        window.addEventListener('keydown', onVolumeKey);
+        map.on('contextmenu', onPolygonContextMenu);
+        map.on('mousedown', onPolygonDown);
+        map.on('mouseup', cancelPolygonDown);
+        map.on('mousemove', cancelPolygonDown);
+        map.on('touchstart', onPolygonDown);
+        map.on('touchend', cancelPolygonDown);
+        map.on('touchmove', cancelPolygonDown);
+        map.on('dragstart', cancelPolygonDown);
+        map.on('move', cancelPolygonDown);
+        map.on('zoomstart', cancelPolygonDown);
     };
 
     let obsSearchCircle = null;
