@@ -1273,17 +1273,52 @@ const initializeSelectionMap = (coords) => {
             (o.phylum && /tracheophyta/i.test(o.phylum)) ||
             (o.kingdom && /plantae/i.test(o.kingdom))
         );
+
+        const locations = new Map();
+        const speciesSet = new Set();
+
         floraOccs.forEach(o => {
             if (o.decimalLatitude && o.decimalLongitude && o.species) {
-                const m = L.marker([o.decimalLatitude, o.decimalLongitude]);
-                const eco = ecolOf(o.species);
-                const faLink = linkIcon(floreAlpesUrl(o.species), 'FloreAlpes.png', 'FloreAlpes');
-                const popup = `<div class="custom-popup"><i>${o.species}</i>${faLink}<br><small>${eco}</small></div>`;
-                m.bindTooltip(`<i>${o.species}</i>`, { permanent: true, direction: 'right', offset: [8,0] })
-                 .bindPopup(popup);
-                observationsLayerGroup.addLayer(m);
+                const key = `${o.decimalLatitude.toFixed(5)},${o.decimalLongitude.toFixed(5)}`;
+                if (!locations.has(key)) {
+                    locations.set(key, { lat: o.decimalLatitude, lon: o.decimalLongitude, speciesList: [] });
+                }
+                const loc = locations.get(key);
+                if (!loc.speciesList.includes(o.species)) {
+                    loc.speciesList.push(o.species);
+                }
+                speciesSet.add(o.species);
             }
         });
+
+        const speciesList = Array.from(speciesSet);
+        const colorMap = new Map();
+        speciesList.forEach((name, idx) => {
+            colorMap.set(name, SPECIES_COLORS[idx % SPECIES_COLORS.length]);
+        });
+
+        for (const loc of locations.values()) {
+            const count = loc.speciesList.length;
+            const firstColor = colorMap.get(loc.speciesList[0]);
+            const iconHtml = `<div class="marker-cluster-icon" style="background-color: ${count > 1 ? '#c62828' : firstColor};"><span>${count}</span></div>`;
+            const icon = L.divIcon({ html: iconHtml, className: 'custom-cluster', iconSize: [28, 28], iconAnchor: [14, 14] });
+
+            let popupContent = `<div class="custom-popup"><b>${count} espèce(s) observée(s) :</b><ul>`;
+            loc.speciesList.forEach(name => {
+                const eco = ecolOf(name);
+                const faLink = linkIcon(floreAlpesUrl(name), 'FloreAlpes.png', 'FloreAlpes');
+                const col = colorMap.get(name);
+                popupContent += `<li><span class="legend-color" style="background-color:${col};"></span><i>${name}</i>${faLink}<br><small>${eco}</small></li>`;
+            });
+            popupContent += '</ul></div>';
+            const tooltipHtml = `<i>${loc.speciesList.join('<br>')}</i>`;
+
+            const marker = L.marker([loc.lat, loc.lon], { icon })
+                .bindTooltip(tooltipHtml, { permanent: true, direction: 'right', offset: [8,0] })
+                .bindPopup(popupContent);
+            observationsLayerGroup.addLayer(marker);
+        }
+
         setStatus(`${floraOccs.length} observation(s) de flore trouvée(s).`);
     };
 
