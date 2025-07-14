@@ -333,6 +333,12 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     .button-grid {
         grid-template-columns: repeat(3, 1fr);
     }
+    #action-bar {
+        margin-bottom: 0.5rem;
+    }
+    table {
+        margin: 0.5rem 0;
+    }
 }
 /* Style pour la navigation principale (issue de l'app cible) */
 .tabs-container { background: var(--card); box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; display:flex; align-items:center; justify-content:space-between; }
