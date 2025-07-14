@@ -613,8 +613,10 @@ async function identifySingleImage(fileBlob, organ) {
             });
         }
         displayedItems = results;
-        buildTable(displayedItems);
-        buildCards(displayedItems);
+    buildTable(displayedItems);
+    buildCards(displayedItems);
+
+
         const latin = results[0] && results[0].species ?
             results[0].species.scientificNameWithoutAuthor :
             undefined;
@@ -1082,13 +1084,13 @@ if (document.getElementById("file-capture")) {
 }
 if (organBoxOnPage) {
   const displayResults = async (results, isNameSearch = false) => {
-    const previewEl = document.getElementById("preview");
-    if (previewEl) {
-      previewEl.classList.add('thumbnail');
-      previewEl.addEventListener('click', () => {
-        previewEl.classList.toggle('enlarged');
-      });
-    }
+    const previewEl = document.getElementById("preview");
+    if (previewEl) {
+      previewEl.classList.add('thumbnail');
+      previewEl.addEventListener('click', () => {
+        previewEl.classList.toggle('enlarged');
+      });
+    }
     organBoxOnPage.style.display = 'none';
     await loadData();
     document.body.classList.remove("home");
@@ -1099,6 +1101,9 @@ if (organBoxOnPage) {
     displayedItems = items;
     buildTable(displayedItems);
     buildCards(displayedItems);
+    if (previewEl) previewEl.style.display = "none";
+    const titleEl = document.getElementById("app-title");
+    if (titleEl) titleEl.style.display = "none";
 
     if (isNameSearch && results.length === 1) {
       showSimilarSpeciesButton(results[0]);
