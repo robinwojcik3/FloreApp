@@ -373,6 +373,12 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     gap: 0.5rem;
 }
 
+/* Limite la taille des infobulles pour eviter qu'elles dépassent de l'écran */
+.leaflet-popup-content {
+    max-height: 160px;
+    overflow-y: auto;
+}
+
 /* Barre d'onglets secondaire (Carte/Tableau) */
 .section-nav {
     display: none;
