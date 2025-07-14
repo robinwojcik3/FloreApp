@@ -1559,14 +1559,23 @@ const initializeSelectionMap = (coords) => {
     };
 
     const runZonageAt = async (latlng) => {
+        const total = Object.keys(APICARTO_LAYERS).length;
+        let loaded = 0;
         const coordsChanged = !lastEnvCoords ||
             Math.abs(lastEnvCoords.lat - latlng.lat) > 0.01 ||
             Math.abs(lastEnvCoords.lon - latlng.lng) > 0.01;
         if (coordsChanged) clearEnvLayers();
         lastEnvCoords = { lat: latlng.lat, lon: latlng.lng };
+        setStatus(`Chargement des couches ${loaded}/${total}...`);
         for (const [name, cfg] of Object.entries(APICARTO_LAYERS)) {
-            if (!envLayerCache[name]) await fetchAndDisplayApiLayer(name, cfg, latlng.lat, latlng.lng);
+            if (!envLayerCache[name]) {
+                const layer = await fetchAndDisplayApiLayer(name, cfg, latlng.lat, latlng.lng);
+                if (layer) envLayerCache[name] = layer;
+            }
+            loaded += 1;
+            setStatus(`Chargement des couches ${loaded}/${total}...`);
         }
+        setStatus('');
     };
 
     const SERVICES = {
