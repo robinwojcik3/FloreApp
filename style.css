@@ -369,8 +369,12 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
 
 /* Espace dans la fenêtre de choix des analyses */
 .popup-button-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 0.5rem;
+}
+.popup-button-container .action-button {
+    width: 100%;
 }
 
 /* Barre d'onglets secondaire (Carte/Tableau) */
