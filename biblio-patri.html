@@ -54,6 +54,28 @@
         margin-top: 4px;
         white-space: nowrap;
       }
+      .results-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+      .resource-btn {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        text-decoration: none;
+        color: var(--text);
+        transition: transform .2s;
+      }
+      .resource-btn:hover { transform: scale(1.05); }
+      .resource-icon { width: 40px; height: 40px; margin-bottom: 0.5rem; }
     </style>
 </head>
 <body>
@@ -99,6 +121,8 @@
         <div id="download-container" style="text-align:center; display:none; margin-bottom:1rem;">
             <button id="download-shapefile-btn" class="action-button">⬇️ Shapefile</button>
         </div>
+
+        <div id="resources-grid" class="results-grid" style="display:none; margin-bottom:1rem;"></div>
 
         <div id="results" class="results-container"></div>
     </div>
