@@ -554,10 +554,12 @@ let rulesByTaxonIndex = new Map();
         }
         return null;
     };
-    const SEARCH_RADIUS_KM = 2;
-    // Rayon de recherche pour "Flore commune" (500 m)
-    const OBS_RADIUS_KM = 0.5;
-    const ANALYSIS_MAX_RETRIES = 3;
+const SEARCH_RADIUS_KM = 2;
+// Rayon de recherche pour "Flore commune" (500 m)
+const OBS_RADIUS_KM = 0.5;
+// Rayon de consultation des couches "Zonage" (50 km)
+const ZONAGE_RADIUS_KM = 50;
+const ANALYSIS_MAX_RETRIES = 3;
     const RETRY_DELAY_MS = 3000;
     const FETCH_TIMEOUT_MS = 10000;
     const TRACHEOPHYTA_TAXON_KEY = 7707728; // GBIF taxonKey for vascular plants
@@ -1527,14 +1529,66 @@ const initializeSelectionMap = (coords) => {
         });
     };
 
+    const gatherCoords = (geom) => {
+        if (!geom) return [];
+        switch (geom.type) {
+            case 'Point':
+                return [geom.coordinates];
+            case 'MultiPoint':
+            case 'LineString':
+                return geom.coordinates;
+            case 'MultiLineString':
+            case 'Polygon':
+                return geom.coordinates.flat();
+            case 'MultiPolygon':
+                return geom.coordinates.flat(2);
+            case 'GeometryCollection':
+                return geom.geometries.flatMap(g => gatherCoords(g));
+            default:
+                return [];
+        }
+    };
+
+    const featureCenter = (geom) => {
+        const coords = gatherCoords(geom);
+        if (coords.length === 0) return null;
+        let minLat = Infinity, maxLat = -Infinity, minLon = Infinity, maxLon = -Infinity;
+        coords.forEach(([lon, lat]) => {
+            if (lat < minLat) minLat = lat;
+            if (lat > maxLat) maxLat = lat;
+            if (lon < minLon) minLon = lon;
+            if (lon > maxLon) maxLon = lon;
+        });
+        return [(minLat + maxLat) / 2, (minLon + maxLon) / 2];
+    };
+
+    const haversineKm = (lat1, lon1, lat2, lon2) => {
+        const toRad = (deg) => deg * Math.PI / 180;
+        const R = 6371;
+        const dLat = toRad(lat2 - lat1);
+        const dLon = toRad(lon2 - lon1);
+        const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
+    };
+
     const fetchAndDisplayApiLayer = async (name, config, lat, lon) => {
         try {
-            const url = `${config.endpoint}?lon=${lon}&lat=${lat}`;
+            const url = `${config.endpoint}?lon=${lon}&lat=${lat}&dist=${ZONAGE_RADIUS_KM * 1000}`;
             const response = await fetch(url);
             if (!response.ok) throw new Error(response.statusText);
             const geojsonData = await response.json();
             if (geojsonData && geojsonData.features && geojsonData.features.length > 0) {
-                const layer = L.geoJSON(geojsonData, {
+                const filtered = geojsonData.features.filter(f => {
+                    const center = featureCenter(f.geometry);
+                    if (!center) return false;
+                    return haversineKm(lat, lon, center[0], center[1]) <= ZONAGE_RADIUS_KM;
+                });
+                if (filtered.length === 0) return null;
+                const layer = L.geoJSON({
+                    type: 'FeatureCollection',
+                    features: filtered
+                }, {
                     renderer: L.canvas(),
                     style: config.style,
                     onEachFeature: addDynamicPopup
