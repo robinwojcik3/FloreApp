@@ -556,7 +556,9 @@ let rulesByTaxonIndex = new Map();
     };
     const SEARCH_RADIUS_KM = 2;
     // Rayon de recherche pour "Flore commune" (500 m)
-    const OBS_RADIUS_KM = 0.5;
+const OBS_RADIUS_KM = 0.5;
+    // Rayon de recherche pour l'affichage du zonage (50 km)
+    const ZONAGE_RADIUS_KM = 50;
     const ANALYSIS_MAX_RETRIES = 3;
     const RETRY_DELAY_MS = 3000;
     const FETCH_TIMEOUT_MS = 10000;
@@ -1529,22 +1531,34 @@ const initializeSelectionMap = (coords) => {
 
     const fetchAndDisplayApiLayer = async (name, config, lat, lon) => {
         try {
-            const url = `${config.endpoint}?lon=${lon}&lat=${lat}`;
+            const url = `${config.endpoint}?lon=${lon}&lat=${lat}&rayon=${ZONAGE_RADIUS_KM * 1000}`;
             const response = await fetch(url);
             if (!response.ok) throw new Error(response.statusText);
             const geojsonData = await response.json();
-            if (geojsonData && geojsonData.features && geojsonData.features.length > 0) {
-                const layer = L.geoJSON(geojsonData, {
-                    renderer: L.canvas(),
-                    style: config.style,
-                    onEachFeature: addDynamicPopup
+            if (geojsonData && geojsonData.features) {
+                const radiusMeters = ZONAGE_RADIUS_KM * 1000;
+                const searchBounds = L.latLng(lat, lon).toBounds(radiusMeters);
+                const filtered = geojsonData.features.filter(f => {
+                    try {
+                        const b = L.geoJSON(f).getBounds();
+                        return searchBounds.intersects(b);
+                    } catch {
+                        return false;
+                    }
                 });
-                envLayerCache[name] = layer;
-                layer.addTo(map);
-                if (layersControl) layersControl.addOverlay(layer, name);
-                return layer;
+                if (filtered.length > 0) {
+                    const layer = L.geoJSON({ type: 'FeatureCollection', features: filtered }, {
+                        renderer: L.canvas(),
+                        style: config.style,
+                        onEachFeature: addDynamicPopup
+                    });
+                    envLayerCache[name] = layer;
+                    layer.addTo(map);
+                    if (layersControl) layersControl.addOverlay(layer, name);
+                    return layer;
+                }
             }
-        } catch(e) {
+        } catch (e) {
             console.error(e);
         }
         return null;
