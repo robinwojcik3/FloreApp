@@ -127,6 +127,13 @@ document.addEventListener('DOMContentLoaded', async () => {
         return data[key] ?? null;
     };
 
+    const latLonToWebMercator = (lat, lon) => {
+        const R = 6378137.0;
+        const x = R * (lon * Math.PI / 180);
+        const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
+        return { x, y };
+    };
+
     // Échantillonnage du profil topographique.
     // Utilise un pas de 100 m pour limiter le nombre de points calculés.
     const sampleSegment = async (p1, p2, step = 100) => {
@@ -396,6 +403,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         patrZnieffBtn.textContent = 'Flore Patri & ZNIEFF';
         const obsBtn = L.DomUtil.create('button', 'action-button', container);
         obsBtn.textContent = 'Flore commune';
+        const zonageBtn = L.DomUtil.create('button', 'action-button', container);
+        zonageBtn.textContent = 'Zonage';
+        const resBtn = L.DomUtil.create('button', 'action-button', container);
+        resBtn.textContent = 'Ressources';
+        const gmapsBtn = L.DomUtil.create('button', 'action-button', container);
+        gmapsBtn.textContent = 'Google Maps';
         L.DomEvent.on(patrBtn, 'click', () => {
             map.closePopup();
             showNavigation();
@@ -410,6 +423,18 @@ document.addEventListener('DOMContentLoaded', async () => {
             map.closePopup();
             showNavigation();
             loadObservationsAt({ latitude: latlng.lat, longitude: latlng.lng, ...extra });
+        });
+        L.DomEvent.on(zonageBtn, 'click', () => {
+            map.closePopup();
+            runZonageAt(latlng);
+        });
+        L.DomEvent.on(resBtn, 'click', () => {
+            map.closePopup();
+            runResourcesAt(latlng);
+        });
+        L.DomEvent.on(gmapsBtn, 'click', () => {
+            map.closePopup();
+            window.open(`https://www.google.com/maps?q=${latlng.lat},${latlng.lng}`, '_blank');
         });
         L.DomEvent.disableClickPropagation(container);
         L.popup().setLatLng(latlng).setContent(container).openOn(map);
@@ -426,6 +451,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     let obsSearchPolygon = null;
     let observationsLayerGroup = L.layerGroup();
     let obsLayerAddedToControl = false;
+    let selectedLat = null;
+    let selectedLon = null;
     let speciesColorMap = new Map();
     let allPatrimonialLocations = null;
 let allPatrimonialSpecies = [];
@@ -489,6 +516,58 @@ let rulesByTaxonIndex = new Map();
     Object.entries(OLD_REGIONS_TO_DEPARTMENTS).forEach(([name, depts]) => {
         NORMALIZED_OLD_REGIONS[normAdmin(name)] = depts;
     });
+
+    // --- Services externes et couches zonage ---
+    const SERVICES = {
+        arcgis: {
+            name: 'ArcGIS - Carte de la végétation',
+            description: 'Visualisez la carte de végétation de la zone',
+            icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+CiAgPHBvbHlsaW5lIHBvaW50cz0iMiA3IDkgNCAxNSA3IDIyIDQgMjIgMTcgMTUgMjAgOSAxNyAyIDIwIDIgNyIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPgogIDxsaW5lIHgxPSI5IiB5MT0iNCIgeDI9IjkiIHkyPSIxNyIgLz4KICA8bGluZSB4MT0iMTUiIHkxPSI3IiB4Mj0iMTUiIHkyPSIyMCIgLz4KPC9zdmc+Cg==',
+            buildUrl: (lat, lon) => {
+                const { x, y } = latLonToWebMercator(lat, lon);
+                const buffer = 1000;
+                return `https://www.arcgis.com/apps/webappviewer/index.html?id=bece6e542e4c42e0ba9374529c7de44c&extent=${x-buffer}%2C${y-buffer}%2C${x+buffer}%2C${y+buffer}%2C102100`;
+            }
+        },
+        geoportail: {
+            name: 'Géoportail - Carte des sols',
+            description: 'Explorez la carte pédologique de la zone',
+            icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+CiAgPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iOSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMCkgc2NhbGUoMSkgIi8+CiAgPHBhdGggZD0iTTMgMTJoMTgiIC8+CiAgPHBhdGggZD0iTTEyIDNhOSA5IDAgMCAwIDAgMTgiIC8+CiAgPHBhdGggZD0iTTEyIDNhOSA5IDAgMCAxIDAgMTgiIC8+PC9zdmc+Cg==',
+            buildUrl: (lat, lon) => `https://www.geoportail.gouv.fr/carte?c=${lon},${lat}&z=15&l0=ORTHOIMAGERY.ORTHOPHOTOS::GEOPORTAIL:OGC:WMTS(1)&l1=AGRICULTURE.CARTE.PEDOLOGIQUE::GEOPORTAIL:OGC:WMS(0.5)&permalink=yes`
+        },
+        ign: {
+            name: 'IGN Remonter le temps',
+            description: "Comparez l'évolution du paysage dans le temps",
+            icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+CiAgPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iOSI+PC9jaXJjbGU+CiAgPHBvbHlsaW5lIHBvaW50cz0iMTIgNyAxMiAxMiAxNSAxNSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPgo8L3N2Zz4=',
+            buildUrl: (lat, lon) => `https://remonterletemps.ign.fr/comparer?lon=${lon.toFixed(6)}&lat=${lat.toFixed(6)}&z=17&layer1=16&layer2=19&mode=split-h`
+        },
+        inaturalist: {
+            name: 'iNaturalist - Observations',
+            description: 'Découvrez les observations naturalistes de la zone',
+            icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+CiAgPHBhdGggZD0iTTEyIDJDNyAyIDQgMTIgNCAxMnMzIDEwIDggMTAgOC0xMCA4LTEwLTMtMTAtOC0xMHoiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+CiAgPGxpbmUgeDE9IjEyIiB5MT0iMiIgeDI9IjEyIiB5Mj0iMjIiIC8+Cjwvc3ZnPgo=',
+            buildUrl: (lat, lon) => `https://www.inaturalist.org/observations?lat=${lat.toFixed(8)}&lng=${lon.toFixed(8)}&radius=5&subview=map&threatened&iconic_taxa=Plantae`
+        }
+    };
+
+    const APICARTO_LAYERS = {
+        'ZNIEFF I': { endpoint: 'https://apicarto.ign.fr/api/nature/znieff1', style: { color: '#AFB42B', weight: 2, opacity: 0.9, fillOpacity: 0.2, dashArray: '5, 5' } },
+        'ZNIEFF II': { endpoint: 'https://apicarto.ign.fr/api/nature/znieff2', style: { color: '#E65100', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Natura 2000 (Habitats)': { endpoint: 'https://apicarto.ign.fr/api/nature/natura-habitat', style: { color: '#2E7D32', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Réserves Naturelles Nationales': { endpoint: 'https://apicarto.ign.fr/api/nature/rnn', style: { color: '#7B1FA2', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Parcs Nationaux': { endpoint: 'https://apicarto.ign.fr/api/nature/pn', style: { color: '#AD1457', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Parcs Naturels Régionaux': { endpoint: 'https://apicarto.ign.fr/api/nature/pnr', style: { color: '#558B2F', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Natura 2000 (Oiseaux)': { endpoint: 'https://apicarto.ign.fr/api/nature/natura-oiseaux', style: { color: '#0277BD', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Réserves Naturelles': { endpoint: 'https://apicarto.ign.fr/api/nature/rn', style: { color: '#6A1B9A', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Réserves Naturelles Régionales': { endpoint: 'https://apicarto.ign.fr/api/nature/rnr', style: { color: '#9C27B0', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Arrêtés de Protection de Biotope': { endpoint: 'https://apicarto.ign.fr/api/nature/apb', style: { color: '#1B5E20', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Espaces Naturels Sensibles': { endpoint: 'https://apicarto.ign.fr/api/nature/ens', style: { color: '#004D40', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Zones humides': { endpoint: 'https://apicarto.ign.fr/api/nature/zones_humides', style: { color: '#1565C0', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Pelouses sèches': { endpoint: 'https://apicarto.ign.fr/api/nature/pelouses_seches', style: { color: '#8BC34A', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'Sites Ramsar': { endpoint: 'https://apicarto.ign.fr/api/nature/ramsar', style: { color: '#00ACC1', weight: 2, opacity: 0.9, fillOpacity: 0.2 } },
+        'ZICO (Zones importantes pour la conservation des oiseaux)': { endpoint: 'https://apicarto.ign.fr/api/nature/zico', style: { color: '#FF9800', weight: 2, opacity: 0.9, fillOpacity: 0.2 } }
+    };
+
+    const zoningLayers = {};
     const setStatus = (message = '') => {
         if (statusMessage) statusMessage.textContent = message;
     };
@@ -515,6 +594,75 @@ let rulesByTaxonIndex = new Map();
                 }
             }
         });
+    };
+
+    const clearZonageLayers = () => {
+        Object.values(zoningLayers).forEach(layer => {
+            if (map && map.hasLayer(layer)) map.removeLayer(layer);
+            if (layersControl) try { layersControl.removeLayer(layer); } catch(e) {}
+        });
+        for (const k in zoningLayers) delete zoningLayers[k];
+    };
+
+    const fetchAndDisplayApiLayer = async (name, config, lat, lon) => {
+        try {
+            const url = `${config.endpoint}?lon=${lon}&lat=${lat}`;
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error('network');
+            const data = await resp.json();
+            if (data && data.features && data.features.length > 0) {
+                const layer = L.geoJSON(data, { renderer: L.canvas(), style: config.style });
+                zoningLayers[name] = layer;
+                layer.addTo(map);
+                if (layersControl) layersControl.addOverlay(layer, name);
+                return layer;
+            }
+        } catch (e) { console.error('layer', name, e); }
+        return null;
+    };
+
+    const displayZonage = async (latlng) => {
+        clearZonageLayers();
+        for (const [name, cfg] of Object.entries(APICARTO_LAYERS)) {
+            await fetchAndDisplayApiLayer(name, cfg, latlng.lat, latlng.lng);
+        }
+    };
+
+    const displayResources = (latlng) => {
+        const grid = document.getElementById('results-grid');
+        if (!grid) return;
+        grid.innerHTML = '';
+        Object.values(SERVICES).forEach(svc => {
+            const link = document.createElement('a');
+            link.href = svc.buildUrl(latlng.lat, latlng.lng);
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            link.className = 'resource-btn';
+            const img = document.createElement('img');
+            img.src = svc.icon;
+            img.alt = '';
+            img.className = 'resource-icon';
+            const span = document.createElement('span');
+            span.textContent = svc.name;
+            link.appendChild(img); link.appendChild(span);
+            grid.appendChild(link);
+        });
+        grid.style.display = 'grid';
+    };
+
+    const runZonageAt = async (latlng) => {
+        selectedLat = latlng.lat;
+        selectedLon = latlng.lng;
+        updateAltitudeDisplay(selectedLat, selectedLon);
+        document.getElementById('results-grid').style.display = 'none';
+        await displayZonage(latlng);
+    };
+
+    const runResourcesAt = (latlng) => {
+        selectedLat = latlng.lat;
+        selectedLon = latlng.lng;
+        updateAltitudeDisplay(selectedLat, selectedLon);
+        displayResources(latlng);
     };
 
     const fetchWithRetry = async (url, options = {}, maxRetries = ANALYSIS_MAX_RETRIES) => {
