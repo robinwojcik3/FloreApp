@@ -557,6 +557,8 @@ let rulesByTaxonIndex = new Map();
     const SEARCH_RADIUS_KM = 2;
     // Rayon de recherche pour "Flore commune" (500 m)
     const OBS_RADIUS_KM = 0.5;
+    // Rayon de chargement pour le bouton "Zonage" (50 km)
+    const ZONAGE_RADIUS_KM = 50;
     const ANALYSIS_MAX_RETRIES = 3;
     const RETRY_DELAY_MS = 3000;
     const FETCH_TIMEOUT_MS = 10000;
@@ -1353,6 +1355,7 @@ const initializeSelectionMap = (coords) => {
     };
 
     let obsSearchCircle = null;
+    let zonageCircle = null;
 
     const displayObservations = (occurrences) => {
         observationsLayerGroup.clearLayers();
@@ -1529,7 +1532,8 @@ const initializeSelectionMap = (coords) => {
 
     const fetchAndDisplayApiLayer = async (name, config, lat, lon) => {
         try {
-            const url = `${config.endpoint}?lon=${lon}&lat=${lat}`;
+            // Limite la requête aux entités situées dans un rayon donné
+            const url = `${config.endpoint}?lon=${lon}&lat=${lat}&dist=${ZONAGE_RADIUS_KM * 1000}`;
             const response = await fetch(url);
             if (!response.ok) throw new Error(response.statusText);
             const geojsonData = await response.json();
@@ -1585,8 +1589,20 @@ const initializeSelectionMap = (coords) => {
         const coordsChanged = !lastEnvCoords ||
             Math.abs(lastEnvCoords.lat - latlng.lat) > 0.01 ||
             Math.abs(lastEnvCoords.lon - latlng.lng) > 0.01;
-        if (coordsChanged) clearEnvLayers();
+        if (coordsChanged) {
+            clearEnvLayers();
+            if (zonageCircle) { map.removeLayer(zonageCircle); zonageCircle = null; }
+        }
         lastEnvCoords = { lat: latlng.lat, lon: latlng.lng };
+        if (zonageCircle) { map.removeLayer(zonageCircle); zonageCircle = null; }
+        zonageCircle = L.circle([latlng.lat, latlng.lng], {
+            radius: ZONAGE_RADIUS_KM * 1000,
+            color: '#c62828',
+            weight: 2,
+            fillOpacity: 0.1,
+            interactive: false
+        }).addTo(map);
+        map.fitBounds(zonageCircle.getBounds());
         await displayZonageLayers(latlng.lat, latlng.lng);
     };
 
