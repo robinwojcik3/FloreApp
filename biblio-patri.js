@@ -83,6 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     let polygonDrawing = false;
     let polygonPoints = [];
     let polygonPreview = null;
+    let polygonMarkers = [];
 
     // Variables pour la mesure de distance et de dénivelé
     let measuring = false;
@@ -1168,38 +1169,58 @@ const initializeSelectionMap = (coords) => {
             map.removeLayer(polygonPreview);
             polygonPreview = null;
         }
+        polygonMarkers.forEach(m => map.removeLayer(m));
+        polygonMarkers = [];
+        polygonPoints.forEach((pt, idx) => {
+            const color = idx === 0 ? '#2e7d32' : '#c62828';
+            const marker = L.circleMarker(pt, { radius: 5, color, fillColor: color, fillOpacity: 1, interactive: false }).addTo(map);
+            polygonMarkers.push(marker);
+        });
         if (polygonPoints.length >= 3) {
             polygonPreview = L.polygon(polygonPoints, { color: '#c62828', weight: 2, fillOpacity: 0.1, interactive: false }).addTo(map);
         } else if (polygonPoints.length === 2) {
             polygonPreview = L.polyline(polygonPoints, { color: '#c62828', weight: 2, interactive: false }).addTo(map);
-        } else if (polygonPoints.length === 1) {
-            polygonPreview = L.circleMarker(polygonPoints[0], { radius: 4, color: '#c62828', fillColor: '#c62828', fillOpacity: 1, interactive: false }).addTo(map);
         }
     };
 
-    const onVolumeKey = (e) => {
+    const isNearFirstPoint = (latlng) => {
+        if (polygonPoints.length === 0) return false;
+        const first = map.latLngToLayerPoint(polygonPoints[0]);
+        const current = map.latLngToLayerPoint(latlng);
+        return first.distanceTo(current) < 10;
+    };
+
+    const onMapClickPolygon = (e) => {
         if (!polygonDrawing) return;
-        if (e.key === 'AudioVolumeUp' || e.key === 'VolumeUp') {
-            e.preventDefault();
-            polygonPoints.push(map.getCenter());
-            updatePolygonPreview();
-        } else if (e.key === 'AudioVolumeDown' || e.key === 'VolumeDown') {
-            e.preventDefault();
-            polygonPoints.pop();
-            updatePolygonPreview();
+        const { latlng } = e;
+        polygonPoints.push(latlng);
+        updatePolygonPreview();
+        if (polygonPoints.length >= 3 && isNearFirstPoint(latlng)) {
+            finishPolygonSelection();
         }
     };
+
+    const onMapRightClickPolygon = (e) => {
+        if (!polygonDrawing) return;
+        e.originalEvent.preventDefault();
+        polygonPoints.pop();
+        updatePolygonPreview();
+    };
+
 
     const finishPolygonSelection = () => {
         if (!polygonDrawing) return;
         polygonDrawing = false;
         if (crosshair) crosshair.style.display = 'none';
         if (drawPolygonBtn) drawPolygonBtn.textContent = '🔶 Zone personnalisée';
-        window.removeEventListener('keydown', onVolumeKey);
+        map.off('click', onMapClickPolygon);
+        map.off('contextmenu', onMapRightClickPolygon);
         if (polygonPreview) {
             map.removeLayer(polygonPreview);
             polygonPreview = null;
         }
+        polygonMarkers.forEach(m => map.removeLayer(m));
+        polygonMarkers = [];
         if (polygonPoints.length >= 3) {
             const latlngs = polygonPoints.slice();
             const centroid = centroidOf(latlngs);
@@ -1230,10 +1251,12 @@ const initializeSelectionMap = (coords) => {
         initializeSelectionMap(center);
         polygonDrawing = true;
         polygonPoints = [];
-        setStatus('Placez la cible et appuyez sur Volume + pour ajouter un point.');
+        polygonMarkers = [];
+        setStatus("Cliquez pour ajouter des points (clic droit pour annuler). Re-cliquez sur le premier pour terminer.");
         if (crosshair) crosshair.style.display = 'block';
         if (drawPolygonBtn) drawPolygonBtn.textContent = '✔️ Terminer';
-        window.addEventListener('keydown', onVolumeKey);
+        map.on('click', onMapClickPolygon);
+        map.on('contextmenu', onMapRightClickPolygon);
     };
 
     let obsSearchCircle = null;
