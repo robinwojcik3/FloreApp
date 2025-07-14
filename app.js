@@ -645,8 +645,13 @@ async function identifyMultipleImages(files, organs) {
 }
 
 function buildTable(items){
-  const wrap = document.getElementById("results");
-  if (!wrap) return;
+  const wrap = document.getElementById("results");
+  if (!wrap) return;
+
+  const title = document.getElementById('app-title');
+  if (title) title.style.display = 'none';
+  const preview = document.getElementById('preview');
+  if (preview) preview.style.display = 'none';
 
   const linkIcon = (url, img, alt, extraClass = '') => {
     if (!url) return "—";
