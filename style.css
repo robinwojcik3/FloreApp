@@ -413,3 +413,9 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     height: 2px;
     background: var(--primary);
 }
+
+/* Popups patrimoniales scrollables */
+.custom-popup {
+    max-height: 200px;
+    overflow-y: auto;
+}
