@@ -615,6 +615,9 @@ async function identifySingleImage(fileBlob, organ) {
         displayedItems = results;
         buildTable(displayedItems);
         buildCards(displayedItems);
+        const title = document.querySelector('h1');
+        if (title) title.remove();
+        if (preview) preview.remove();
         const latin = results[0] && results[0].species ?
             results[0].species.scientificNameWithoutAuthor :
             undefined;
@@ -1082,23 +1085,26 @@ if (document.getElementById("file-capture")) {
 }
 if (organBoxOnPage) {
   const displayResults = async (results, isNameSearch = false) => {
-    const previewEl = document.getElementById("preview");
-    if (previewEl) {
-      previewEl.classList.add('thumbnail');
-      previewEl.addEventListener('click', () => {
-        previewEl.classList.toggle('enlarged');
-      });
-    }
-    organBoxOnPage.style.display = 'none';
-    await loadData();
-    document.body.classList.remove("home");
+    const previewEl = document.getElementById("preview");
+    if (previewEl) {
+      previewEl.classList.add('thumbnail');
+      previewEl.addEventListener('click', () => {
+        previewEl.classList.toggle('enlarged');
+      });
+    }
+    organBoxOnPage.style.display = 'none';
+    await loadData();
+    document.body.classList.remove("home");
     let items = isNameSearch
       ? results.map(n => ({ score: 1.0, species: { scientificNameWithoutAuthor: n }, autoCheck: results.length === 1 }))
       : results;
 
-    displayedItems = items;
-    buildTable(displayedItems);
-    buildCards(displayedItems);
+    displayedItems = items;
+    buildTable(displayedItems);
+    buildCards(displayedItems);
+    const titleEl = document.querySelector('h1');
+    if (titleEl) titleEl.remove();
+    if (previewEl) previewEl.remove();
 
     if (isNameSearch && results.length === 1) {
       showSimilarSpeciesButton(results[0]);
