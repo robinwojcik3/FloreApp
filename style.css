@@ -139,7 +139,7 @@ h1 {
     justify-content: center;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 #action-bar .action-button {
     display: inline-flex;
