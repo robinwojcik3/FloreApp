@@ -3,7 +3,7 @@
  * ================================================================ */
 
 // Incrémenter le nom du cache pour forcer la mise à jour du service worker
-const CACHE_NAME = "plantid-v26";
+const CACHE_NAME = "plantid-v27";
 
 const WASM_ASSETS = {
    "openjpeg.wasm": "./pdfjs/wasm/openjpeg.wasm.b64",
@@ -15,10 +15,8 @@ const CORE_ASSETS = [
    "./index.html",
    "./organ.html",
    "./viewer.html",
-   "./contexte.html",
    "./biblio-patri.html",
    "./app.js",
-   "./contexte.js",
    "./biblio-patri.js",
    "./style.css",
   "https://unpkg.com/proj4@2.9.0/dist/proj4.js",
