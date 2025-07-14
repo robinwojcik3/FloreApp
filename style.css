@@ -413,3 +413,14 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     height: 2px;
     background: var(--primary);
 }
+
+/*
+   Fix the height of Leaflet popups used in the biblio-patri map.
+   When many species are listed the popup can become too tall to fit
+   on screen. Limit the displayed height and allow scrolling to see
+   all entries.
+*/
+.custom-popup {
+    max-height: 180px;
+    overflow-y: auto;
+}
