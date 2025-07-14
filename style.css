@@ -423,3 +423,46 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     max-height: 200px;
     overflow-y: auto;
 }
+
+/* Responsive table -> stacked card layout on small screens */
+@media (max-width: 700px) {
+    .table-wrapper table,
+    .table-wrapper thead,
+    .table-wrapper tbody,
+    .table-wrapper th,
+    .table-wrapper td,
+    .table-wrapper tr {
+        display: block;
+        width: 100%;
+    }
+    .table-wrapper thead { display: none; }
+    .table-wrapper tr {
+        margin-bottom: 1rem;
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        padding: 0.5rem;
+    }
+    .table-wrapper td {
+        border: none;
+        padding: 0.4rem 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .table-wrapper td::before {
+        content: attr(data-label);
+        font-weight: 600;
+        color: var(--primary);
+        margin-right: 0.5rem;
+        flex-basis: 50%;
+    }
+    .table-wrapper td.col-checkbox {
+        justify-content: flex-start;
+    }
+    .table-wrapper td.col-checkbox::before {
+        content: attr(data-label);
+        margin-right: 0.25rem;
+    }
+}
