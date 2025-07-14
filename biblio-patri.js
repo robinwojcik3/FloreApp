@@ -1558,15 +1558,35 @@ const initializeSelectionMap = (coords) => {
         for (const k in envLayerCache) delete envLayerCache[k];
     };
 
+    const displayZonageLayers = async (latlng) => {
+        const loading = statusMessage;
+        const total = Object.keys(APICARTO_LAYERS).length;
+        let loaded = 0;
+        const updateLoading = () => {
+            if (loading) loading.textContent = `Chargement des zonages ${loaded}/${total}...`;
+            if (loaded === total && loading) loading.textContent = '';
+        };
+        updateLoading();
+        for (const [name, cfg] of Object.entries(APICARTO_LAYERS)) {
+            if (!envLayerCache[name]) {
+                await fetchAndDisplayApiLayer(name, cfg, latlng.lat, latlng.lng);
+            } else {
+                envLayerCache[name].addTo(map);
+                if (layersControl) layersControl.addOverlay(envLayerCache[name], name);
+            }
+            loaded += 1;
+            updateLoading();
+        }
+    };
+
     const runZonageAt = async (latlng) => {
+        if (!map) initializeSelectionMap({ latitude: latlng.lat, longitude: latlng.lng });
         const coordsChanged = !lastEnvCoords ||
             Math.abs(lastEnvCoords.lat - latlng.lat) > 0.01 ||
             Math.abs(lastEnvCoords.lon - latlng.lng) > 0.01;
         if (coordsChanged) clearEnvLayers();
         lastEnvCoords = { lat: latlng.lat, lon: latlng.lng };
-        for (const [name, cfg] of Object.entries(APICARTO_LAYERS)) {
-            if (!envLayerCache[name]) await fetchAndDisplayApiLayer(name, cfg, latlng.lat, latlng.lng);
-        }
+        await displayZonageLayers(latlng);
     };
 
     const SERVICES = {
