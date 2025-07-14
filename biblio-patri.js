@@ -1558,15 +1558,36 @@ const initializeSelectionMap = (coords) => {
         for (const k in envLayerCache) delete envLayerCache[k];
     };
 
+    const displayZonageLayers = async (lat, lon) => {
+        const total = Object.keys(APICARTO_LAYERS).length;
+        let loaded = 0;
+        setStatus(`Chargement des couches ${loaded}/${total}...`);
+        for (const [name, cfg] of Object.entries(APICARTO_LAYERS)) {
+            if (envLayerCache[name]) {
+                envLayerCache[name].addTo(map);
+                if (layersControl) layersControl.addOverlay(envLayerCache[name], name);
+                loaded += 1;
+                setStatus(`Chargement des couches ${loaded}/${total}...`);
+            } else {
+                try {
+                    const layer = await fetchAndDisplayApiLayer(name, cfg, lat, lon);
+                    if (layer) loaded += 1;
+                } catch (e) {
+                    console.error(e);
+                }
+                setStatus(`Chargement des couches ${loaded}/${total}...`);
+            }
+        }
+        setStatus('');
+    };
+
     const runZonageAt = async (latlng) => {
         const coordsChanged = !lastEnvCoords ||
             Math.abs(lastEnvCoords.lat - latlng.lat) > 0.01 ||
             Math.abs(lastEnvCoords.lon - latlng.lng) > 0.01;
         if (coordsChanged) clearEnvLayers();
         lastEnvCoords = { lat: latlng.lat, lon: latlng.lng };
-        for (const [name, cfg] of Object.entries(APICARTO_LAYERS)) {
-            if (!envLayerCache[name]) await fetchAndDisplayApiLayer(name, cfg, latlng.lat, latlng.lng);
-        }
+        await displayZonageLayers(latlng.lat, latlng.lng);
     };
 
     const SERVICES = {
