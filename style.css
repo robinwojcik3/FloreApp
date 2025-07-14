@@ -423,3 +423,11 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     max-height: 200px;
     overflow-y: auto;
 }
+@media (max-width: 600px) {
+  #results thead { display: none; }
+  #results table { border: none; }
+  #results tbody tr { display: block; margin-bottom: 1rem; background: var(--card); border: 1px solid var(--border); border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+  #results tbody td { display: flex; justify-content: space-between; padding: 0.6rem 0.8rem; border: none; border-bottom: 1px solid var(--border); }
+  #results tbody td:last-child { border-bottom: none; }
+  #results tbody td::before { content: attr(data-label); font-weight: 600; color: var(--primary); margin-right: 0.5rem; }
+}

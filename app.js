@@ -645,8 +645,14 @@ async function identifyMultipleImages(files, organs) {
 }
 
 function buildTable(items){
-  const wrap = document.getElementById("results");
-  if (!wrap) return;
+  const wrap = document.getElementById("results");
+  if (!wrap) return;
+
+  const headers = [
+    "Sélection","Nom","FloreAlpes","Flora Gallica","Critères",
+    "Écologie","Physionomie","Phénologie","Biodiv'AURA","Info Flora",
+    "Synthèse","PFAF","Régal Végétal","Flore Méd","INPN"
+  ];
 
   const linkIcon = (url, img, alt, extraClass = '') => {
     if (!url) return "—";
@@ -655,7 +661,7 @@ function buildTable(items){
     return `<a href="${url}" target="_blank" rel="noopener"><img src="assets/${encoded}" alt="${alt}" class="${cls}"></a>`;
   };
 
-  const rows = items.map(item => {
+  const rows = items.map(item => {
     const pct = item.score !== undefined ? `${Math.round(item.score * 100)}%` : "N/A";
     const sci  = item.species.scientificNameWithoutAuthor;
     const displaySci = capitalizeGenus(sci);
@@ -701,39 +707,43 @@ function buildTable(items){
     const escapedSci = displaySci.replace(/'/g, "\\'");
     const checkedAttr = item.autoCheck ? ' checked' : '';
     return `<tr>
-              <td class="col-checkbox">
-                <input type="checkbox" class="species-checkbox"${checkedAttr}
-                       data-species="${escapedSci}"
-                       data-physio="${encodeURIComponent(phys)}"
-                       data-eco="${encodeURIComponent(eco)}"
-                       data-pheno="${encodeURIComponent(pheno)}">
-              </td>
-            	 <td class="col-nom-latin" data-latin="${displaySci}">${displaySci}<br><span class="score">(${pct})</span></td>
-            <td class="col-link">${floreAlpesLink}</td>
-            <td class="col-link">${floraGallicaLink}</td>
-            <td class="col-criteres">
-            	 	 <div class="text-popup-trigger" data-title="Critères physiologiques" data-fulltext="${encodeURIComponent(crit)}">${crit}</div>
-            	 </td>
-            	 <td class="col-ecologie">
-            	 	 	 <div class="text-popup-trigger" data-title="Écologie" data-fulltext="${encodeURIComponent(eco)}">${eco}</div>
-            	 </td>
-            	 <td class="col-physionomie">
-            	 	 <div class="text-popup-trigger" data-title="Physionomie" data-fulltext="${encodeURIComponent(phys)}">${phys}</div>
-          	 	 </td>
-          	 	 <td class="col-phenologie">
-          	 	 	 <div class="text-popup-trigger" data-title="Phénologie" data-fulltext="${encodeURIComponent(pheno)}">${pheno}</div>
-          	 	 </td>
-          	 	 <td class="col-link">${linkIcon(cd && aura(cd), "Biodiv'AURA.png", "Biodiv'AURA")}</td>
-          	 	 <td class="col-link">${linkIcon(infoFlora(sci), "Info Flora.png", "Info Flora")}</td>
-                <td class="col-link"><a href="#" onclick="handleSynthesisClick(event, this, '${escapedSci}')"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA4MDAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CiAgPHBvbHlnb24gcG9pbnRzPSIxMSA1IDYgOSAyIDkgMiAxNSA2IDE1IDExIDE5IDExIDUiIC8+CiAgPHBhdGggZD0iTTE1LjU0IDguNDZhNSA1IDAgMDEwIDcuMDciIC8+CiAgPHBhdGggZD0iTTE5LjA3IDQuOTNhOSA5IDAgMDEwIDE0LjE0IiAvPgo8L3N2Zz4K" alt="Audio" class="logo-icon"></a></td>
-          	 	 <td class="col-link">${linkIcon(pfaf(sci), "PFAF.png", "PFAF")}</td>
-         <td class="col-link">${regalVegetalLink}</td>
-            <td class="col-link">${floreMedLink}</td>
-            <td class="col-link">${linkIcon(cd && inpnStatut(cd), "INPN.png", "INPN", "small-logo")}</td>
-         </tr>`;
+              <td class="col-checkbox" data-label="${headers[0]}">
+                <input type="checkbox" class="species-checkbox"${checkedAttr}
+                      data-species="${escapedSci}"
+                      data-physio="${encodeURIComponent(phys)}"
+                      data-eco="${encodeURIComponent(eco)}"
+                      data-pheno="${encodeURIComponent(pheno)}">
+              </td>
+              <td class="col-nom-latin" data-label="${headers[1]}" data-latin="${displaySci}">${displaySci}<br><span class="score">(${pct})</span></td>
+              <td class="col-link" data-label="${headers[2]}">${floreAlpesLink}</td>
+              <td class="col-link" data-label="${headers[3]}">${floraGallicaLink}</td>
+              <td class="col-criteres" data-label="${headers[4]}">
+                        <div class="text-popup-trigger" data-title="Critères physiologiques" data-fulltext="${encodeURIComponent(crit)}">${crit}</div>
+              </td>
+              <td class="col-ecologie" data-label="${headers[5]}">
+                            <div class="text-popup-trigger" data-title="Écologie" data-fulltext="${encodeURIComponent(eco)}">${eco}</div>
+              </td>
+              <td class="col-physionomie" data-label="${headers[6]}">
+                      <div class="text-popup-trigger" data-title="Physionomie" data-fulltext="${encodeURIComponent(phys)}">${phys}</div>
+              </td>
+              <td class="col-phenologie" data-label="${headers[7]}">
+                              <div class="text-popup-trigger" data-title="Phénologie" data-fulltext="${encodeURIComponent(pheno)}">${pheno}</div>
+              </td>
+              <td class="col-link" data-label="${headers[8]}">${linkIcon(cd && aura(cd), "Biodiv'AURA.png", "Biodiv'AURA")}</td>
+              <td class="col-link" data-label="${headers[9]}">${linkIcon(infoFlora(sci), "Info Flora.png", "Info Flora")}</td>
+              <td class="col-link" data-label="${headers[10]}"><a href="#" onclick="handleSynthesisClick(event, this, '${escapedSci}')"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA4MDAwIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+CiAgPHBvbHlnb24gcG9pbnRzPSIxMSA1IDYgOSAyIDkgMiAxNSA2IDE1IDExIDE5IDExIDUiIC8+CiAgPHBhdGggZD0iTTE1LjU0IDguNDZhNSA1IDAgMDEwIDcuMDciIC8+CiAgPHBhdGggZD0iTTE5LjA3IDQuOTNhOSA5IDAgMDEwIDE0LjE0IiAvPgo8L3N2Zz4K" alt="Audio" class="logo-icon"></a></td>
+              <td class="col-link" data-label="${headers[11]}">${linkIcon(pfaf(sci), "PFAF.png", "PFAF")}</td>
+              <td class="col-link" data-label="${headers[12]}">${regalVegetalLink}</td>
+              <td class="col-link" data-label="${headers[13]}">${floreMedLink}</td>
+              <td class="col-link" data-label="${headers[14]}">${linkIcon(cd && inpnStatut(cd), "INPN.png", "INPN", "small-logo")}</td>
+           </tr>`;
   }).join("");
 
-  const headerHtml = `<tr><th class="col-checkbox"><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th><th>Nom latin (score %)</th><th>FloreAlpes</th><th>Flora Gallica</th><th>Critères physiologiques</th><th>Écologie</th><th>Physionomie</th><th>Phénologie</th><th>Biodiv'AURA</th><th>Info Flora</th><th>Fiche synthèse</th><th>PFAF</th><th>Régal Végétal</th><th>Flore Méd</th><th>INPN statut</th></tr>`;
+  const headerHtml = `<tr>${headers.map((h,i) => {
+      if(i===0) return '<th class="col-checkbox"><button type="button" id="toggle-select-btn" class="select-toggle-btn">Tout sélectionner</button></th>';
+      const label = i===1 ? 'Nom latin (score %)' : h;
+      return `<th>${label}</th>`;
+  }).join('')}</tr>`;
 
   let similarArea = document.getElementById('similar-btn-area');
   if (!similarArea) {
