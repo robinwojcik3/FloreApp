@@ -132,9 +132,9 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
       dv.setUint16(10, 0, true);
       dv.setUint16(12, 0, true);
       dv.setUint16(14, 0, true);
-      dv.setUint32(14 + 2, crc, true);
-      dv.setUint32(14 + 6, size, true);
-      dv.setUint32(14 + 10, size, true);
+      dv.setUint32(16, crc, true);
+      dv.setUint32(20, size, true);
+      dv.setUint32(24, size, true);
       dv.setUint16(26, nameBuf.length, true);
       dv.setUint16(28, 0, true);
       new Uint8Array(local).set(nameBuf, 30);
