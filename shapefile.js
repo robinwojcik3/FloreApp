@@ -127,14 +127,14 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
       const local = new ArrayBuffer(30 + nameBuf.length);
       const dv = new DataView(local);
       dv.setUint32(0, 0x04034b50, true);
-      dv.setUint16(4, 20, true);
-      dv.setUint16(8, 0, true);
-      dv.setUint16(10, 0, true);
-      dv.setUint16(12, 0, true);
-      dv.setUint16(14, 0, true);
-      dv.setUint32(14 + 2, crc, true);
-      dv.setUint32(14 + 6, size, true);
-      dv.setUint32(14 + 10, size, true);
+      dv.setUint16(4, 20, true); // version needed to extract
+      dv.setUint16(6, 0, true); // general purpose bit flag
+      dv.setUint16(8, 0, true); // compression method
+      dv.setUint16(10, 0, true); // last modification time
+      dv.setUint16(12, 0, true); // last modification date
+      dv.setUint32(14, crc, true); // CRC-32
+      dv.setUint32(18, size, true); // compressed size
+      dv.setUint32(22, size, true); // uncompressed size
       dv.setUint16(26, nameBuf.length, true);
       dv.setUint16(28, 0, true);
       new Uint8Array(local).set(nameBuf, 30);
