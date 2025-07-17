@@ -907,7 +907,7 @@ function showSimilarSpeciesButton(speciesName) {
   area.style.display = 'inline-block';
   const btn = document.createElement('button');
   btn.id = 'similar-btn';
-  btn.textContent = 'Montrer des espèces similaires (Rhône-Alpes/PACA)';
+  btn.textContent = 'Espèces similaires';
   btn.className = 'action-button';
   area.appendChild(btn);
   btn.addEventListener('click', async () => {
