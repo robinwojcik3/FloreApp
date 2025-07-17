@@ -25,6 +25,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     const searchAddressBtn = document.getElementById('search-address-btn');
     const useGeolocationBtn = document.getElementById('use-geolocation-btn');
     const drawPolygonBtn = document.getElementById('draw-polygon-btn');
+    const drawLineBtn = document.getElementById('draw-line-btn');
     const toggleTrackingBtn = document.getElementById('toggle-tracking-btn');
     const toggleLabelsBtn = document.getElementById('toggle-labels-btn');
     const measureDistanceBtn = document.getElementById('measure-distance-btn');
@@ -84,6 +85,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     let polygonPoints = [];
     let polygonPreview = null;
     let polygonMarkers = [];
+
+    let lineDrawing = false;
+    let linePoints = [];
+    let linePreview = null;
+    let lineMarkers = [];
 
     // Variables pour la mesure de distance et de dénivelé
     let measuring = false;
@@ -1324,6 +1330,97 @@ const initializeSelectionMap = (coords) => {
         map.on('contextmenu', onMapRightClickPolygon);
     };
 
+    const updateLinePreview = () => {
+        if (!map) return;
+        if (linePreview) { map.removeLayer(linePreview); linePreview = null; }
+        lineMarkers.forEach(m => map.removeLayer(m));
+        lineMarkers = [];
+        linePoints.forEach((pt, idx) => {
+            const color = idx === 0 ? '#ff9800' : '#c62828';
+            const marker = L.circleMarker(pt, { radius: 4, color, fillColor: color, fillOpacity: 1, interactive: false }).addTo(map);
+            lineMarkers.push(marker);
+        });
+        if (linePoints.length >= 2) {
+            linePreview = L.polyline(linePoints, { color: '#c62828', weight: 2, interactive: false }).addTo(map);
+        }
+    };
+
+    const finishLineSelection = () => {
+        if (!lineDrawing) return;
+        lineDrawing = false;
+        if (crosshair) crosshair.style.display = 'none';
+        if (drawLineBtn) drawLineBtn.textContent = '📈 Analyse linéaire';
+        map.off('click', onMapClickLine);
+        map.off('contextmenu', onMapRightClickLine);
+        map.off('touchstart', onLineTouchStart);
+        map.off('touchend', cancelLineTouch);
+        map.off('touchmove', cancelLineTouch);
+        if (linePreview) { map.removeLayer(linePreview); linePreview = null; }
+        lineMarkers.forEach(m => map.removeLayer(m));
+        lineMarkers = [];
+        if (linePoints.length >= 2) {
+            const line = turf.lineString(linePoints.map(p => [p.lng, p.lat]));
+            const buffered = turf.buffer(line, 0.3, { units: 'kilometers' });
+            const coords = buffered.geometry.coordinates[0].map(c => ({ lat: c[1], lng: c[0] }));
+            const centroid = centroidOf(coords);
+            const wkt = polygonToWkt(coords);
+            showChoicePopup(L.latLng(centroid.latitude, centroid.longitude), { wkt, polygon: coords });
+        } else {
+            setStatus('Ligne non valide');
+        }
+        linePoints = [];
+    };
+
+    let lineTouchTimer;
+    const onLineTouchStart = (e) => {
+        if (e.originalEvent && e.originalEvent.touches && e.originalEvent.touches.length === 1) {
+            lineTouchTimer = setTimeout(() => finishLineSelection(), LONG_PRESS_MS);
+        }
+    };
+    const cancelLineTouch = () => clearTimeout(lineTouchTimer);
+
+    const onMapClickLine = (e) => {
+        if (!lineDrawing) return;
+        linePoints.push(e.latlng);
+        updateLinePreview();
+    };
+
+    const onMapRightClickLine = (e) => {
+        if (!lineDrawing) return;
+        e.originalEvent.preventDefault();
+        finishLineSelection();
+    };
+
+    const startLineSelection = async () => {
+        if (lineDrawing) {
+            finishLineSelection();
+            return;
+        }
+        let center;
+        if (map) {
+            const c = map.getCenter();
+            center = { latitude: c.lat, longitude: c.lng };
+        } else {
+            center = { latitude: 45.1885, longitude: 5.7245 };
+            try {
+                const { coords } = await new Promise((resolve, reject) => navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 5000 }));
+                center = { latitude: coords.latitude, longitude: coords.longitude };
+            } catch (e) {}
+        }
+        initializeSelectionMap(center);
+        lineDrawing = true;
+        linePoints = [];
+        updateLinePreview();
+        setStatus('Cliquez pour ajouter des points, clic droit ou appui long pour terminer.');
+        if (crosshair) crosshair.style.display = 'none';
+        if (drawLineBtn) drawLineBtn.textContent = '✔️ Terminer';
+        map.on('click', onMapClickLine);
+        map.on('contextmenu', onMapRightClickLine);
+        map.on('touchstart', onLineTouchStart);
+        map.on('touchend', cancelLineTouch);
+        map.on('touchmove', cancelLineTouch);
+    };
+
     let obsSearchCircle = null;
 
     const displayObservations = (occurrences) => {
@@ -1626,6 +1723,9 @@ const initializeSelectionMap = (coords) => {
     searchAddressBtn.addEventListener('click', handleAddressSearch);
     useGeolocationBtn.addEventListener('click', handleGeolocationSearch);
     drawPolygonBtn.addEventListener('click', startPolygonSelection);
+    if (drawLineBtn) {
+        drawLineBtn.addEventListener('click', startLineSelection);
+    }
     addressInput.addEventListener('keypress', (e) => e.key === 'Enter' && handleAddressSearch());
     downloadShapefileBtn.addEventListener('click', triggerShapefileDownload);
     toggleTrackingBtn.addEventListener('click', () => toggleLocationTracking(map, toggleTrackingBtn));
