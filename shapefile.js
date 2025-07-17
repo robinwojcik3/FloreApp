@@ -120,6 +120,9 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
     let chunks = [];
     let central = [];
     let offset = 0;
+    const now = new Date();
+    const dosTime = (now.getHours() << 11) | (now.getMinutes() << 5) | (now.getSeconds() >> 1);
+    const dosDate = ((now.getFullYear() - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
     files.forEach(file => {
       const nameBuf = new TextEncoder().encode(file.name);
       const crc = crc32(file.data);
@@ -130,8 +133,8 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
       dv.setUint16(4, 20, true);
       dv.setUint16(8, 0, true);
       dv.setUint16(10, 0, true);
-      dv.setUint16(12, 0, true);
-      dv.setUint16(14, 0, true);
+      dv.setUint16(12, dosTime, true);
+      dv.setUint16(14, dosDate, true);
       dv.setUint32(14 + 2, crc, true);
       dv.setUint32(14 + 6, size, true);
       dv.setUint32(14 + 10, size, true);
@@ -146,8 +149,8 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
       cdv.setUint16(6, 20, true);
       cdv.setUint16(8, 0, true);
       cdv.setUint16(10, 0, true);
-      cdv.setUint16(12, 0, true);
-      cdv.setUint16(14, 0, true);
+      cdv.setUint16(12, dosTime, true);
+      cdv.setUint16(14, dosDate, true);
       cdv.setUint32(16, crc, true);
       cdv.setUint32(20, size, true);
       cdv.setUint32(24, size, true);
