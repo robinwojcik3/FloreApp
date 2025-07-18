@@ -67,9 +67,9 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
   function dbfBuffer() {
     const encoder = new TextEncoder();
     const fields = [
-      { name: 'SPECIES', length: 100, prop: 'species' },
-      { name: 'STATUS', length: 100, prop: 'status' },
-      { name: 'ECOLOGY', length: 100, prop: 'ecology' }
+      { name: 'SPECIES', length: 254, prop: 'species' },
+      { name: 'STATUS', length: 254, prop: 'status' },
+      { name: 'ECOLOGY', length: 254, prop: 'ecology' }
     ];
     const recordLength = fields.reduce((s, f) => s + f.length, 1);
     const headerLength = 33 + 32 * fields.length;
@@ -191,11 +191,12 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
   const shx = shxBuffer();
   const dbf = dbfBuffer();
   const prj = new TextEncoder().encode(prjString).buffer;
+  const base = fileName.replace(/[\\/:*?"<>|]/g, '_');
   const blob = zip([
-    { name: 'occurrences.shp', data: shp },
-    { name: 'occurrences.shx', data: shx },
-    { name: 'occurrences.dbf', data: dbf },
-    { name: 'occurrences.prj', data: prj }
+    { name: base + '.shp', data: shp },
+    { name: base + '.shx', data: shx },
+    { name: base + '.dbf', data: dbf },
+    { name: base + '.prj', data: prj }
   ]);
 
   const url = URL.createObjectURL(blob);

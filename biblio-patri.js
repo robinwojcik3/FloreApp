@@ -1525,7 +1525,8 @@ const initializeSelectionMap = (coords) => {
                 }
             });
             if (features.length && typeof downloadShapefile === 'function') {
-                downloadShapefile({ type: 'FeatureCollection', features }, LAMBERT93_WKT, fileName);
+                const safeName = fileName.replace(/[\\/:*?"<>|]/g, '_');
+                downloadShapefile({ type: 'FeatureCollection', features }, LAMBERT93_WKT, safeName);
             }
         } catch (e) {
             if (typeof showNotification === 'function') {
