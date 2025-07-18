@@ -86,12 +86,14 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
     let pos = 32;
     fields.forEach(f => {
       const nameBuf = encoder.encode(f.name);
-      new Uint8Array(buf).set(nameBuf, pos);
+      new Uint8Array(buf, pos, 11).set(nameBuf.slice(0, 11));
       pos += 11;
       dv.setUint8(pos, 'C'.charCodeAt(0));
+      pos += 1; // field type
       pos += 4; // address not used
-      dv.setUint8(pos, f.length);
-      pos += 16; // rest zeros
+      dv.setUint8(pos, f.length); pos += 1; // field length
+      dv.setUint8(pos, 0); pos += 1; // decimal count
+      pos += 14; // reserved bytes
     });
     dv.setUint8(headerLength - 1, 0x0D);
     let offset = headerLength;
@@ -99,9 +101,11 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
       dv.setUint8(offset, 0x20); // not deleted
       offset += 1;
       fields.forEach(f => {
-        const txt = p.props[f.prop] || '';
-        const tbuf = encoder.encode(txt.substring(0, f.length));
-        new Uint8Array(buf).set(tbuf, offset);
+        const txt = (p.props[f.prop] || '').toString();
+        const tbuf = encoder.encode(txt);
+        const fieldBuf = new Uint8Array(buf, offset, f.length);
+        fieldBuf.fill(0x20);
+        fieldBuf.set(tbuf.slice(0, f.length));
         offset += f.length;
       });
     });
