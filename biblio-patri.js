@@ -499,6 +499,7 @@ let znieffOnlySpecies = new Set();
 let hideZnieffOnly = false;
 let excludeZnieffAnalysis = false;
 let rulesByTaxonIndex = new Map();
+let patrimonialStatusMap = {};
     let trackingWatchId = null;
     let trackingMarker = null;
     let trackingActive = false;
@@ -871,6 +872,7 @@ const initializeSelectionMap = (coords) => {
             const marker = L.marker([location.lat, location.lon], { icon })
                 .bindPopup(popupContent)
                 .bindTooltip(tooltipHtml, { permanent: true, direction: 'right', offset: [8, 0] });
+            marker.speciesList = filtered.map(s => s.name);
             patrimonialLayerGroup.addLayer(marker);
             if (typeof proj4 !== 'undefined') {
                 const coords2154 = proj4('EPSG:4326', 'EPSG:2154', [location.lon, location.lat]);
@@ -914,6 +916,7 @@ const initializeSelectionMap = (coords) => {
             znieffOnlySpecies.forEach(sp => { delete patrimonialMap[sp]; });
             allSpeciesList = Object.keys(patrimonialMap).sort();
         }
+        patrimonialStatusMap = patrimonialMap;
         if (allSpeciesList.length === 0) {
             setStatus(`Aucune occurrence d'espèce patrimoniale trouvée dans ce rayon de ${SEARCH_RADIUS_KM} km.`);
             return;
@@ -1485,7 +1488,7 @@ const initializeSelectionMap = (coords) => {
     };
 
     const triggerShapefileDownload = async () => {
-        if (!currentShapefileData) return;
+        if (!map) return;
         try {
             let fileName = 'patrimonial_data';
             if (lastAnalysisCoords) {
@@ -1503,8 +1506,26 @@ const initializeSelectionMap = (coords) => {
                     }
                 } catch (e) { /* ignore */ }
             }
-            if (typeof downloadShapefile === 'function') {
-                downloadShapefile(currentShapefileData, LAMBERT93_WKT, fileName);
+            const bounds = map.getBounds();
+            const features = [];
+            patrimonialLayerGroup.eachLayer(layer => {
+                const latlng = layer.getLatLng();
+                if (!bounds.contains(latlng)) return;
+                if (typeof proj4 !== 'undefined' && Array.isArray(layer.speciesList)) {
+                    layer.speciesList.forEach(spName => {
+                        const coords2154 = proj4('EPSG:4326', 'EPSG:2154', [latlng.lng, latlng.lat]);
+                        const status = patrimonialStatusMap[spName];
+                        const statusStr = Array.isArray(status) ? status.join('; ') : (status || '');
+                        features.push({
+                            type: 'Feature',
+                            properties: { species: spName, status: statusStr, ecology: ecolOf(spName) },
+                            geometry: { type: 'Point', coordinates: coords2154 }
+                        });
+                    });
+                }
+            });
+            if (features.length && typeof downloadShapefile === 'function') {
+                downloadShapefile({ type: 'FeatureCollection', features }, LAMBERT93_WKT, fileName);
             }
         } catch (e) {
             if (typeof showNotification === 'function') {
