@@ -1,4 +1,5 @@
 window.downloadShapefile = function(featureCollection, prjString, fileName = 'patrimonial_data') {
+  const sanitizedName = (fileName || 'patrimonial_data').replace(/[\\/:*?"<>|]+/g, '_');
   const points = featureCollection.features.map(f => ({ x: f.geometry.coordinates[0], y: f.geometry.coordinates[1], props: f.properties }));
   if (points.length === 0) return;
 
@@ -67,9 +68,10 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
   function dbfBuffer() {
     const encoder = new TextEncoder();
     const fields = [
-      { name: 'SPECIES', length: 100, prop: 'species' },
-      { name: 'STATUS', length: 100, prop: 'status' },
-      { name: 'ECOLOGY', length: 100, prop: 'ecology' }
+      // Use near-maximum DBF text field length to avoid truncating information
+      { name: 'SPECIES', length: 254, prop: 'species' },
+      { name: 'STATUS',  length: 254, prop: 'status'  },
+      { name: 'ECOLOGY', length: 254, prop: 'ecology' }
     ];
     const recordLength = fields.reduce((s, f) => s + f.length, 1);
     const headerLength = 33 + 32 * fields.length;
@@ -192,16 +194,16 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
   const dbf = dbfBuffer();
   const prj = new TextEncoder().encode(prjString).buffer;
   const blob = zip([
-    { name: 'occurrences.shp', data: shp },
-    { name: 'occurrences.shx', data: shx },
-    { name: 'occurrences.dbf', data: dbf },
-    { name: 'occurrences.prj', data: prj }
+    { name: `${sanitizedName}.shp`, data: shp },
+    { name: `${sanitizedName}.shx`, data: shx },
+    { name: `${sanitizedName}.dbf`, data: dbf },
+    { name: `${sanitizedName}.prj`, data: prj }
   ]);
 
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = fileName + '.zip';
+  a.download = sanitizedName + '.zip';
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 100);
 }
