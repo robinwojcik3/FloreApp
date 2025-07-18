@@ -498,6 +498,7 @@ let selectedSpecies = new Set();
 let znieffOnlySpecies = new Set();
 let hideZnieffOnly = false;
 let excludeZnieffAnalysis = false;
+let speciesStatusMap = new Map();
 let rulesByTaxonIndex = new Map();
     let trackingWatchId = null;
     let trackingMarker = null;
@@ -874,9 +875,16 @@ const initializeSelectionMap = (coords) => {
             patrimonialLayerGroup.addLayer(marker);
             if (typeof proj4 !== 'undefined') {
                 const coords2154 = proj4('EPSG:4326', 'EPSG:2154', [location.lon, location.lat]);
+                const speciesNames = filtered.map(s => s.name);
+                const statusStr = speciesNames.map(n => speciesStatusMap.get(n) || '').join('; ');
+                const traitsStr = speciesNames.map(n => ecolOf(n)).join('; ');
                 features.push({
                     type: 'Feature',
-                    properties: { species: filtered.map(s => s.name).join('; ') },
+                    properties: {
+                        species: speciesNames.join('; '),
+                        status: statusStr,
+                        traits: traitsStr
+                    },
                     geometry: { type: 'Point', coordinates: coords2154 }
                 });
             }
@@ -920,13 +928,18 @@ const initializeSelectionMap = (coords) => {
         }
         setStatus(`${allSpeciesList.length} espèce(s) patrimoniale(s) trouvée(s). Lancement de l'étape 4/4 : cartographie détaillée...`);
         const tableBody = document.createElement('tbody');
+        speciesStatusMap = new Map();
         allSpeciesList.forEach((speciesName, index) => {
             const color = SPECIES_COLORS[index % SPECIES_COLORS.length];
             const row = tableBody.insertRow();
             row.dataset.species = speciesName;
+            const statusVal = Array.isArray(patrimonialMap[speciesName])
+                ? patrimonialMap[speciesName].join('; ')
+                : patrimonialMap[speciesName];
             const statusCellContent = Array.isArray(patrimonialMap[speciesName])
                 ? '<ul>' + patrimonialMap[speciesName].map(s => `<li>${s}</li>`).join('') + '</ul>'
                 : patrimonialMap[speciesName];
+            speciesStatusMap.set(speciesName, statusVal);
             const faLink = linkIcon(floreAlpesUrl(speciesName), 'FloreAlpes.png', 'FloreAlpes', 'small-logo');
             row.innerHTML = `<td><input type="checkbox" class="species-toggle" data-species="${speciesName}" checked></td><td><span class="legend-color" style="background-color:${color};"></span><i>${speciesName}</i> ${faLink}</td><td>${statusCellContent}</td>`;
         });

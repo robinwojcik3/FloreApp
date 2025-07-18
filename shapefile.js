@@ -65,10 +65,15 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
   }
 
   function dbfBuffer() {
+    const fields = [
+      { name: 'SPECIES', key: 'species' },
+      { name: 'STATUS', key: 'status' },
+      { name: 'TRAITS', key: 'traits' }
+    ];
     const encoder = new TextEncoder();
     const fieldLength = 254;
-    const recordLength = fieldLength + 1;
-    const headerLength = 33 + 32;
+    const recordLength = fields.length * fieldLength + 1;
+    const headerLength = 33 + fields.length * 32;
     const buf = new ArrayBuffer(headerLength + recordLength * points.length + 1);
     const dv = new DataView(buf);
     const now = new Date();
@@ -80,20 +85,27 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
     dv.setUint16(8, headerLength, true);
     dv.setUint16(10, recordLength, true);
     let pos = 32;
-    const nameBuf = encoder.encode('SPECIES');
-    new Uint8Array(buf).set(nameBuf, pos);
-    pos += 11;
-    dv.setUint8(pos, 'C'.charCodeAt(0));
-    pos += 4; // address not used
-    dv.setUint8(pos, fieldLength);
-    pos += 16; // rest zeros
+    fields.forEach(f => {
+      const nameBuf = encoder.encode(f.name);
+      new Uint8Array(buf).set(nameBuf.slice(0, 10), pos);
+      pos += 11;
+      dv.setUint8(pos, 'C'.charCodeAt(0));
+      pos += 4; // address not used
+      dv.setUint8(pos, fieldLength);
+      pos += 16; // rest zeros
+    });
     dv.setUint8(headerLength - 1, 0x0D);
+
     let offset = headerLength;
     points.forEach(p => {
       dv.setUint8(offset, 0x20); // not deleted
-      const txt = p.props.species || '';
-      const tbuf = encoder.encode(txt.substring(0, fieldLength));
-      new Uint8Array(buf).set(tbuf, offset + 1);
+      let inner = offset + 1;
+      fields.forEach(f => {
+        const txt = String(p.props[f.key] || '');
+        const tbuf = encoder.encode(txt.substring(0, fieldLength));
+        new Uint8Array(buf).set(tbuf, inner);
+        inner += fieldLength;
+      });
       offset += recordLength;
     });
     new Uint8Array(buf)[offset] = 0x1A;
