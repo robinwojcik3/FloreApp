@@ -100,8 +100,10 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
       offset += 1;
       fields.forEach(f => {
         const txt = p.props[f.prop] || '';
+        const start = offset;
+        new Uint8Array(buf).fill(0x20, start, start + f.length);
         const tbuf = encoder.encode(txt.substring(0, f.length));
-        new Uint8Array(buf).set(tbuf, offset);
+        new Uint8Array(buf).set(tbuf, start);
         offset += f.length;
       });
     });
