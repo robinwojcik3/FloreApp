@@ -482,6 +482,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 
     let currentShapefileData = null;
+    let currentPatrimonialMap = null;
 
     let map = null;
     let prefetchListenerAdded = false;
@@ -874,10 +875,15 @@ const initializeSelectionMap = (coords) => {
             patrimonialLayerGroup.addLayer(marker);
             if (typeof proj4 !== 'undefined') {
                 const coords2154 = proj4('EPSG:4326', 'EPSG:2154', [location.lon, location.lat]);
-                features.push({
-                    type: 'Feature',
-                    properties: { species: filtered.map(s => s.name).join('; ') },
-                    geometry: { type: 'Point', coordinates: coords2154 }
+                filtered.forEach(s => {
+                    const statusVal = currentPatrimonialMap && currentPatrimonialMap[s.name];
+                    const statusStr = Array.isArray(statusVal) ? statusVal.join('; ') : (statusVal || '');
+                    const ecoStr = ecolOf(s.name);
+                    features.push({
+                        type: 'Feature',
+                        properties: { species: s.name, status: statusStr, ecology: ecoStr },
+                        geometry: { type: 'Point', coordinates: coords2154 }
+                    });
                 });
             }
         }
@@ -896,6 +902,7 @@ const initializeSelectionMap = (coords) => {
     };
 
     const displayResults = (occurrences, patrimonialMap, wkt) => {
+        currentPatrimonialMap = patrimonialMap;
         resultsContainer.innerHTML = '';
         // Ne pas effacer les points précédents pour conserver l'historique
         hideZnieffOnly = false;
@@ -1504,7 +1511,23 @@ const initializeSelectionMap = (coords) => {
                 } catch (e) { /* ignore */ }
             }
             if (typeof downloadShapefile === 'function') {
-                downloadShapefile(currentShapefileData, LAMBERT93_WKT, fileName);
+                let features = currentShapefileData.features;
+                if (map && typeof proj4 !== 'undefined') {
+                    const b = map.getBounds();
+                    const [minX, minY] = proj4('EPSG:4326', 'EPSG:2154', [b.getWest(), b.getSouth()]);
+                    const [maxX, maxY] = proj4('EPSG:4326', 'EPSG:2154', [b.getEast(), b.getNorth()]);
+                    features = features.filter(f => {
+                        const [x, y] = f.geometry.coordinates;
+                        return x >= minX && x <= maxX && y >= minY && y <= maxY;
+                    });
+                }
+                if (features.length === 0) {
+                    if (typeof showNotification === 'function') {
+                        showNotification('Aucune observation visible à exporter', 'warning');
+                    }
+                    return;
+                }
+                downloadShapefile({ type: 'FeatureCollection', features }, LAMBERT93_WKT, fileName);
             }
         } catch (e) {
             if (typeof showNotification === 'function') {

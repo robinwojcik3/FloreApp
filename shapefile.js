@@ -66,9 +66,13 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
 
   function dbfBuffer() {
     const encoder = new TextEncoder();
-    const fieldLength = 254;
-    const recordLength = fieldLength + 1;
-    const headerLength = 33 + 32;
+    const fields = [
+      { name: 'SPECIES', length: 100 },
+      { name: 'STATUS', length: 254 },
+      { name: 'ECOLOGY', length: 254 }
+    ];
+    const recordLength = fields.reduce((s, f) => s + f.length, 1);
+    const headerLength = 33 + 32 * fields.length;
     const buf = new ArrayBuffer(headerLength + recordLength * points.length + 1);
     const dv = new DataView(buf);
     const now = new Date();
@@ -80,21 +84,28 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
     dv.setUint16(8, headerLength, true);
     dv.setUint16(10, recordLength, true);
     let pos = 32;
-    const nameBuf = encoder.encode('SPECIES');
-    new Uint8Array(buf).set(nameBuf, pos);
-    pos += 11;
-    dv.setUint8(pos, 'C'.charCodeAt(0));
-    pos += 4; // address not used
-    dv.setUint8(pos, fieldLength);
-    pos += 16; // rest zeros
+    fields.forEach(f => {
+      const nameBuf = encoder.encode(f.name);
+      new Uint8Array(buf).set(nameBuf.slice(0, 10), pos);
+      pos += 11;
+      dv.setUint8(pos, 'C'.charCodeAt(0));
+      pos += 4; // address not used
+      dv.setUint8(pos, f.length);
+      pos += 16; // rest zeros
+    });
     dv.setUint8(headerLength - 1, 0x0D);
+
     let offset = headerLength;
     points.forEach(p => {
       dv.setUint8(offset, 0x20); // not deleted
-      const txt = p.props.species || '';
-      const tbuf = encoder.encode(txt.substring(0, fieldLength));
-      new Uint8Array(buf).set(tbuf, offset + 1);
-      offset += recordLength;
+      offset += 1;
+      const values = [p.props.species || '', p.props.status || '', p.props.ecology || ''];
+      fields.forEach((f, idx) => {
+        const txt = values[idx];
+        const tbuf = encoder.encode(String(txt).substring(0, f.length));
+        new Uint8Array(buf).set(tbuf, offset);
+        offset += f.length;
+      });
     });
     new Uint8Array(buf)[offset] = 0x1A;
     return buf;
