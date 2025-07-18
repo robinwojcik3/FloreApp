@@ -1509,6 +1509,7 @@ const initializeSelectionMap = (coords) => {
             const bounds = map.getBounds();
             const features = [];
             patrimonialLayerGroup.eachLayer(layer => {
+                if (!map.hasLayer(layer)) return; // skip hidden markers
                 const latlng = layer.getLatLng();
                 if (!bounds.contains(latlng)) return;
                 if (typeof proj4 !== 'undefined' && Array.isArray(layer.speciesList)) {

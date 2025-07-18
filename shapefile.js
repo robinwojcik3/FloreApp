@@ -91,7 +91,8 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
       dv.setUint8(pos, 'C'.charCodeAt(0));
       pos += 4; // address not used
       dv.setUint8(pos, f.length);
-      pos += 16; // rest zeros
+      pos += 1; // decimal count
+      pos += 15; // reserved bytes
     });
     dv.setUint8(headerLength - 1, 0x0D);
     let offset = headerLength;
@@ -99,9 +100,10 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
       dv.setUint8(offset, 0x20); // not deleted
       offset += 1;
       fields.forEach(f => {
-        const txt = p.props[f.prop] || '';
-        const tbuf = encoder.encode(txt.substring(0, f.length));
-        new Uint8Array(buf).set(tbuf, offset);
+        const txt = (p.props[f.prop] || '').substring(0, f.length);
+        const padded = txt.padEnd(f.length, ' ');
+        const tbuf = encoder.encode(padded);
+        new Uint8Array(buf).set(tbuf.slice(0, f.length), offset);
         offset += f.length;
       });
     });
