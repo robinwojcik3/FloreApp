@@ -95,13 +95,16 @@ window.downloadShapefile = function(featureCollection, prjString, fileName = 'pa
     });
     dv.setUint8(headerLength - 1, 0x0D);
     let offset = headerLength;
+    const u8 = new Uint8Array(buf);
     points.forEach(p => {
       dv.setUint8(offset, 0x20); // not deleted
       offset += 1;
       fields.forEach(f => {
         const txt = p.props[f.prop] || '';
-        const tbuf = encoder.encode(txt.substring(0, f.length));
-        new Uint8Array(buf).set(tbuf, offset);
+        const encoded = encoder.encode(txt);
+        const len = Math.min(encoded.length, f.length);
+        u8.set(encoded.slice(0, len), offset);
+        if (len < f.length) u8.fill(0x20, offset + len, offset + f.length);
         offset += f.length;
       });
     });
