@@ -104,3 +104,15 @@ L.tileLayer('/tiles/{z}/{x}/{y}.png', {
 
 Activez la compression (gzip ou brotli) pour limiter le poids des transferts.
 
+## Scraping
+
+Avant tout lancement local (`netlify dev`), créez un fichier `.env` contenant
+la variable `CHROME_WS_ENDPOINT` fournie par Browserless :
+
+```bash
+CHROME_WS_ENDPOINT=wss://chrome.browserless.io?token=VOTRE_TOKEN
+```
+
+Cette URL est utilisée par `netlify/functions/arcgis-scrape.js` pour se
+connecter au navigateur distant.
+
