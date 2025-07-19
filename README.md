@@ -25,17 +25,19 @@ déclarées dans `package.json` (notamment `node-fetch` utilisé par les fonctio
 serverless).
 
 Copiez ensuite `env.example` en `.env` et remplissez les clés
-`PLANTNET_API_KEY`, `GEMINI_API_KEY` et `TTS_API_KEY`.
+`PLANTNET_API_KEY`, `GEMINI_API_KEY`, `TTS_API_KEY` et
+`CHROME_WS_ENDPOINT` (WebSocket Browserless).
 
 Si vous déployez sur Netlify, ces variables se définissent dans l'interface sous
-**Site settings > Environment variables**.
+**Site settings > Environment variables**. N'oubliez pas d'y ajouter
+`CHROME_WS_ENDPOINT` pour la fonction de scraping.
 
 ## Configuration
 
-Les fonctions Netlify lisent les clés `PLANTNET_API_KEY`, `GEMINI_API_KEY` et
-`TTS_API_KEY` depuis l'environnement. `netlify dev` charge automatiquement le
-fichier `.env` si présent. Vérifiez donc que ces variables sont définies avant de
-lancer l'application.
+Les fonctions Netlify lisent les clés `PLANTNET_API_KEY`, `GEMINI_API_KEY`,
+`TTS_API_KEY` et `CHROME_WS_ENDPOINT` depuis l'environnement.
+`netlify dev` charge automatiquement le fichier `.env` si présent. Vérifiez donc
+que ces variables sont définies avant de lancer l'application.
 
 ## Lancement en local
 
