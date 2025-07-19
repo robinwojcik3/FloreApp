@@ -1,5 +1,7 @@
-// Use puppeteer-core to avoid bundling Chromium
-const puppeteer = require('puppeteer-core');
+// Use puppeteer-core when connecting to a remote browserless instance
+// Fallback to the full puppeteer package when no endpoint is provided
+const puppeteerCore = require('puppeteer-core');
+const puppeteer = require('puppeteer');
 require('dotenv').config(); // charge .env en dev
 process.env.PUPPETEER_SKIP_DOWNLOAD = 'true';
 
@@ -9,12 +11,15 @@ const ARC_GIS_URL =
 
 exports.handler = async () => {
   const ws = process.env.CHROME_WS_ENDPOINT;
-  if (!ws) {
-    return { statusCode: 500, body: '{"ok":false,"error":"CHROME_WS_ENDPOINT manquant"}' };
-  }
   let browser;
   try {
-    browser = await puppeteer.connect({ browserWSEndpoint: ws });
+    if (ws) {
+      // Connect to a remote Chrome instance when provided
+      browser = await puppeteerCore.connect({ browserWSEndpoint: ws });
+    } else {
+      // Fall back to launching a local Chromium bundled with puppeteer
+      browser = await puppeteer.launch({ args: ['--no-sandbox'] });
+    }
 
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 900 });

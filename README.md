@@ -81,8 +81,9 @@ Poussez le dépôt sur GitHub puis créez un site sur Netlify. Le fichier `netli
 
 Avant tout lancement local (`netlify dev`) créez un fichier `.env` à la racine
 contenant la clé `CHROME_WS_ENDPOINT` fournie par Browserless.
-Sans cette variable, la fonction de scraping renverra une erreur et Chromium ne
-sera pas téléchargé localement.
+Si cette variable est absente, la fonction tentera d'ouvrir le
+Chromium inclus avec Puppeteer, mais l'utilisation d'un navigateur
+distant reste recommandée pour un déploiement léger.
 
 ## Intégration de la Carte de la Végétation Potentielle
 
