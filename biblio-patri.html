@@ -55,33 +55,34 @@
         margin-top: 4px;
         white-space: nowrap;
       }
-      .results-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1rem;
-        margin-top: 1rem;
-      }
-      .resource-btn {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 1rem;
-        background: var(--card);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        text-decoration: none;
-        color: var(--text);
-        transition: transform .2s;
-      }
-      .resource-btn:hover { transform: scale(1.05); }
-      .resource-icon { width: 40px; height: 40px; margin-bottom: 0.5rem; }
-      .resources-popup {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 0.5rem;
-      }
+        .results-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+          gap: 0.5rem;
+          margin-top: 0.5rem;
+        }
+        .resource-btn {
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          padding: 0.4rem 0.6rem;
+          border-radius: 6px;
+          text-decoration: none;
+          color: #fff;
+          font-size: 0.9rem;
+          transition: filter .2s;
+        }
+        .resource-btn:hover { filter: brightness(1.1); }
+        .resource-icon { width: 24px; height: 24px; margin: 0; }
+        .resources-popup {
+          display: grid;
+          grid-template-columns: 1fr;
+          gap: 0.4rem;
+        }
+        .arcgis { background:#4caf50; }
+        .geoportail { background:#2196f3; }
+        .ign { background:#ff7043; }
+        .inaturalist { background:#2e7d32; }
     </style>
 </head>
 <body>
