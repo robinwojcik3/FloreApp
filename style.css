@@ -114,6 +114,12 @@ h1 {
     width: 100%;
 }
 
+/* Des boutons plus compacts dans la grille d'actions */
+.button-grid .action-button {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.9rem;
+}
+
 
 
 #address-input {
@@ -333,6 +339,10 @@ html[data-theme="dark"] tbody tr:hover { background-color: rgba(198,40,40,0.15);
     }
     .button-grid {
         grid-template-columns: repeat(3, 1fr);
+    }
+    .button-grid .action-button {
+        padding: 0.35rem 0.4rem;
+        font-size: 0.85rem;
     }
 }
 /* Style pour la navigation principale (issue de l'app cible) */
