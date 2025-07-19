@@ -50,7 +50,6 @@ netlify dev
 
 ## Tests
 
-
 Le projet inclut une suite Jest. Pour faciliter l'exécution des tests sur
 toute plateforme, un script est fourni pour installer les dépendances et
 lancer Jest automatiquement :
@@ -78,9 +77,9 @@ Poussez le dépôt sur GitHub puis créez un site sur Netlify. Le fichier `netli
 ## Scraping
 
 Avant tout lancement local (`netlify dev`) créez un fichier `.env` à la racine
-contenant éventuellement la clé `CHROME_WS_ENDPOINT` fournie par Browserless.
-Si cette variable est absente, un navigateur Chromium sera lancé localement via
-Puppeteer.
+contenant la clé `CHROME_WS_ENDPOINT` fournie par Browserless.
+Cette variable est désormais obligatoire : Puppeteer se connecte uniquement à
+ce navigateur distant et n'installe plus Chromium localement.
 
 ## Intégration de la Carte de la Végétation Potentielle
 
@@ -110,4 +109,3 @@ L.tileLayer('/tiles/{z}/{x}/{y}.png', {
 ```
 
 Activez la compression (gzip ou brotli) pour limiter le poids des transferts.
-

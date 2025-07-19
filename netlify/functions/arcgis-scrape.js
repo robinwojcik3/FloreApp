@@ -1,6 +1,7 @@
-// Use full puppeteer to embed a local Chromium when needed
-const puppeteer = require('puppeteer');
-require('dotenv').config();
+// Connects to a remote Chrome instance (Browserless)
+const puppeteer = require('puppeteer-core');
+require('dotenv').config(); // charge .env en dev
+process.env.PUPPETEER_SKIP_DOWNLOAD = 'true';
 
 const ARC_GIS_URL =
   'https://www.arcgis.com/apps/webappviewer/index.html?id=' +
@@ -10,11 +11,11 @@ exports.handler = async () => {
   let browser;
   try {
     const ws = process.env.CHROME_WS_ENDPOINT;
-    if (ws) {
-      browser = await puppeteer.connect({ browserWSEndpoint: ws });
-    } else {
-      browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    if (!ws) {
+      return { statusCode: 500, body: '{"ok":false,"error":"CHROME_WS_ENDPOINT manquant"}' };
     }
+
+    browser = await puppeteer.connect({ browserWSEndpoint: ws });
 
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 900 });
@@ -27,7 +28,7 @@ exports.handler = async () => {
     const popupSel = '.esriPopup, .esri-popup, .esri-popup__main, .dijitPopup';
     await page.waitForSelector(popupSel, { timeout: 2_000 });
 
-    const data = await page.evaluate(sel => {
+    const data = await page.evaluate((sel) => {
       const n = document.querySelector(sel);
       return n ? n.innerText.trim() : null;
     }, popupSel);
@@ -35,7 +36,7 @@ exports.handler = async () => {
     return {
       statusCode: 200,
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok: true, data }),
+      body: JSON.stringify({ ok: true, data })
     };
   } catch (err) {
     return { statusCode: 500, body: JSON.stringify({ ok: false, error: err.message }) };
