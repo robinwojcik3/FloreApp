@@ -75,6 +75,11 @@ Poussez le dépôt sur GitHub puis créez un site sur Netlify. Le fichier `netli
 - recherche par trigramme et suggestions via TaxRef Match
 - comparaison d'espèces et synthèse vocale optionnelle
 
+## Scraping
+
+Avant tout lancement local (`netlify dev`) créez un fichier `.env` à la racine
+contenant la clé `CHROME_WS_ENDPOINT` fournie par Browserless.
+
 ## Intégration de la Carte de la Végétation Potentielle
 
 Cette application peut afficher la Carte de la Végétation Potentielle (CVP)
