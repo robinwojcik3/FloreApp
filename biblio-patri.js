@@ -1740,8 +1740,27 @@ const initializeSelectionMap = (coords) => {
         grid.style.display = 'grid';
     };
 
+    const openResourcesPopup = (latlng) => {
+        const grid = document.getElementById('resources-grid');
+        if (grid) grid.style.display = 'none';
+        const container = L.DomUtil.create('div', 'resources-popup');
+        Object.values(SERVICES).forEach(s => {
+            const url = s.buildUrl(latlng.lat, latlng.lng);
+            const link = L.DomUtil.create('a', 'resource-btn', container);
+            link.href = url; link.target = '_blank'; link.rel = 'noopener noreferrer';
+            const img = L.DomUtil.create('img', 'resource-icon', link);
+            img.src = s.icon; img.alt = '';
+            const span = L.DomUtil.create('span', '', link);
+            span.textContent = s.name;
+        });
+        L.popup({ className: 'resources-popup-container' })
+            .setLatLng(latlng)
+            .setContent(container)
+            .openOn(map);
+    };
+
     const runResourcesAt = (latlng) => {
-        displayResources(latlng);
+        openResourcesPopup(latlng);
     };
 
     
