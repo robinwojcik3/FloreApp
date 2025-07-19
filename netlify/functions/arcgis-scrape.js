@@ -1,4 +1,5 @@
 const puppeteer = require('puppeteer-core');
+require('dotenv').config();
 
 const ARC_GIS_URL =
   'https://www.arcgis.com/apps/webappviewer/index.html?id=' +
@@ -7,9 +8,15 @@ const ARC_GIS_URL =
 exports.handler = async () => {
   let browser;
   try {
-    browser = await puppeteer.connect({
-      browserWSEndpoint: process.env.CHROME_WS_ENDPOINT,
-    });
+    const ws = process.env.CHROME_WS_ENDPOINT;
+    if (!ws) {
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ ok: false, error: 'CHROME_WS_ENDPOINT not configured' }),
+      };
+    }
+
+    browser = await puppeteer.connect({ browserWSEndpoint: ws });
 
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 900 });

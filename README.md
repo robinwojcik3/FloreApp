@@ -104,3 +104,10 @@ L.tileLayer('/tiles/{z}/{x}/{y}.png', {
 
 Activez la compression (gzip ou brotli) pour limiter le poids des transferts.
 
+## Scraping
+
+Certaines fonctions utilisent Puppeteer pour récupérer des informations sur des
+sites tiers. Avant tout lancement local (`netlify dev`), créez un fichier `.env`
+à la racine et définissez-y `CHROME_WS_ENDPOINT` avec l'URL de votre instance
+Browserless.
+
