@@ -1,6 +1,7 @@
-// Use full puppeteer to embed a local Chromium when needed
-const puppeteer = require('puppeteer');
-require('dotenv').config();
+// Connect to a remote Chrome instance without downloading Chromium
+const puppeteer = require('puppeteer-core');
+require('dotenv').config(); // charge .env en dev
+process.env.PUPPETEER_SKIP_DOWNLOAD = 'true';
 
 const ARC_GIS_URL =
   'https://www.arcgis.com/apps/webappviewer/index.html?id=' +
@@ -10,11 +11,13 @@ exports.handler = async () => {
   let browser;
   try {
     const ws = process.env.CHROME_WS_ENDPOINT;
-    if (ws) {
-      browser = await puppeteer.connect({ browserWSEndpoint: ws });
-    } else {
-      browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+    if (!ws) {
+      return {
+        statusCode: 500,
+        body: '{"ok":false,"error":"CHROME_WS_ENDPOINT manquant"}',
+      };
     }
+    browser = await puppeteer.connect({ browserWSEndpoint: ws });
 
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 900 });
