@@ -1,4 +1,6 @@
-const puppeteer = require('puppeteer-core');
+const puppeteer = process.env.CHROME_WS_ENDPOINT
+  ? require('puppeteer-core')
+  : require('puppeteer');
 require('dotenv').config();
 
 const ARC_GIS_URL =
@@ -9,14 +11,11 @@ exports.handler = async () => {
   let browser;
   try {
     const ws = process.env.CHROME_WS_ENDPOINT;
-    if (!ws) {
-      return {
-        statusCode: 500,
-        body: JSON.stringify({ ok: false, error: 'CHROME_WS_ENDPOINT not configured' }),
-      };
+    if (ws) {
+      browser = await puppeteer.connect({ browserWSEndpoint: ws });
+    } else {
+      browser = await puppeteer.launch({ headless: 'new' });
     }
-
-    browser = await puppeteer.connect({ browserWSEndpoint: ws });
 
     const page = await browser.newPage();
     await page.setViewport({ width: 1280, height: 900 });
