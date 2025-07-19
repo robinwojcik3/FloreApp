@@ -3,24 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Intégration</title>
+    <title>Scraping</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" href="icons/icon-192.png">
     <link rel="stylesheet" href="style.css">
     <script defer src="ui.js"></script>
     <script defer src="sw-register.js"></script>
+    <script defer src="scraping.js"></script>
 </head>
 <body>
     <nav class="tabs-container">
         <div class="tabs">
             <button class="tab" onclick="window.location.href='index.html'">Identification</button>
             <button class="tab" onclick="window.location.href='biblio-patri.html'">Biblio Patri</button>
-            <button class="tab active">Intégration</button>
-            <button class="tab" onclick="window.location.href='scraping.html'">Scraping</button>
+            <button class="tab" onclick="window.location.href='integration.html'">Intégration</button>
+            <button class="tab active">Scraping</button>
         </div>
     </nav>
-    <div class="main-content" style="text-align:center;">
-        <iframe width="1080" height="720" frameborder="0" scrolling="no" allowfullscreen src="https://arcg.is/1y14eW0"></iframe>
+    <div class="p-6 space-y-4" style="padding:1.5rem;">
+        <button id="run-scrape-btn" class="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50">
+            Lancer le scraping
+        </button>
+        <pre id="scrape-result" class="whitespace-pre-wrap bg-gray-100 p-4 rounded" style="display:none;"></pre>
     </div>
 </body>
 </html>
