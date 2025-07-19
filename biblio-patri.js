@@ -1723,21 +1723,27 @@ const initializeSelectionMap = (coords) => {
 
     const displayResources = (latlng) => {
         const grid = document.getElementById('resources-grid');
-        if (!grid) return;
-        grid.innerHTML = '';
+        if (grid) {
+            grid.innerHTML = '';
+            grid.style.display = 'none';
+        }
+        const container = L.DomUtil.create('div', 'resource-popup');
         Object.values(SERVICES).forEach(s => {
             const url = s.buildUrl(latlng.lat, latlng.lng);
-            const link = document.createElement('a');
-            link.href = url; link.target = '_blank'; link.rel = 'noopener noreferrer';
-            link.className = 'resource-btn';
-            const img = document.createElement('img');
-            img.src = s.icon; img.alt = ''; img.className = 'resource-icon';
-            const span = document.createElement('span');
+            const link = L.DomUtil.create('a', 'resource-btn', container);
+            link.href = url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            const img = L.DomUtil.create('img', 'resource-icon', link);
+            img.src = s.icon;
+            img.alt = '';
+            const span = L.DomUtil.create('span', '', link);
             span.textContent = s.name;
-            link.appendChild(img); link.appendChild(span);
-            grid.appendChild(link);
         });
-        grid.style.display = 'grid';
+        L.popup({ maxWidth: 260 })
+            .setLatLng(latlng)
+            .setContent(container)
+            .openOn(map);
     };
 
     const runResourcesAt = (latlng) => {
