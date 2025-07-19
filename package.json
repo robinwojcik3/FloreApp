@@ -15,7 +15,8 @@
   },
   "dependencies": {
     "node-fetch": "^2.6.7",
-    "form-data": "^4.0.0"
+    "form-data": "^4.0.0",
+    "puppeteer-core": "^21.0.0"
   },
   "devDependencies": {
     "jest": "^29.7.0",
