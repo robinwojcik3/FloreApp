@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Scraping</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+  <script defer src="scraping.js"></script>
+</head>
+<body>
+  <nav class="tabs-container">
+    <div class="tabs">
+      <button class="tab" onclick="window.location.href='index.html'">Identification</button>
+      <button class="tab" onclick="window.location.href='biblio-patri.html'">Biblio Patri</button>
+      <button class="tab" onclick="window.location.href='integration.html'">Intégration</button>
+      <button class="tab active">Scraping</button>
+    </div>
+  </nav>
+
+  <div style="padding:1rem;">
+    <button id="scrape-btn" class="action-button">Lancer le scraping</button>
+    <pre id="scrape-output" style="white-space:pre-wrap;background:var(--card);padding:1rem;border-radius:8px;margin-top:1rem;"></pre>
+  </div>
+</body>
+</html>
