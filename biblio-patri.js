@@ -428,7 +428,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             measurePoints = [];
             profileSamples = [];
             if (profileContainer) profileContainer.style.display = 'none';
-            measureDistanceBtn.textContent = '📏 Mesurer';
+            measureDistanceBtn.textContent = '📐 Mesurer';
         }
     };
 
@@ -1300,7 +1300,7 @@ const initializeSelectionMap = (coords) => {
         if (!lineDrawing) return;
         lineDrawing = false;
         if (crosshair) crosshair.style.display = 'none';
-        if (drawLineBtn) drawLineBtn.textContent = '📐 Analyse linéaire';
+        if (drawLineBtn) drawLineBtn.textContent = '📏 Analyse linéaire';
         map.off('click', onMapClickLine);
         map.off('contextmenu', onMapContextLine);
         map.off('mousedown', onDownLine);
