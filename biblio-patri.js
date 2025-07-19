@@ -1692,6 +1692,7 @@ const initializeSelectionMap = (coords) => {
         arcgis: {
             name: "ArcGIS - Carte de la végétation",
             description: "Visualisez la carte de végétation de la zone",
+            color: "#558B2F",
             icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+PHBvbHlsaW5lIHBvaW50cz0iMiA3IDkgNCAxNSA3IDIyIDQgMjIgMTcgMTUgMjAgOSAxNyAyIDIwIDIgNyIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIvPjxsaW5lIHgxPSI5IiB5MT0iNCIgeDI9IjkiIHkyPSIxNyIgLz48bGluZSB4MT0iMTUiIHkxPSI3IiB4Mj0iMTUiIHkyPSIyMCIgLz48L3N2Zz4=',
             buildUrl: (lat, lon) => {
                 const R = 6378137.0;
@@ -1704,18 +1705,21 @@ const initializeSelectionMap = (coords) => {
         geoportail: {
             name: "Géoportail - Carte des sols",
             description: "Explorez la carte pédologique de la zone",
+            color: "#0072FF",
             icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iOSI+PC9jaXJjbGU+PHBhdGggZD0iTTMgMTJoMTgiIC8+PHBhdGggZD0iTTEyIDNhOSA5IDAgMCAwIDAgMTgiIC8+PHBhdGggZD0iTTEyIDNhOSA5IDAgMCAxIDAgMTgiIC8+PC9zdmc+',
             buildUrl: (lat, lon) => `https://www.geoportail.gouv.fr/carte?c=${lon},${lat}&z=15&l0=ORTHOIMAGERY.ORTHOPHOTOS::GEOPORTAIL:OGC:WMTS(1)&l1=AGRICULTURE.CARTE.PEDOLOGIQUE::GEOPORTAIL:OGC:WMS(0.5)&permalink=yes`
         },
         ign: {
             name: "IGN Remonter le temps",
             description: "Comparez l'évolution du paysage dans le temps",
+            color: "#8B4513",
             icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iOSI+PC9jaXJjbGU+PHBvbHlsaW5lIHBvaW50cz0iMTIgNyAxMiAxMiAxNSAxNSIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiAvPjwvc3ZnPg==',
             buildUrl: (lat, lon) => `https://remonterletemps.ign.fr/comparer?lon=${lon.toFixed(6)}&lat=${lat.toFixed(6)}&z=17&layer1=16&layer2=19&mode=split-h`
         },
         inaturalist: {
             name: "iNaturalist - Observations",
             description: "Découvrez les observations naturalistes de la zone",
+            color: "#2E7D32",
             icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+PHBhdGggZD0iTTEyIDJDNyAyIDQgMTIgNCAxMnMzIDEwIDggMTAgOC0xMCA4LTEwLTMtMTAtOC0xMHoiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PGxpbmUgeDE9IjEyIiB5MT0iMiIgeDI9IjEyIiB5Mj0iMjIiIC8+PC9zdmc+',
             buildUrl: (lat, lon) => `https://www.inaturalist.org/observations?lat=${lat.toFixed(8)}&lng=${lon.toFixed(8)}&radius=5&subview=map&threatened&iconic_taxa=Plantae`
         }
@@ -1728,13 +1732,22 @@ const initializeSelectionMap = (coords) => {
         Object.values(SERVICES).forEach(s => {
             const url = s.buildUrl(latlng.lat, latlng.lng);
             const link = document.createElement('a');
-            link.href = url; link.target = '_blank'; link.rel = 'noopener noreferrer';
+            link.href = url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
             link.className = 'resource-btn';
+            if (s.color) {
+                link.style.backgroundColor = s.color;
+                link.style.color = '#fff';
+            }
             const img = document.createElement('img');
-            img.src = s.icon; img.alt = ''; img.className = 'resource-icon';
+            img.src = s.icon;
+            img.alt = '';
+            img.className = 'resource-icon';
             const span = document.createElement('span');
             span.textContent = s.name;
-            link.appendChild(img); link.appendChild(span);
+            link.appendChild(img);
+            link.appendChild(span);
             grid.appendChild(link);
         });
         grid.style.display = 'grid';
@@ -1747,9 +1760,16 @@ const initializeSelectionMap = (coords) => {
         Object.values(SERVICES).forEach(s => {
             const url = s.buildUrl(latlng.lat, latlng.lng);
             const link = L.DomUtil.create('a', 'resource-btn', container);
-            link.href = url; link.target = '_blank'; link.rel = 'noopener noreferrer';
+            link.href = url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            if (s.color) {
+                link.style.backgroundColor = s.color;
+                link.style.color = '#fff';
+            }
             const img = L.DomUtil.create('img', 'resource-icon', link);
-            img.src = s.icon; img.alt = '';
+            img.src = s.icon;
+            img.alt = '';
             const span = L.DomUtil.create('span', '', link);
             span.textContent = s.name;
         });
