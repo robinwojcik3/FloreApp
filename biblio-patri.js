@@ -1697,7 +1697,7 @@ const initializeSelectionMap = (coords) => {
                 const R = 6378137.0;
                 const x = R * (lon * Math.PI / 180);
                 const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
-                const buffer = 1000;
+                const buffer = 3000;
                 return `https://www.arcgis.com/apps/webappviewer/index.html?id=bece6e542e4c42e0ba9374529c7de44c&extent=${x-buffer}%2C${y-buffer}%2C${x+buffer}%2C${y+buffer}%2C102100`;
             }
         },
