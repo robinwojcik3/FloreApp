@@ -464,9 +464,9 @@ window.handleSynthesisClick = async function(event, element, speciesName) {
     NOUVEAU : FONCTIONS POUR L'ANALYSE COMPARATIVE
     ================================================================ */
 async function getComparisonFromGemini(speciesData) {
-    const speciesDataString = speciesData.map(s => `Espèce: ${s.species}\nDonnées morphologiques (Physionomie): ${s.physio || 'Non renseignée'}\nDonnées écologiques: ${s.eco || 'Non renseignée'}`).join('\n\n');
+    const speciesDataString = speciesData.map(s => `Espèce: ${s.species}\nPhysionomie: ${s.physio || 'Non renseignée'}`).join('\n\n');
     
-    const promptTemplate = `En tant qu'expert botaniste, rédige une analyse comparative détaillée à partir des données ci-dessous. Les informations écologiques et morphologiques doivent uniquement provenir des champs "Critères physiologiques", "Écologie" et "Physionomie" indiqués.
+    const promptTemplate = `En tant qu'expert botaniste, rédige une analyse comparative détaillée en te basant uniquement sur le contenu de la colonne "Physionomie" indiqué ci-dessous.
 Données :
 ---
 ${speciesDataString}
@@ -475,7 +475,7 @@ Structure ta réponse en trois parties sans texte introductif superflu.
 
 Commence par une phrase unique (1 à 2 lignes) soulignant le trait distinctif le plus facilement observable.
 
-Ensuite, construis un tableau en Markdown où chaque espèce (nom latin seul) forme une colonne. Structure les lignes autour des organes végétatifs puis reproducteurs (feuille, tige, racine, fleur, fruit, etc.) et consacre environ quatre cinquièmes du contenu à ces différences morphologiques. Ajoute une ligne spécifique résumant les caractéristiques écologiques générales. Chaque cellule doit être une phrase courte et précise rédigée dans une terminologie botanique rigoureuse. Les informations doivent provenir uniquement des champs "Critères physiologiques", "Écologie" et "Physionomie". N'utilise ni gras ni italique. Ne garde dans ce tableau que les organes ou aspects écologiques présentant des différences entre les espèces ; omets les lignes sans distinction.
+Ensuite, construis un tableau en Markdown où chaque espèce (nom latin seul) forme une colonne. Structure les lignes autour des organes végétatifs puis reproducteurs (feuille, tige, racine, fleur, fruit, etc.) et consacre la majeure partie du contenu à ces différences morphologiques. Chaque cellule doit être une phrase courte et précise rédigée dans une terminologie botanique rigoureuse. Les informations doivent uniquement provenir de la colonne "Physionomie". N'utilise ni gras ni italique. Ne garde dans ce tableau que les organes présentant des différences entre les espèces ; omets les lignes sans distinction.
 
 Termine par un paragraphe de synthèse d'environ cinq à six phrases, rédigé dans un style oral mais rigoureux, rappelant les points clés pour ne pas confondre les espèces. Ce paragraphe ne doit contenir aucun formatage Markdown ni liste, ni caractères tels que '*' ou '/'.`;
 
@@ -559,8 +559,7 @@ async function handleComparisonClick() {
             : (box.dataset.species || '');
         return {
             species: latin,
-            physio: decodeURIComponent(box.dataset.physio),
-            eco: decodeURIComponent(box.dataset.eco)
+            physio: decodeURIComponent(box.dataset.physio)
         };
     });
 
