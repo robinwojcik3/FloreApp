@@ -114,3 +114,36 @@ L.tileLayer('/tiles/{z}/{x}/{y}.png', {
 
 Activez la compression (gzip ou brotli) pour limiter le poids des transferts.
 
+
+## API Selenium autonome
+
+Ce dépôt comprend une petite API FastAPI pour déclencher un workflow Selenium. Pour l’installer sur une VM Oracle Cloud (Ubuntu 22.04 ARM64) :
+
+1. Créez une instance "Always Free" puis connectez-vous en `ubuntu`.
+2. Mettez à jour le système : `sudo apt update && sudo apt upgrade`.
+3. Installez Python 3.12, Chromium et Nginx :
+   ```bash
+   sudo apt install python3.12-venv chromium-browser chromium-chromedriver nginx
+   ```
+4. Clonez le dépôt dans `/home/ubuntu/app` et installez les dépendances :
+   ```bash
+   python3.12 -m venv venv && source venv/bin/activate
+   pip install -r app/requirements.txt
+   ```
+5. Copiez `etc/systemd/system/selenium-api.service` dans `/etc/systemd/system/` puis activez le service :
+   ```bash
+   sudo cp etc/systemd/system/selenium-api.service /etc/systemd/system/
+   sudo systemctl enable --now selenium-api.service
+   ```
+6. Copiez la configuration Nginx et activez-la :
+   ```bash
+   sudo cp etc/nginx/sites-available/selenium /etc/nginx/sites-available/
+   sudo ln -s /etc/nginx/sites-available/selenium /etc/nginx/sites-enabled/
+   sudo systemctl restart nginx
+   ```
+7. Générez un certificat HTTPS avec Let’s Encrypt :
+   ```bash
+   sudo apt install certbot python3-certbot-nginx
+   sudo certbot --nginx -d example.com
+   ```
+8. Depuis le front-end Netlify, appelez `https://example.com/run?lat=LAT&lon=LON` et vérifiez la réponse `{"status":"started"}`.
