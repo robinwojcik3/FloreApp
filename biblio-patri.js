@@ -1707,7 +1707,8 @@ const initializeSelectionMap = (coords) => {
             description: "Explorez la carte pédologique de la zone",
             color: "#0072FF",
             icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+PGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iOSI+PC9jaXJjbGU+PHBhdGggZD0iTTMgMTJoMTgiIC8+PHBhdGggZD0iTTEyIDNhOSA5IDAgMCAwIDAgMTgiIC8+PHBhdGggZD0iTTEyIDNhOSA5IDAgMCAxIDAgMTgiIC8+PC9zdmc+',
-            buildUrl: (lat, lon) => `https://www.geoportail.gouv.fr/carte?c=${lon},${lat}&z=15&l0=ORTHOIMAGERY.ORTHOPHOTOS::GEOPORTAIL:OGC:WMTS(1)&l1=AGRICULTURE.CARTE.PEDOLOGIQUE::GEOPORTAIL:OGC:WMS(0.5)&permalink=yes`
+            buildUrl: (lat, lon) =>
+                `https://www.geoportail.gouv.fr/carte?c=${lon},${lat}&z=12&l0=ORTHOIMAGERY.ORTHOPHOTOS::GEOPORTAIL:OGC:WMTS(1)&l1=GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN25TOUR.CV::GEOPORTAIL:OGC:WMTS(1)&l2=INRA.CARTE.SOLS::GEOPORTAIL:OGC:WMTS(0.8)&permalink=yes`
         },
         ign: {
             name: "IGN Remonter le temps",
