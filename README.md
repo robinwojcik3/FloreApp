@@ -85,6 +85,10 @@ Si cette variable est absente, la fonction tentera d'ouvrir le
 Chromium inclus avec Puppeteer, mais l'utilisation d'un navigateur
 distant reste recommandée pour un déploiement léger.
 
+La fonction `arcgis-scrape` ouvre la carte ArcGIS, patiente cinq secondes
+puis déclenche quatre fois un clic sur le bouton « Zoom arrière » afin de
+capturer une vue plus large avant l'extraction des données.
+
 ## Intégration de la Carte de la Végétation Potentielle
 
 Cette application peut afficher la Carte de la Végétation Potentielle (CVP)
