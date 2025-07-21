@@ -1731,6 +1731,18 @@ const initializeSelectionMap = (coords) => {
             icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+PHBhdGggZD0iTTMgMjBMMTIgNWw5IDE1SDN6Ii8+PC9zdmc+',
             buildUrl: (lat, lon) =>
                 `https://www.geoportail.gouv.fr/carte?c=${lon},${lat}&z=13&l0=GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN25TOUR.CV::GEOPORTAIL:OGC:WMTS(1;h)&l1=ORTHOIMAGERY.ORTHOPHOTOS::GEOPORTAIL:OGC:WMTS(1)&l2=GEOGRAPHICALGRIDSYSTEMS.SLOPES.MOUNTAIN::GEOPORTAIL:OGC:WMTS(0.6)&permalink=yes`
+        },
+        wetlands: {
+            name: "Zone humide potentielles",
+            description: "Cartographie des zones humides potentielles",
+            color: "#009688",
+            icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+PHBhdGggZD0iTTEyIDJDMTIgMiA1IDkgNSAxNGE3IDcgMCAwIDAgMTQgMGMwLTUtNy0xMi03LTEyeiIvPjwvc3ZnPg==',
+            buildUrl: (lat, lon) => {
+                const R = 6378137.0;
+                const x = R * (lon * Math.PI / 180);
+                const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
+                return `https://sig.reseau-zones-humides.org/?zoom=9&lat=${y.toFixed(5)}&lon=${x.toFixed(5)}&idlyr=16484&blyr=Ortho%20IGN&vlyr=1`;
+            }
         }
     };
 
