@@ -85,6 +85,17 @@ Si cette variable est absente, la fonction tentera d'ouvrir le
 Chromium inclus avec Puppeteer, mais l'utilisation d'un navigateur
 distant reste recommandée pour un déploiement léger.
 
+Cette clé s'obtient gratuitement sur <https://www.browserless.io/>. Copiez le
+WebSocket fourni (format `wss://...`) puis placez‑le dans votre `.env` :
+
+```bash
+CHROME_WS_ENDPOINT=wss://chrome.browserless.io?token=VOTRE_TOKEN
+```
+
+Une fois configuré, lancez `netlify dev` et ouvrez `scraping.html` pour tester le
+bouton **Lancer le scraping**. La pop‑up de la carte ArcGIS est lue et son texte
+renvoyé au format JSON dans la page.
+
 ## Intégration de la Carte de la Végétation Potentielle
 
 Cette application peut afficher la Carte de la Végétation Potentielle (CVP)
