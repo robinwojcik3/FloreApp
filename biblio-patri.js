@@ -1731,6 +1731,18 @@ const initializeSelectionMap = (coords) => {
             icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+PHBhdGggZD0iTTMgMjBMMTIgNWw5IDE1SDN6Ii8+PC9zdmc+',
             buildUrl: (lat, lon) =>
                 `https://www.geoportail.gouv.fr/carte?c=${lon},${lat}&z=13&l0=GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN25TOUR.CV::GEOPORTAIL:OGC:WMTS(1;h)&l1=ORTHOIMAGERY.ORTHOPHOTOS::GEOPORTAIL:OGC:WMTS(1)&l2=GEOGRAPHICALGRIDSYSTEMS.SLOPES.MOUNTAIN::GEOPORTAIL:OGC:WMTS(0.6)&permalink=yes`
+        },
+        wetlands: {
+            name: "Zone humide potentielles",
+            description: "Ouvre la carte des zones humides potentielles",
+            color: "#1E88E5",
+            icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9ImN1cnJlbnRDb2xvciIgc3Ryb2tlLXdpZHRoPSIyIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiPjxwYXRoIGQ9Ik0xMiAyLjY5bDUuNjYgNS42NmE4IDggMCAxIDEtMTEuMzEgMHoiLz48L3N2Zz4=',
+            buildUrl: (lat, lon) => {
+                const R = 6378137.0;
+                const x = R * (lon * Math.PI / 180);
+                const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
+                return `https://sig.reseau-zones-humides.org/?zoom=9&lat=${y.toFixed(5)}&lon=${x.toFixed(5)}&idlyr=16484&blyr=Ortho%20IGN&vlyr=1`;
+            }
         }
     };
 
