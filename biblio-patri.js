@@ -504,7 +504,10 @@ let patrimonialStatusMap = {};
     let trackingMarker = null;
     let trackingActive = false;
     let ecology = {};
-    let floreAlpesIndex = {};
+let floreAlpesIndex = {};
+let synonymsMap = {};
+
+const canonicalName = (name) => synonymsMap[name] || name;
 
     function norm(txt) {
         if (typeof txt !== 'string') return '';
@@ -625,10 +628,11 @@ let patrimonialStatusMap = {};
     const initializeApp = async () => {
         try {
             setStatus("Chargement des données...");
-            const [bdcResp, ecoResp, faResp] = await Promise.all([
+            const [bdcResp, ecoResp, faResp, synResp] = await Promise.all([
                 fetch('BDCstatut.csv'),
                 fetch('ecology.json'),
-                fetch('assets/florealpes_index.json')
+                fetch('assets/florealpes_index.json'),
+                fetch('synonyms.json')
             ]);
             if (!bdcResp.ok) throw new Error("Le référentiel BDCstatut.csv est introuvable.");
             if (!ecoResp.ok) throw new Error("Le fichier ecology.json est introuvable.");
@@ -640,6 +644,9 @@ let patrimonialStatusMap = {};
                 ecology[norm(k.split(';')[0])] = v;
             });
             floreAlpesIndex = await faResp.json();
+            if (synResp.ok) {
+                synonymsMap = await synResp.json();
+            }
             setStatus("");
             console.log(`Référentiel chargé, ${rulesByTaxonIndex.size} taxons indexés.`);
         } catch (error) {
@@ -791,8 +798,9 @@ const initializeSelectionMap = (coords) => {
         let allOccurrencesWithContext = [];
         const taxonKeyMap = new Map();
         initialOccurrences.forEach(occ => {
-            if (occ.species && occ.speciesKey && !taxonKeyMap.has(occ.species)) {
-                taxonKeyMap.set(occ.species, occ.speciesKey);
+            const name = canonicalName(occ.species);
+            if (name && occ.speciesKey && !taxonKeyMap.has(name)) {
+                taxonKeyMap.set(name, occ.speciesKey);
             }
         });
         for (const [index, speciesName] of speciesNames.entries()) {
@@ -1074,6 +1082,9 @@ const initializeSelectionMap = (coords) => {
                 }
 
                 if (pageData.results?.length > 0) {
+                    pageData.results.forEach(o => {
+                        if (o.species) o.species = canonicalName(o.species);
+                    });
                     allOccurrences = allOccurrences.concat(pageData.results);
                 }
 
@@ -1093,7 +1104,7 @@ const initializeSelectionMap = (coords) => {
             if (allOccurrences.length === 0) { throw new Error("Aucune occurrence de plante trouvée à proximité."); }
             setStatus("Étape 3/4: Analyse des données...");
             updateProgress(40);
-            const uniqueSpeciesNames = [...new Set(allOccurrences.map(o => o.species).filter(Boolean))];
+            const uniqueSpeciesNames = [...new Set(allOccurrences.map(o => canonicalName(o.species)).filter(Boolean))];
             const relevantRules = new Map();
             const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${params.latitude}&lon=${params.longitude}&fields=departement,region`)).json())[0];
             const departementCode = departement.code;
@@ -1445,15 +1456,16 @@ const initializeSelectionMap = (coords) => {
         const speciesNames = [];
 
         floraOccs.forEach(o => {
-            if (o.decimalLatitude && o.decimalLongitude && o.species) {
-                if (!speciesNames.includes(o.species)) speciesNames.push(o.species);
+            const name = canonicalName(o.species);
+            if (o.decimalLatitude && o.decimalLongitude && name) {
+                if (!speciesNames.includes(name)) speciesNames.push(name);
                 const coordKey = `${o.decimalLatitude.toFixed(5)},${o.decimalLongitude.toFixed(5)}`;
                 if (!locations.has(coordKey)) {
                     locations.set(coordKey, { lat: o.decimalLatitude, lon: o.decimalLongitude, speciesList: [] });
                 }
                 const loc = locations.get(coordKey);
-                if (!loc.speciesList.some(s => s.name === o.species)) {
-                    loc.speciesList.push({ name: o.species });
+                if (!loc.speciesList.some(s => s.name === name)) {
+                    loc.speciesList.push({ name });
                 }
             }
         });
