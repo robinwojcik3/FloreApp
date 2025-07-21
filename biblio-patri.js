@@ -98,6 +98,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     let measureLine = null;
     let measureTooltip = null;
 
+    // Store canonical names for the last analysis
+    let lastCanonicalNames = {};
+
     const ALTITUDES_URL = 'assets/altitudes_fr.json';
     let altitudeDataPromise = null;
 
@@ -600,6 +603,24 @@ let patrimonialStatusMap = {};
             }
         }
     };
+
+    // Resolve the accepted/valid name of a taxon via GBIF
+    const gbifMatchCache = new Map();
+    const getCanonicalName = async (name) => {
+        if (gbifMatchCache.has(name)) return gbifMatchCache.get(name);
+        try {
+            const resp = await fetch(`/api/gbif?endpoint=match&name=${encodeURIComponent(name)}`);
+            if (!resp.ok) throw new Error('match failed');
+            const data = await resp.json();
+            const canonical = data.accepted || data.canonicalName || name;
+            gbifMatchCache.set(name, canonical);
+            return canonical;
+        } catch (e) {
+            console.warn('GBIF match error for', name, e);
+            gbifMatchCache.set(name, name);
+            return name;
+        }
+    };
     
     const indexRulesFromCSV = (csvText) => {
         const lines = csvText.trim().split(/\r?\n/);
@@ -791,14 +812,17 @@ const initializeSelectionMap = (coords) => {
         let allOccurrencesWithContext = [];
         const taxonKeyMap = new Map();
         initialOccurrences.forEach(occ => {
-            if (occ.species && occ.speciesKey && !taxonKeyMap.has(occ.species)) {
-                taxonKeyMap.set(occ.species, occ.speciesKey);
+            if (occ.species && occ.speciesKey) {
+                const canon = lastCanonicalNames[occ.species] || occ.species;
+                if (!taxonKeyMap.has(canon)) {
+                    taxonKeyMap.set(canon, occ.speciesKey);
+                }
             }
         });
         for (const [index, speciesName] of speciesNames.entries()) {
             setStatus(`Étape 4/4: Cartographie détaillée des espèces patrimoniales... (${index + 1}/${speciesNames.length})`);
             updateProgress(60 + ((index + 1) / speciesNames.length) * 40);
-            const taxonKey = taxonKeyMap.get(speciesName);
+            const taxonKey = taxonKeyMap.get(speciesName) || taxonKeyMap.get(lastCanonicalNames[speciesName]);
             if (!taxonKey) continue;
             const color = SPECIES_COLORS[index % SPECIES_COLORS.length];
             let speciesOccs = [];
@@ -1094,12 +1118,18 @@ const initializeSelectionMap = (coords) => {
             setStatus("Étape 3/4: Analyse des données...");
             updateProgress(40);
             const uniqueSpeciesNames = [...new Set(allOccurrences.map(o => o.species).filter(Boolean))];
+            const canonicalNames = {};
+            for (const n of uniqueSpeciesNames) {
+                canonicalNames[n] = await getCanonicalName(n);
+            }
+            lastCanonicalNames = canonicalNames;
             const relevantRules = new Map();
             const { departement, region } = (await (await fetch(`https://geo.api.gouv.fr/communes?lat=${params.latitude}&lon=${params.longitude}&fields=departement,region`)).json())[0];
             const departementCode = departement.code;
             const regionCode = region.code;
             for (const speciesName of uniqueSpeciesNames) {
-                const rulesForThisTaxon = rulesByTaxonIndex.get(speciesName);
+                const canonical = canonicalNames[speciesName];
+                const rulesForThisTaxon = rulesByTaxonIndex.get(canonical) || rulesByTaxonIndex.get(speciesName);
                 if (rulesForThisTaxon) {
                     for (const row of rulesForThisTaxon) {
                         let ruleApplies = false;
@@ -1153,7 +1183,12 @@ const initializeSelectionMap = (coords) => {
                     await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
                 }
             }
-            const patrimonialMap = await analysisResp.json();
+            const respMap = await analysisResp.json();
+            const patrimonialMap = {};
+            Object.entries(respMap).forEach(([k,v]) => {
+                const canonical = canonicalNames[k] || k;
+                if (!patrimonialMap[canonical]) patrimonialMap[canonical] = v;
+            });
             updateProgress(60);
             displayResults(allOccurrences, patrimonialMap, wkt);
         } catch (error) {
