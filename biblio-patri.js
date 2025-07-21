@@ -1723,6 +1723,14 @@ const initializeSelectionMap = (coords) => {
             color: "#2E7D32",
             icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+PHBhdGggZD0iTTEyIDJDNyAyIDQgMTIgNCAxMnMzIDEwIDggMTAgOC0xMCA4LTEwLTMtMTAtOC0xMHoiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PGxpbmUgeDE9IjEyIiB5MT0iMiIgeDI9IjEyIiB5Mj0iMjIiIC8+PC9zdmc+',
             buildUrl: (lat, lon) => `https://www.inaturalist.org/observations?lat=${lat.toFixed(8)}&lng=${lon.toFixed(8)}&radius=5&subview=map&threatened&iconic_taxa=Plantae`
+        },
+        geoportailSlopes: {
+            name: "Géoportail - Carte des pentes",
+            description: "Affiche la carte des pentes de la zone",
+            color: "#FF8800",
+            icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+PHBhdGggZD0iTTMgMjBMMTIgNWw5IDE1SDN6Ii8+PC9zdmc+',
+            buildUrl: (lat, lon) =>
+                `https://www.geoportail.gouv.fr/carte?c=${lon},${lat}&z=13&l0=GEOGRAPHICALGRIDSYSTEMS.MAPS.SCAN25TOUR.CV::GEOPORTAIL:OGC:WMTS(1;h)&l1=ORTHOIMAGERY.ORTHOPHOTOS::GEOPORTAIL:OGC:WMTS(1)&l2=GEOGRAPHICALGRIDSYSTEMS.SLOPES.MOUNTAIN::GEOPORTAIL:OGC:WMTS(0.6)&permalink=yes`
         }
     };
 
