@@ -1,5 +1,12 @@
-// Use puppeteer-core when connecting to a remote browserless instance
-// Fallback to the full puppeteer package when no endpoint is provided
+/**
+ * Netlify serverless function used to query the ArcGIS vegetation map.
+ * It loads the map, simulates a click at the centre and returns the
+ * text content of the resulting pop-up.
+ *
+ * When `CHROME_WS_ENDPOINT` is defined, the function connects to the
+ * remote browser via puppeteer-core (typically Browserless). Otherwise
+ * it falls back to launching the local Chromium bundled with puppeteer.
+ */
 const puppeteerCore = require('puppeteer-core');
 const puppeteer = require('puppeteer');
 require('dotenv').config(); // charge .env en dev
@@ -14,10 +21,10 @@ exports.handler = async () => {
   let browser;
   try {
     if (ws) {
-      // Connect to a remote Chrome instance when provided
+      // Connect to the remote Chrome instance defined by CHROME_WS_ENDPOINT
       browser = await puppeteerCore.connect({ browserWSEndpoint: ws });
     } else {
-      // Fall back to launching a local Chromium bundled with puppeteer
+      // No endpoint provided: launch the bundled Chromium instead
       browser = await puppeteer.launch({ args: ['--no-sandbox'] });
     }
 
@@ -25,10 +32,12 @@ exports.handler = async () => {
     await page.setViewport({ width: 1280, height: 900 });
     await page.goto(ARC_GIS_URL, { waitUntil: 'networkidle0', timeout: 60_000 });
 
+    // Wait for the map element and click roughly at its centre
     const map = await page.waitForSelector('#map_gc', { timeout: 10_000 });
     const { x, y, width, height } = await map.boundingBox();
     await page.mouse.click(x + width / 2, y + height / 2);
 
+    // Pop-up container used by various ArcGIS themes
     const popupSel = '.esriPopup, .esri-popup, .esri-popup__main, .dijitPopup';
     await page.waitForSelector(popupSel, { timeout: 2_000 });
 
