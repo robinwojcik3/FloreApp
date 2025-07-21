@@ -500,6 +500,7 @@ let hideZnieffOnly = false;
 let excludeZnieffAnalysis = false;
 let rulesByTaxonIndex = new Map();
 let patrimonialStatusMap = {};
+let synonymGroups = {};
     let trackingWatchId = null;
     let trackingMarker = null;
     let trackingActive = false;
@@ -599,13 +600,26 @@ let patrimonialStatusMap = {};
                 await new Promise(res => setTimeout(res, RETRY_DELAY_MS));
             }
         }
+
+    const buildSynonymGroups = (taxrefData) => {
+        const groups = {};
+        for (const [name, code] of Object.entries(taxrefData)) {
+            const n = norm(name);
+            if (!groups[code]) groups[code] = [];
+            groups[code].push(n);
+        }
+        const map = {};
+        Object.values(groups).forEach(names => {
+            names.forEach(n => { map[n] = names; });
+        });
+        return map;
     };
-    
+
     const indexRulesFromCSV = (csvText) => {
         const lines = csvText.trim().split(/\r?\n/);
-        const header = lines.shift().split(';').map(h => h.trim().replace(/"/g, ''));
+        const header = lines.shift().split(';').map(h => h.trim().replace(/"/g,''));
         const indices = { adm: header.indexOf('LB_ADM_TR'), nom: header.indexOf('LB_NOM'), code: header.indexOf('CODE_STATUT'), type: header.indexOf('LB_TYPE_STATUT'), label: header.indexOf('LABEL_STATUT') };
-        
+
         const index = new Map();
         lines.forEach(line => {
             const cols = line.split(';');
@@ -615,25 +629,34 @@ let patrimonialStatusMap = {};
                 label: cols[indices.label]?.trim().replace(/"/g, '') || ''
             };
             if (rowData.nom && rowData.type) {
-                if (!index.has(rowData.nom)) { index.set(rowData.nom, []); }
-                index.get(rowData.nom).push(rowData);
+                const normalized = norm(rowData.nom);
+                const syns = synonymGroups[normalized] || [normalized];
+                syns.forEach(s => {
+                    if (!index.has(s)) index.set(s, []);
+                    index.get(s).push(rowData);
+                });
             }
         });
         return index;
     };
+    
 
     const initializeApp = async () => {
         try {
             setStatus("Chargement des données...");
-            const [bdcResp, ecoResp, faResp] = await Promise.all([
+            const [bdcResp, ecoResp, faResp, taxResp] = await Promise.all([
                 fetch('BDCstatut.csv'),
                 fetch('ecology.json'),
-                fetch('assets/florealpes_index.json')
+                fetch('assets/florealpes_index.json'),
+                fetch('taxref.json')
             ]);
             if (!bdcResp.ok) throw new Error("Le référentiel BDCstatut.csv est introuvable.");
             if (!ecoResp.ok) throw new Error("Le fichier ecology.json est introuvable.");
             if (!faResp.ok) throw new Error("Le fichier florealpes_index.json est introuvable.");
+            if (!taxResp.ok) throw new Error("Le fichier taxref.json est introuvable.");
             const csvText = await bdcResp.text();
+            const taxData = await taxResp.json();
+            synonymGroups = buildSynonymGroups(taxData);
             rulesByTaxonIndex = indexRulesFromCSV(csvText);
             const ecoJson = await ecoResp.json();
             Object.entries(ecoJson).forEach(([k,v]) => {
@@ -1099,7 +1122,7 @@ const initializeSelectionMap = (coords) => {
             const departementCode = departement.code;
             const regionCode = region.code;
             for (const speciesName of uniqueSpeciesNames) {
-                const rulesForThisTaxon = rulesByTaxonIndex.get(speciesName);
+                const rulesForThisTaxon = rulesByTaxonIndex.get(norm(speciesName));
                 if (rulesForThisTaxon) {
                     for (const row of rulesForThisTaxon) {
                         let ruleApplies = false;
