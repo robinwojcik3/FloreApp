@@ -25,6 +25,16 @@ exports.handler = async () => {
     await page.setViewport({ width: 1280, height: 900 });
     await page.goto(ARC_GIS_URL, { waitUntil: 'networkidle0', timeout: 60_000 });
 
+    // Wait for the map to settle before sending zoom commands
+    await page.waitForTimeout(5_000);
+
+    const zoomOutSel = '.zoom.zoom-out.jimu-corner-bottom';
+    await page.waitForSelector(zoomOutSel, { timeout: 10_000 });
+    for (let i = 0; i < 4; i++) {
+      await page.click(zoomOutSel);
+      await page.waitForTimeout(500);
+    }
+
     const map = await page.waitForSelector('#map_gc', { timeout: 10_000 });
     const { x, y, width, height } = await map.boundingBox();
     await page.mouse.click(x + width / 2, y + height / 2);
@@ -32,7 +42,7 @@ exports.handler = async () => {
     const popupSel = '.esriPopup, .esri-popup, .esri-popup__main, .dijitPopup';
     await page.waitForSelector(popupSel, { timeout: 2_000 });
 
-    const data = await page.evaluate(sel => {
+    const data = await page.evaluate((sel) => {
       const n = document.querySelector(sel);
       return n ? n.innerText.trim() : null;
     }, popupSel);
@@ -40,7 +50,7 @@ exports.handler = async () => {
     return {
       statusCode: 200,
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ ok: true, data }),
+      body: JSON.stringify({ ok: true, data })
     };
   } catch (err) {
     return { statusCode: 500, body: JSON.stringify({ ok: false, error: err.message }) };
