@@ -26,7 +26,10 @@ serverless).
 
 Copiez ensuite `env.example` en `.env` et remplissez les clés
 `PLANTNET_API_KEY`, `GEMINI_API_KEY`, `TTS_API_KEY` et
-`CHROME_WS_ENDPOINT` (WebSocket Browserless).
+`CHROME_WS_ENDPOINT`. Cette dernière correspond à l'URL WebSocket
+d'un Chrome distant (par exemple Browserless). Créez un compte sur
+<https://www.browserless.io/> puis récupérez votre endpoint du type
+`wss://chrome.browserless.io?token=VOTRE_TOKEN`.
 
 Si vous déployez sur Netlify, ces variables se définissent dans l'interface sous
 **Site settings > Environment variables**. N'oubliez pas d'y ajouter
@@ -80,10 +83,11 @@ Poussez le dépôt sur GitHub puis créez un site sur Netlify. Le fichier `netli
 ## Scraping
 
 Avant tout lancement local (`netlify dev`) créez un fichier `.env` à la racine
-contenant la clé `CHROME_WS_ENDPOINT` fournie par Browserless.
-Si cette variable est absente, la fonction tentera d'ouvrir le
-Chromium inclus avec Puppeteer, mais l'utilisation d'un navigateur
-distant reste recommandée pour un déploiement léger.
+contenant la clé `CHROME_WS_ENDPOINT` récupérée auprès de Browserless
+ou d'une autre instance Chrome en mode WebSocket. Si cette variable est
+absente, la fonction tentera d'ouvrir le Chromium inclus avec Puppeteer,
+mais l'utilisation d'un navigateur distant reste recommandée pour un
+déploiement léger.
 
 ## Intégration de la Carte de la Végétation Potentielle
 
