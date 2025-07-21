@@ -114,3 +114,38 @@ L.tileLayer('/tiles/{z}/{x}/{y}.png', {
 
 Activez la compression (gzip ou brotli) pour limiter le poids des transferts.
 
+
+## Déploiement du backend Selenium
+
+1. **Provisionner une VM Oracle Cloud** (Ubuntu 22.04 ARM64). Ouvrez les ports 22, 80 et 443 dans le pare-feu.
+2. **Installer les paquets nécessaires** :
+   ```bash
+   sudo apt update && sudo apt install -y python3.12 python3.12-venv nginx \
+     chromium-browser chromium-chromedriver certbot python3-certbot-nginx
+   ```
+3. **Déployer le code** dans `/home/ubuntu/app` et installez les dépendances :
+   ```bash
+   python3.12 -m venv venv
+   source venv/bin/activate
+   pip install -r app/requirements.txt
+   ```
+4. **Activer le service systemd** :
+   ```bash
+   sudo cp etc/systemd/system/selenium-api.service /etc/systemd/system/
+   sudo systemctl daemon-reload
+   sudo systemctl enable --now selenium-api.service
+   ```
+5. **Configurer Nginx** pour le reverse‑proxy :
+   ```bash
+   sudo cp etc/nginx/sites-available/selenium /etc/nginx/sites-available/
+   sudo ln -s ../sites-available/selenium /etc/nginx/sites-enabled/
+   sudo nginx -t && sudo systemctl reload nginx
+   ```
+6. **Obtenir un certificat Let's Encrypt** :
+   ```bash
+   sudo certbot --nginx -d example.com
+   ```
+   Certbot mettra à jour la configuration SSL automatiquement.
+7. **Tester depuis le front‑end Netlify** :
+   appelez `triggerRun(lat, lon)` depuis votre application React et vérifiez que le JSON `{"status": "processing"}` s'affiche.
+
