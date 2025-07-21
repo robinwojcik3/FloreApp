@@ -114,3 +114,37 @@ L.tileLayer('/tiles/{z}/{x}/{y}.png', {
 
 Activez la compression (gzip ou brotli) pour limiter le poids des transferts.
 
+
+## Déploiement de l'API Selenium
+
+Ce guide résume les étapes pour connecter la SPA hébergée sur Netlify à un backend Python tournant sur une VM Oracle Cloud (Ampere A1).
+
+1. **Provisionner la VM**
+   - Créez une instance Ubuntu 22.04 ARM64 "Always Free".
+   - Ouvrez le port `80` et `443` dans le panneau réseau.
+2. **Installer les dépendances**
+   ```bash
+   sudo apt update && sudo apt install -y python3.12 python3.12-venv \
+     chromium-browser chromium-chromedriver nginx certbot python3-certbot-nginx
+   ```
+3. **Déployer le code**
+   ```bash
+   git clone https://github.com/your/repo.git ~/app
+   cd ~/app/app && python3.12 -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   ```
+4. **Configurer systemd**
+   - Copiez `etc/systemd/system/selenium-api.service` vers `/etc/systemd/system/`.
+   - `sudo systemctl enable --now selenium-api.service`.
+5. **Configurer Nginx et HTTPS**
+   - Copiez `etc/nginx/sites-available/selenium` vers `/etc/nginx/sites-available/` puis activez-le :
+     `sudo ln -s /etc/nginx/sites-available/selenium /etc/nginx/sites-enabled/`.
+   - `sudo nginx -t && sudo systemctl reload nginx`.
+   - Obtenez un certificat :
+     `sudo certbot --nginx -d your-domain.example`.
+6. **Tester depuis Netlify**
+   - Dans votre SPA React, appelez `triggerRun(lat, lon)` défini dans `frontend/src/services/seleniumApi.js`.
+   - Le backend renvoie `{ "status": "started" }` lorsque le workflow démarre.
+
+
