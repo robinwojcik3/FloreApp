@@ -114,3 +114,38 @@ L.tileLayer('/tiles/{z}/{x}/{y}.png', {
 
 Activez la compression (gzip ou brotli) pour limiter le poids des transferts.
 
+
+## Déploiement du backend Selenium
+
+Ce backend Python permet de lancer un workflow Selenium à distance.
+Voici un exemple de procédure complète pour l’installer sur une VM Oracle Cloud :
+
+1. **Provisionner la VM** sous Ubuntu 22.04 (image ARM64) et ouvrir le port 80.
+2. **Installer les paquets requis** :
+   ```bash
+   sudo apt update && sudo apt install -y python3.12 python3.12-venv \
+     chromium-browser chromium-chromedriver nginx certbot python3-certbot-nginx
+   ```
+3. **Déployer le code** dans `/home/ubuntu/app` puis installer les dépendances :
+   ```bash
+   python3.12 -m venv venv
+   source venv/bin/activate
+   pip install -r app/requirements.txt
+   ```
+4. **Configurer systemd** avec `etc/systemd/system/selenium-api.service` puis :
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable --now selenium-api
+   ```
+5. **Activer le reverse proxy Nginx** :
+   ```bash
+   sudo cp etc/nginx/sites-available/selenium /etc/nginx/sites-available/
+   sudo ln -s ../sites-available/selenium /etc/nginx/sites-enabled/
+   sudo nginx -t && sudo systemctl reload nginx
+   ```
+6. **Obtenir le certificat Let’s Encrypt** :
+   ```bash
+   sudo certbot --nginx -d example.com
+   ```
+7. **Tester depuis Netlify** en appelant l’endpoint `/run?lat=45.8&lon=4.8` via
+   la fonction `triggerRun` du front-end.
