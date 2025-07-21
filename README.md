@@ -114,3 +114,46 @@ L.tileLayer('/tiles/{z}/{x}/{y}.png', {
 
 Activez la compression (gzip ou brotli) pour limiter le poids des transferts.
 
+
+## Backend Selenium API
+
+Ce dépôt fournit aussi une petite API REST en Python déclenchant un workflow
+Selenium. Elle tourne sur une VM Ubuntu sous systemd et est exposée via Nginx
+avec HTTPS.
+
+### Pas à pas de déploiement
+
+1. **Provisionner la VM Oracle Cloud**
+   - Créez une instance Ubuntu 22.04 ARM64 (formule Always Free).
+   - Ouvrez les ports **22**, **80** et **443** dans les règles réseau.
+2. **Installer les paquets nécessaires**
+   ```bash
+   sudo apt update
+   sudo apt install python3.12 python3.12-venv chromium-browser \
+       chromium-chromedriver nginx certbot python3-certbot-nginx
+   ```
+   Placez ce dépôt dans `/home/ubuntu/app` puis installez les
+   dépendances :
+   ```bash
+   python3.12 -m venv venv
+   source venv/bin/activate
+   pip install -r app/requirements.txt
+   ```
+3. **Service systemd**
+   Copiez `etc/systemd/system/selenium-api.service` vers
+   `/etc/systemd/system/` puis activez-le :
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable --now selenium-api
+   ```
+4. **Configurer Nginx et HTTPS**
+   Copiez `etc/nginx/sites-available/selenium` dans
+   `/etc/nginx/sites-available/` puis :
+   ```bash
+   sudo ln -s /etc/nginx/sites-available/selenium /etc/nginx/sites-enabled/
+   sudo nginx -t && sudo systemctl reload nginx
+   sudo certbot --nginx
+   ```
+5. **Test depuis Netlify**
+   Depuis l'application front‑end, appelez `triggerRun(lat, lon)` pour
+   lancer le workflow. Vérifiez les journaux avec `journalctl -u selenium-api`.
