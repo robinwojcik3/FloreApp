@@ -1723,6 +1723,18 @@ const initializeSelectionMap = (coords) => {
             color: "#2E7D32",
             icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiI+PHBhdGggZD0iTTEyIDJDNyAyIDQgMTIgNCAxMnMzIDEwIDggMTAgOC0xMCA4LTEwLTMtMTAtOC0xMHoiIHN0cm9rZS1saW5lam9pbj0icm91bmQiIC8+PGxpbmUgeDE9IjEyIiB5MT0iMiIgeDI9IjEyIiB5Mj0iMjIiIC8+PC9zdmc+',
             buildUrl: (lat, lon) => `https://www.inaturalist.org/observations?lat=${lat.toFixed(8)}&lng=${lon.toFixed(8)}&radius=5&subview=map&threatened&iconic_taxa=Plantae`
+        },
+        wetlands: {
+            name: "Zone humide potentielles",
+            description: "Affiche les zones humides potentielles",
+            color: "#0277BD",
+            icon: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cGF0aCBkPSJNMTIgMi42OWw1IDVBNyA3IDAgMDExMiAyMWE3IDcgMCAwMS01LTEzLjMxbDUtNXoiLz48L3N2Zz4=',
+            buildUrl: (lat, lon) => {
+                const R = 6378137.0;
+                const x = R * (lon * Math.PI / 180);
+                const y = R * Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI / 180) / 2));
+                return `https://sig.reseau-zones-humides.org/?zoom=9&lat=${y}&lon=${x}&idlyr=16484&blyr=Ortho%20IGN&vlyr=1`;
+            }
         }
     };
 
