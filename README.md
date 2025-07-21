@@ -85,6 +85,13 @@ Si cette variable est absente, la fonction tentera d'ouvrir le
 Chromium inclus avec Puppeteer, mais l'utilisation d'un navigateur
 distant reste recommandée pour un déploiement léger.
 
+Pour obtenir cette clé :
+1. Créez un compte gratuit sur [browserless.io](https://www.browserless.io/).
+2. Dans le tableau de bord, générez un "API Token".
+3. Le WebSocket à renseigner est alors `wss://chrome.browserless.io?token=VOTRE_TOKEN`.
+
+Lancez ensuite `netlify dev` et ouvrez `scraping.html` pour cliquer sur le bouton **Lancer le scraping**.
+
 ## Intégration de la Carte de la Végétation Potentielle
 
 Cette application peut afficher la Carte de la Végétation Potentielle (CVP)

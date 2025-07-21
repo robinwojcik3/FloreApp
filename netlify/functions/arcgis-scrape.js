@@ -1,6 +1,14 @@
-// Use puppeteer-core when connecting to a remote browserless instance
-// Fallback to the full puppeteer package when no endpoint is provided
+/**
+ * Connects to the ArcGIS "Carte de la végétation" web app and retrieves
+ * the text shown in the popup after clicking on the map.
+ *
+ * If `CHROME_WS_ENDPOINT` is defined the function connects to this remote
+ * browser using `puppeteer-core`. Otherwise it launches the local Chromium
+ * bundled with Puppeteer.
+ */
+// Lightweight package used when a remote Chrome endpoint is provided
 const puppeteerCore = require('puppeteer-core');
+// Full Puppeteer for the local fallback
 const puppeteer = require('puppeteer');
 require('dotenv').config(); // charge .env en dev
 process.env.PUPPETEER_SKIP_DOWNLOAD = 'true';
@@ -14,25 +22,28 @@ exports.handler = async () => {
   let browser;
   try {
     if (ws) {
-      // Connect to a remote Chrome instance when provided
+      // Remote browser (Browserless or similar)
       browser = await puppeteerCore.connect({ browserWSEndpoint: ws });
     } else {
-      // Fall back to launching a local Chromium bundled with puppeteer
+      // Local Chromium fallback
       browser = await puppeteer.launch({ args: ['--no-sandbox'] });
     }
 
     const page = await browser.newPage();
+    // Ensure the map has enough space for the click to be triggered
     await page.setViewport({ width: 1280, height: 900 });
     await page.goto(ARC_GIS_URL, { waitUntil: 'networkidle0', timeout: 60_000 });
 
+    // Wait for the map container and click roughly at its center
     const map = await page.waitForSelector('#map_gc', { timeout: 10_000 });
     const { x, y, width, height } = await map.boundingBox();
     await page.mouse.click(x + width / 2, y + height / 2);
 
+    // Several selectors are supported depending on the ArcGIS version
     const popupSel = '.esriPopup, .esri-popup, .esri-popup__main, .dijitPopup';
     await page.waitForSelector(popupSel, { timeout: 2_000 });
 
-    const data = await page.evaluate(sel => {
+    const data = await page.evaluate((sel) => {
       const n = document.querySelector(sel);
       return n ? n.innerText.trim() : null;
     }, popupSel);
@@ -43,6 +54,7 @@ exports.handler = async () => {
       body: JSON.stringify({ ok: true, data }),
     };
   } catch (err) {
+    // Any error (timeout, missing popup, etc.) is returned to the client
     return { statusCode: 500, body: JSON.stringify({ ok: false, error: err.message }) };
   } finally {
     if (browser) await browser.close();
