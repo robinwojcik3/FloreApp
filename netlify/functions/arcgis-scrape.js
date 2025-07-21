@@ -25,6 +25,14 @@ exports.handler = async () => {
     await page.setViewport({ width: 1280, height: 900 });
     await page.goto(ARC_GIS_URL, { waitUntil: 'networkidle0', timeout: 60_000 });
 
+    // Wait 5 seconds to ensure all widgets are loaded then zoom out 4 times
+    await page.waitForTimeout(5000);
+    const zoomOutSel = '[aria-label="Zoom arrière"]';
+    for (let i = 0; i < 4; i++) {
+      await page.click(zoomOutSel).catch(() => {});
+      await page.waitForTimeout(500);
+    }
+
     const map = await page.waitForSelector('#map_gc', { timeout: 10_000 });
     const { x, y, width, height } = await map.boundingBox();
     await page.mouse.click(x + width / 2, y + height / 2);
