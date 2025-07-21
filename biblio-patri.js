@@ -782,6 +782,25 @@ const initializeSelectionMap = (coords) => {
         const n = latlngs.length;
         return { latitude: lat/n, longitude: lng/n };
     };
+
+    const gbifMatch = async (name) => {
+        try {
+            const url = `/.netlify/functions/gbif-proxy?endpoint=match&name=${encodeURIComponent(name)}`;
+            const resp = await fetchWithRetry(url);
+            if (!resp.ok) return null;
+            return await resp.json();
+        } catch(e) { console.error('GBIF match error', e); return null; }
+    };
+
+    const gbifSynonyms = async (taxonKey) => {
+        try {
+            const url = `/.netlify/functions/gbif-proxy?endpoint=synonyms&taxonKey=${taxonKey}`;
+            const resp = await fetchWithRetry(url);
+            if (!resp.ok) return [];
+            const json = await resp.json();
+            return Array.isArray(json.results) ? json.results : [];
+        } catch(e) { console.error('GBIF synonyms error', e); return []; }
+    };
     
     const fetchAndDisplayAllPatrimonialOccurrences = async (patrimonialMap, wkt, initialOccurrences) => {
         const speciesNames = Object.keys(patrimonialMap);
@@ -795,6 +814,27 @@ const initializeSelectionMap = (coords) => {
                 taxonKeyMap.set(occ.species, occ.speciesKey);
             }
         });
+        for (const [name, key] of Array.from(taxonKeyMap.entries())) {
+            const syns = await gbifSynonyms(key);
+            syns.forEach(s => {
+                const n = s.canonicalName || s.scientificName;
+                if (n && !taxonKeyMap.has(n)) taxonKeyMap.set(n, key);
+            });
+        }
+        for (const name of speciesNames) {
+            if (!taxonKeyMap.has(name)) {
+                const match = await gbifMatch(name);
+                const key = match ? (match.acceptedUsageKey || match.usageKey) : null;
+                if (key) {
+                    taxonKeyMap.set(name, key);
+                    const syns = await gbifSynonyms(key);
+                    syns.forEach(s => {
+                        const n = s.canonicalName || s.scientificName;
+                        if (n && !taxonKeyMap.has(n)) taxonKeyMap.set(n, key);
+                    });
+                }
+            }
+        }
         for (const [index, speciesName] of speciesNames.entries()) {
             setStatus(`Étape 4/4: Cartographie détaillée des espèces patrimoniales... (${index + 1}/${speciesNames.length})`);
             updateProgress(60 + ((index + 1) / speciesNames.length) * 40);

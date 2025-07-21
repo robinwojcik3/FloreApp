@@ -1,8 +1,10 @@
 const fetch = require('./utils/fetch');
+const { URL } = require('url');
 
 const ENDPOINTS = {
   match: 'https://api.gbif.org/v1/species/match',
-  search: 'https://api.gbif.org/v1/occurrence/search'
+  search: 'https://api.gbif.org/v1/occurrence/search',
+  synonyms: (id) => `https://api.gbif.org/v1/species/${id}/synonyms`
 };
 
 exports.handler = async function(event) {
@@ -12,9 +14,18 @@ exports.handler = async function(event) {
     return { statusCode: 400, body: 'Invalid or missing endpoint' };
   }
 
-  const url = new URL(ENDPOINTS[endpoint]);
-  for (const [key, value] of Object.entries(params)) {
-    if (key !== 'endpoint') url.searchParams.append(key, value);
+  let url;
+  if (endpoint === 'synonyms') {
+    const id = params.taxonKey;
+    if (!id) {
+      return { statusCode: 400, body: 'Missing taxonKey' };
+    }
+    url = new URL(ENDPOINTS.synonyms(id));
+  } else {
+    url = new URL(ENDPOINTS[endpoint]);
+    for (const [key, value] of Object.entries(params)) {
+      if (key !== 'endpoint') url.searchParams.append(key, value);
+    }
   }
 
   try {

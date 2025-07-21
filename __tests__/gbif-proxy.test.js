@@ -18,6 +18,14 @@ describe('gbif-proxy handler', () => {
     expect(res.body).toBe('{"ok":true}');
   });
 
+  test('synonyms endpoint uses taxonKey', async () => {
+    const fetchMock = createMockFetch('{"ok":true}');
+    const handler = loadGbifHandler(fetchMock);
+    const res = await handler({ queryStringParameters: { endpoint: 'synonyms', taxonKey: '123' } });
+    expect(fetchMock).toHaveBeenCalledWith('https://api.gbif.org/v1/species/123/synonyms');
+    expect(res.statusCode).toBe(200);
+  });
+
   test('returns 400 for invalid endpoint', async () => {
     const fetchMock = createMockFetch('{}');
     const handler = loadGbifHandler(fetchMock);
