@@ -25,6 +25,21 @@ exports.handler = async () => {
     await page.setViewport({ width: 1280, height: 900 });
     await page.goto(ARC_GIS_URL, { waitUntil: 'networkidle0', timeout: 60_000 });
 
+    // Wait 5s for the page to fully render before interacting
+    await page.waitForTimeout(5000);
+
+    // Automatically zoom out 4 times if the control is available
+    const zoomSel = '.zoom.zoom-out';
+    try {
+      await page.waitForSelector(zoomSel, { timeout: 5000 });
+      for (let i = 0; i < 4; i++) {
+        await page.click(zoomSel);
+        await page.waitForTimeout(200);
+      }
+    } catch (err) {
+      // Ignore if zoom control isn't found; continue scraping
+    }
+
     const map = await page.waitForSelector('#map_gc', { timeout: 10_000 });
     const { x, y, width, height } = await map.boundingBox();
     await page.mouse.click(x + width / 2, y + height / 2);
