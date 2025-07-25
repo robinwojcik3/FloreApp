@@ -114,3 +114,12 @@ L.tileLayer('/tiles/{z}/{x}/{y}.png', {
 
 Activez la compression (gzip ou brotli) pour limiter le poids des transferts.
 
+
+## Découpage de Flora Gallica
+
+Deux utilitaires facilitent la navigation dans ce volumineux PDF :
+
+1. `node scripts/split_flora_gallica.js` génère un répertoire `assets/flora_gallica_segments` contenant un PDF par genre ainsi qu'un fichier `assets/flora_gallica_segments_toc.json`.
+2. `node scripts/search_species_in_segment.js <Genre> <épithète>` cherche l'épithète uniquement dans le segment correspondant pour afficher la ou les pages trouvées.
+
+Ces outils permettent de localiser rapidement une espèce sans charger l'ensemble du document.
