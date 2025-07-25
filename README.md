@@ -85,6 +85,17 @@ Si cette variable est absente, la fonction tentera d'ouvrir le
 Chromium inclus avec Puppeteer, mais l'utilisation d'un navigateur
 distant reste recommandée pour un déploiement léger.
 
+## Découpage du PDF Flora Gallica
+
+Le script `scripts/segment-gallica-pdf.js` extrait un fichier PDF par genre à partir de `flora_gallica_toc.json`. Exécutez :
+
+```bash
+node scripts/segment-gallica-pdf.js
+```
+
+Les segments sont créés dans `assets/flora_gallica_segments/` pour faciliter la recherche d'une épithète spécifique sans charger le volume entier.
+
+
 ## Intégration de la Carte de la Végétation Potentielle
 
 Cette application peut afficher la Carte de la Végétation Potentielle (CVP)
