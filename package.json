@@ -16,6 +16,8 @@
   "dependencies": {
     "node-fetch": "^2.6.7",
     "form-data": "^4.0.0",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "^5.3.93",
     "puppeteer": "^22.8.0"
   },
   "devDependencies": {
