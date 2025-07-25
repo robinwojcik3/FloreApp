@@ -85,6 +85,15 @@ Si cette variable est absente, la fonction tentera d'ouvrir le
 Chromium inclus avec Puppeteer, mais l'utilisation d'un navigateur
 distant reste recommandée pour un déploiement léger.
 
+## Segmentation de la Flora Gallica
+
+Le script `scripts/split_flora_genus.js` extrait du PDF original un
+fichier par genre botanique dans `assets/flora_gallica_segments`. Le
+fichier `assets/flora_gallica_toc.json` est mis à jour avec le champ
+`segmentFile` correspondant. Pour localiser rapidement une espèce,
+`scripts/find_species_page.js` recherche l'épithète uniquement dans ce
+segment et renvoie le numéro de page dans la flore complète.
+
 ## Intégration de la Carte de la Végétation Potentielle
 
 Cette application peut afficher la Carte de la Végétation Potentielle (CVP)
