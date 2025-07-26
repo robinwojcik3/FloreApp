@@ -37,6 +37,7 @@ const CORE_ASSETS = [
    "./assets/Biodiv'AURA.png",
    "./assets/Info Flora.png",
    "./assets/PFAF.png",
+   "https://unpkg.com/tesseract.js@5.0.1/dist/tesseract.min.js",
    "./pdfjs/build/pdf.mjs",
    "./pdfjs/build/pdf.worker.mjs",
    "./pdfjs/wasm/openjpeg.wasm.b64",
