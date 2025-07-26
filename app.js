@@ -487,17 +487,9 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage, genus
         const blob = new Blob([newBytes], { type: 'application/pdf' });
         const url = URL.createObjectURL(blob);
 
-        const downloadLink = document.createElement('a');
-        downloadLink.href = url;
-        downloadLink.download = `${capitalizeGenus(genus)}.pdf`;
-        downloadLink.style.display = 'none';
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        document.body.removeChild(downloadLink);
-
         const viewerUrl = `viewer.html?file=${encodeURIComponent(url)}&genus=${encodeURIComponent(genus)}`;
         window.open(viewerUrl, '_blank');
-        setTimeout(() => URL.revokeObjectURL(url), 30000);
+        setTimeout(() => URL.revokeObjectURL(url), 300000);
     } catch (err) {
         console.error('Flora Gallica extraction error:', err);
         showNotification('Erreur lors de la génération du PDF.', 'error');
