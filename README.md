@@ -10,6 +10,7 @@ Plantouille Express est une application web progressive qui aide à l'identifica
 - consultation hors ligne grâce au service worker
 - cartes patrimoniales et couches contextuelles (INPN, Biodiv'AURA, IGN)
 - récupération de l'altitude via l'API Open‑Meteo
+- extraction de sous-PDF haute résolution tirés de la Flora Gallica
 
 ## Prérequis
 
