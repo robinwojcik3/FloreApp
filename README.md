@@ -115,3 +115,15 @@ L.tileLayer('/tiles/{z}/{x}/{y}.png', {
 
 Activez la compression (gzip ou brotli) pour limiter le poids des transferts.
 
+
+## Génération d'une clé Flora Gallica
+
+Le script `generate_key.js` convertit un fichier OCR de la Flora Gallica en clé dichotomique interactive. Placez un fichier nommé `<genre>_ocr.txt` à la racine du projet puis lancez :
+
+```bash
+node generate_key <genre>
+```
+
+Deux fichiers seront produits :
+- `<genre>_key.json` : structure de la clé au format JSON.
+- `key_<genre>.html` : interface pour parcourir la clé dans le navigateur.
