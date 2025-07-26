@@ -11,6 +11,7 @@ try {
 }
 
 const viewerContainer = document.getElementById('pdf-viewer');
+const ocrBtn = document.getElementById('ocr-btn');
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 // Increase render scale for crisper text in generated excerpts
 const RENDER_SCALE = isIOS ? 2.5 : 3.0;
@@ -63,6 +64,7 @@ async function loadPdfViewer() {
     const urlParams = new URLSearchParams(window.location.search);
     const pdfUrl = urlParams.get('file');
     const initialPageNum = parseInt(urlParams.get('page'), 10) || 1;
+    const genusName = urlParams.get('name') || 'extrait';
 
     if (!pdfUrl) {
         viewerContainer.innerHTML = '<div class="error-message"><h1>Erreur : Aucun fichier PDF spécifié.</h1></div>';
@@ -130,6 +132,50 @@ async function loadPdfViewer() {
         console.error('Erreur lors du chargement du PDF:', error);
         displayFallback('Erreur de chargement', 'Impossible de charger le lecteur PDF.', pdfUrl, initialPageNum);
     }
+
+    if (ocrBtn) {
+        ocrBtn.addEventListener('click', async () => {
+            ocrBtn.disabled = true;
+            ocrBtn.textContent = 'OCR...';
+            try {
+                const text = await extractTextFromPdfUrl(pdfUrl);
+                const blob = new Blob([text], { type: 'text/plain' });
+                const dlUrl = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = dlUrl;
+                a.download = `${genusName}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                setTimeout(() => URL.revokeObjectURL(dlUrl), 30000);
+            } catch (err) {
+                console.error('OCR error:', err);
+                alert('Erreur OCR');
+            } finally {
+                ocrBtn.disabled = false;
+                ocrBtn.textContent = 'Extraction OCR';
+            }
+        });
+    }
+}
+
+async function extractTextFromPdfUrl(url) {
+    const resp = await fetch(url);
+    const buffer = await resp.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+    let text = '';
+    for (let n = 1; n <= pdf.numPages; n++) {
+        const page = await pdf.getPage(n);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        const result = await Tesseract.recognize(canvas, 'fra');
+        text += result.data.text + '\n';
+    }
+    return text;
 }
 
 // Lancement de l'application
