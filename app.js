@@ -456,7 +456,42 @@ window.handleSynthesisClick = async function(event, element, speciesName) {
         showInfoModal("Échec de la synthèse audio", "La synthèse audio a échoué. Le texte généré était :\n\n" + synthesisText);
     }
 
-    parentCell.innerHTML = `<a href="#" onclick="handleSynthesisClick(event, this, '${speciesName.replace(/'/g, "\\'")}')">Générer</a>`;
+    parentCell.innerHTML = `<a href="#" onclick="handleSynthesisClick(event, this, '${speciesName.replace(/'/g, "\\'")}')">Générer</a>`;
+};
+
+window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
+    event.preventDefault();
+    try {
+        toggleSpinner(true);
+        const resp = await fetch(`assets/flora_gallica_pdfs/${pdfFile}`);
+        const bytes = await resp.arrayBuffer();
+        const { PDFDocument } = PDFLib;
+        const srcDoc = await PDFDocument.load(bytes);
+        const totalPages = srcDoc.getPageCount();
+
+        const pages = Object.values(floraToc)
+            .filter(e => e.pdfFile === pdfFile)
+            .map(e => e.page)
+            .sort((a, b) => a - b);
+        let endPage = totalPages;
+        for (const p of pages) {
+            if (p > startPage) { endPage = p - 1; break; }
+        }
+
+        const newDoc = await PDFDocument.create();
+        for (let p = startPage; p <= endPage; p++) {
+            const [pg] = await newDoc.copyPages(srcDoc, [p - 1]);
+            newDoc.addPage(pg);
+        }
+        const newBytes = await newDoc.save();
+        const url = URL.createObjectURL(new Blob([newBytes], { type: 'application/pdf' }));
+        window.open(`viewer.html?file=${encodeURIComponent(url)}`, '_blank');
+    } catch (err) {
+        console.error('Flora Gallica extraction error:', err);
+        showNotification('Erreur lors de la génération du PDF.', 'error');
+    } finally {
+        toggleSpinner(false);
+    }
 };
 
 
@@ -671,13 +706,15 @@ function buildTable(items){
     const pheno = phenoOf(sci);
     const genus = sci.split(' ')[0].toLowerCase();
     
-    const tocEntryFloraGallica = floraToc[genus];
-    let floraGallicaLink = "—";
-    if (tocEntryFloraGallica && tocEntryFloraGallica.pdfFile && tocEntryFloraGallica.page) {
-      const pdfPath = `assets/flora_gallica_pdfs/${tocEntryFloraGallica.pdfFile}`;
-      const viewerUrl = `viewer.html?file=${encodeURIComponent(pdfPath)}&page=${tocEntryFloraGallica.page}`;
-      floraGallicaLink = linkIcon(viewerUrl, "Flora Gallica.png", "Flora Gallica");
-    }
+    const tocEntryFloraGallica = floraToc[genus];
+    let floraGallicaLink = "—";
+    if (tocEntryFloraGallica && tocEntryFloraGallica.pdfFile && tocEntryFloraGallica.page) {
+      const pdfFile = tocEntryFloraGallica.pdfFile;
+      const startPage = tocEntryFloraGallica.page;
+      const handler = `handleFloraGallicaClick(event,'${pdfFile}',${startPage})`;
+      floraGallicaLink = `<a href="#" onclick=\"${handler}\">` +
+                         `<img src="assets/Flora Gallica.png" alt="Flora Gallica"></a>`;
+    }
 
     const tocEntryRegalVegetal = regalVegetalToc[genus];
     let regalVegetalLink = "—";
