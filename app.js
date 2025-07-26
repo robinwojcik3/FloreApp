@@ -488,6 +488,13 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
         setTimeout(() => URL.revokeObjectURL(url), 30000);
+        try {
+            const text = await extractTextFromPdf(blob);
+            const txtName = pdfFile.replace(/\s+/g, '_') + '_' + startPage + '.txt';
+            downloadTextFile(text, txtName);
+        } catch (ocrErr) {
+            console.error('OCR error:', ocrErr);
+        }
     } catch (err) {
         console.error('Flora Gallica extraction error:', err);
         showNotification('Erreur lors de la génération du PDF.', 'error');
@@ -496,9 +503,39 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
     }
 };
 
+async function extractTextFromPdf(blob) {
+    const pdfjsLib = await import('./pdfjs/build/pdf.mjs');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = './pdfjs/build/pdf.worker.mjs';
+    pdfjsLib.GlobalWorkerOptions.wasmUrl = './pdfjs/wasm/';
+    const pdf = await pdfjsLib.getDocument({ data: await blob.arrayBuffer() }).promise;
+    let result = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+        const page = await pdf.getPage(i);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+        const { data: { text } } = await Tesseract.recognize(canvas, 'fra');
+        result += text.trim() + '\n\n';
+    }
+    return result.trim();
+}
+
+function downloadTextFile(text, filename) {
+    const blob = new Blob([text], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(link.href), 30000);
+}
+
 
 /* ================================================================
-    NOUVEAU : FONCTIONS POUR L'ANALYSE COMPARATIVE
+    NOUVEAU : FONCTIONS POUR L'ANALYSE COMPARATIVE
     ================================================================ */
 async function getComparisonFromGemini(speciesData) {
     const speciesDataString = speciesData.map(s => `Espèce: ${s.species}\nDonnées morphologiques (Physionomie): ${s.physio || 'Non renseignée'}\nDonnées écologiques: ${s.eco || 'Non renseignée'}`).join('\n\n');
