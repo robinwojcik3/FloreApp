@@ -11,9 +11,15 @@ try {
 }
 
 const viewerContainer = document.getElementById('pdf-viewer');
+const ocrButton = document.getElementById('ocr-button');
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 // Increase render scale for crisper text in generated excerpts
 const RENDER_SCALE = isIOS ? 2.5 : 3.0;
+
+function capitalizeGenus(name) {
+    if (typeof name !== 'string') return name;
+    return name.replace(/^(?:[x×]\s*)?([a-z])/, (m, p1) => m.replace(p1, p1.toUpperCase()));
+}
 
 /**
  * Affiche un message d'erreur et un lien de secours.
@@ -63,10 +69,33 @@ async function loadPdfViewer() {
     const urlParams = new URLSearchParams(window.location.search);
     const pdfUrl = urlParams.get('file');
     const initialPageNum = parseInt(urlParams.get('page'), 10) || 1;
+    const genus = urlParams.get('genus');
 
     if (!pdfUrl) {
         viewerContainer.innerHTML = '<div class="error-message"><h1>Erreur : Aucun fichier PDF spécifié.</h1></div>';
         return;
+    }
+
+    if (ocrButton && genus) {
+        ocrButton.style.display = 'block';
+        ocrButton.addEventListener('click', async () => {
+            ocrButton.disabled = true;
+            try {
+                const text = await extractTextFromPdf(pdfUrl);
+                const blob = new Blob([text], { type: 'text/plain' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `${capitalizeGenus(genus)}.txt`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                setTimeout(() => URL.revokeObjectURL(link.href), 30000);
+            } catch (err) {
+                console.error('OCR error:', err);
+            } finally {
+                ocrButton.disabled = false;
+            }
+        });
     }
 
     try {
@@ -134,3 +163,27 @@ async function loadPdfViewer() {
 
 // Lancement de l'application
 loadPdfViewer();
+
+async function extractTextFromPdf(url) {
+    try {
+        const response = await fetch(url);
+        const buffer = await response.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+        let text = '';
+        for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const viewport = page.getViewport({ scale: 2 });
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            await page.render({ canvasContext: ctx, viewport }).promise;
+            const result = await Tesseract.recognize(canvas, 'fra');
+            text += result.data.text + '\n';
+        }
+        return text;
+    } catch (err) {
+        console.error('OCR processing error:', err);
+        throw err;
+    }
+}
