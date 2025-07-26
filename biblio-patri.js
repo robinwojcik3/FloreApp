@@ -133,6 +133,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         return data[key] ?? null;
     };
 
+    const getAltitudeStage = (alt) => {
+        if (alt === null || alt === undefined) return null;
+        if (alt < 300) return 'planitiaire';
+        if (alt < 800) return 'collinéen';
+        if (alt < 1600) return 'montagnard';
+        if (alt < 2300) return 'subalpin';
+        if (alt < 3000) return 'alpin';
+        return 'nival';
+    };
+
     // --- Couches environnementales issues de l'API Carto de l'IGN ---
     const APICARTO_LAYERS = {
         'ZNIEFF I': {
@@ -1775,10 +1785,20 @@ const initializeSelectionMap = (coords) => {
         grid.style.display = 'grid';
     };
 
-    const openResourcesPopup = (latlng) => {
+    const openResourcesPopup = async (latlng) => {
         const grid = document.getElementById('resources-grid');
         if (grid) grid.style.display = 'none';
         const container = L.DomUtil.create('div', 'resources-popup');
+
+        const alt = await fetchAltitude(latlng.lat, latlng.lng);
+        const stage = getAltitudeStage(alt);
+        const altDiv = L.DomUtil.create('div', 'altitude-info', container);
+        if (alt !== null) {
+            altDiv.textContent = `Altitude : ${Math.round(alt)} m${stage ? ` (${stage})` : ''}`;
+        } else {
+            altDiv.textContent = 'Altitude inconnue';
+        }
+
         Object.values(SERVICES).forEach(s => {
             const url = s.buildUrl(latlng.lat, latlng.lng);
             const link = L.DomUtil.create('a', 'resource-btn', container);
@@ -1801,8 +1821,8 @@ const initializeSelectionMap = (coords) => {
             .openOn(map);
     };
 
-    const runResourcesAt = (latlng) => {
-        openResourcesPopup(latlng);
+    const runResourcesAt = async (latlng) => {
+        await openResourcesPopup(latlng);
     };
 
     
