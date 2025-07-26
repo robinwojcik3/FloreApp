@@ -14,6 +14,7 @@ let trigramIndex = {};
 let nameTrigram = {};
 let ecology = {};
 let floraToc = {};
+let floraTocSorted = [];
 let regalVegetalToc = {};
 let floreMedToc = {}; // Variable pour la table des matières de Flore Méd
 let floreAlpesIndex = {};
@@ -116,7 +117,14 @@ function loadData() {
       const [name, phen] = row;
       if (name) phenologie[norm(name)] = phen;
     }))
-  ]).then(() => { taxrefNames.sort(); console.log("Données prêtes."); })
+ ]).then(() => {
+   taxrefNames.sort();
+   floraTocSorted = Object.entries(floraToc).sort((a,b)=>{
+     if(a[1].pdfFile === b[1].pdfFile) return a[1].page - b[1].page;
+     return a[1].pdfFile.localeCompare(b[1].pdfFile);
+   });
+   console.log("Données prêtes.");
+ })
     .catch(err => {
       dataPromise = null;
       showNotification("Erreur chargement des données: " + err.message, 'error');
@@ -149,6 +157,25 @@ const criteresOf = n => criteres[norm(n)] || "—";
 const physioOf = n => physionomie[norm(n)] || "—";
 const phenoOf  = n => phenologie[norm(n)] || "—";
 const slug = n => norm(n).replace(/ /g, "-");
+
+function floraRange(genus) {
+  const idx = floraTocSorted.findIndex(([k]) => k === genus);
+  if (idx === -1) return null;
+  const entry = floraTocSorted[idx][1];
+  let end;
+  for (let i = idx + 1; i < floraTocSorted.length; i++) {
+    const next = floraTocSorted[i][1];
+    if (next.pdfFile === entry.pdfFile) {
+      end = next.page - 1;
+      break;
+    }
+    if (end === undefined && next.pdfFile !== entry.pdfFile) {
+      end = next.page - 1;
+      break;
+    }
+  }
+  return { pdfFile: entry.pdfFile, start: entry.page, end };
+}
 
 function parseCsv(text) {
   if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
@@ -671,13 +698,13 @@ function buildTable(items){
     const pheno = phenoOf(sci);
     const genus = sci.split(' ')[0].toLowerCase();
     
-    const tocEntryFloraGallica = floraToc[genus];
-    let floraGallicaLink = "—";
-    if (tocEntryFloraGallica && tocEntryFloraGallica.pdfFile && tocEntryFloraGallica.page) {
-      const pdfPath = `assets/flora_gallica_pdfs/${tocEntryFloraGallica.pdfFile}`;
-      const viewerUrl = `viewer.html?file=${encodeURIComponent(pdfPath)}&page=${tocEntryFloraGallica.page}`;
-      floraGallicaLink = linkIcon(viewerUrl, "Flora Gallica.png", "Flora Gallica");
-    }
+    const range = floraRange(genus);
+    let floraGallicaLink = "—";
+    if (range) {
+      const funcUrl = `/.netlify/functions/flora-gallica-excerpt?file=${encodeURIComponent(range.pdfFile)}&start=${range.start}` + (range.end ? `&end=${range.end}` : "");
+      const viewerUrl = `viewer.html?file=${encodeURIComponent(funcUrl)}&page=1`;
+      floraGallicaLink = linkIcon(viewerUrl, "Flora Gallica.png", "Flora Gallica");
+    }
 
     const tocEntryRegalVegetal = regalVegetalToc[genus];
     let regalVegetalLink = "—";
