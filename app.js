@@ -475,7 +475,7 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
             .sort((a, b) => a - b);
         let endPage = totalPages;
         for (const p of pages) {
-            if (p > startPage) { endPage = p - 1; break; }
+            if (p > startPage) { endPage = p; break; }
         }
 
         const newDoc = await PDFDocument.create();
