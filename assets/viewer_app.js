@@ -11,9 +11,17 @@ try {
 }
 
 const viewerContainer = document.getElementById('pdf-viewer');
+const ocrBtn = document.getElementById('ocr-btn');
+let pdfDoc = null;
+let genusName = '';
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 // Increase render scale for crisper text in generated excerpts
 const RENDER_SCALE = isIOS ? 2.5 : 3.0;
+
+function capitalizeGenus(name) {
+    if (typeof name !== 'string') return name;
+    return name.replace(/^(?:[x×]\s*)?([a-z])/, (m, p1) => m.replace(p1, p1.toUpperCase()));
+}
 
 /**
  * Affiche un message d'erreur et un lien de secours.
@@ -63,6 +71,8 @@ async function loadPdfViewer() {
     const urlParams = new URLSearchParams(window.location.search);
     const pdfUrl = urlParams.get('file');
     const initialPageNum = parseInt(urlParams.get('page'), 10) || 1;
+    const genParam = urlParams.get('genus');
+    if (genParam) genusName = genParam;
 
     if (!pdfUrl) {
         viewerContainer.innerHTML = '<div class="error-message"><h1>Erreur : Aucun fichier PDF spécifié.</h1></div>';
@@ -71,7 +81,8 @@ async function loadPdfViewer() {
 
     try {
         const loadingTask = pdfjsLib.getDocument(pdfUrl);
-        const pdfDoc = await loadingTask.promise;
+        pdfDoc = await loadingTask.promise;
+        if (ocrBtn) ocrBtn.style.display = 'inline-block';
 
         const observer = new IntersectionObserver(async (entries, self) => {
             for (const entry of entries) {
@@ -130,6 +141,49 @@ async function loadPdfViewer() {
         console.error('Erreur lors du chargement du PDF:', error);
         displayFallback('Erreur de chargement', 'Impossible de charger le lecteur PDF.', pdfUrl, initialPageNum);
     }
+}
+
+async function extractTextFromDocument(doc) {
+    let text = '';
+    for (let n = 1; n <= doc.numPages; n++) {
+        const page = await doc.getPage(n);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        const result = await Tesseract.recognize(canvas, 'fra');
+        text += result.data.text + '\n';
+    }
+    return text;
+}
+
+if (ocrBtn) {
+    ocrBtn.addEventListener('click', async () => {
+        if (!pdfDoc) return;
+        ocrBtn.disabled = true;
+        const original = ocrBtn.textContent;
+        ocrBtn.textContent = 'OCR en cours...';
+        try {
+            const txt = await extractTextFromDocument(pdfDoc);
+            const blob = new Blob([txt], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            const name = genusName ? capitalizeGenus(genusName) : 'extrait';
+            a.href = url;
+            a.download = `${name}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 30000);
+        } catch (e) {
+            console.error('OCR error:', e);
+        } finally {
+            ocrBtn.textContent = original;
+            ocrBtn.disabled = false;
+        }
+    });
 }
 
 // Lancement de l'application

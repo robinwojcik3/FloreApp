@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Visualiseur - Flora Gallica</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/tesseract.js@5.0.1/dist/tesseract.min.js"></script>
     <style>
         body, html {
             margin: 0;
@@ -55,6 +56,7 @@
 </head>
 <body>
 
+    <button id="ocr-btn" class="action-button" style="display:none;margin:1rem;">Extraction OCR</button>
     <div id="pdf-viewer">
         </div>
 

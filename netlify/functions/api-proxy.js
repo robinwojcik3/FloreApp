@@ -1,5 +1,6 @@
-const fetch = require('./utils/fetch');
+const fetch = require('node-fetch');
 const FormData = require('form-data');
+const { Buffer } = require('buffer');
 
 // Fonction pour convertir un Data URL (base64) en Buffer
 const dataUrlToBuffer = (dataUrl) => {
