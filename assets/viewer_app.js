@@ -1,5 +1,10 @@
 import * as pdfjsLib from '../pdfjs/build/pdf.mjs';
 
+const urlParams = new URLSearchParams(window.location.search);
+const pdfUrl = urlParams.get('file');
+const genus = urlParams.get('genus') || 'extrait';
+const initialPageNum = parseInt(urlParams.get('page'), 10) || 1;
+
 // Configuration du worker
 try {
     pdfjsLib.GlobalWorkerOptions.workerSrc = `../pdfjs/build/pdf.worker.mjs`;
@@ -60,10 +65,7 @@ async function renderPageOnCanvas(page, canvas) {
  * Fonction principale qui initialise le visualiseur.
  */
 async function loadPdfViewer() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const pdfUrl = urlParams.get('file');
-    const initialPageNum = parseInt(urlParams.get('page'), 10) || 1;
-
+    
     if (!pdfUrl) {
         viewerContainer.innerHTML = '<div class="error-message"><h1>Erreur : Aucun fichier PDF spécifié.</h1></div>';
         return;
@@ -134,3 +136,55 @@ async function loadPdfViewer() {
 
 // Lancement de l'application
 loadPdfViewer();
+
+const ocrButton = document.getElementById('ocr-btn');
+if (ocrButton) ocrButton.addEventListener('click', () => runOcr());
+
+function capitalize(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+async function extractTextFromPdf(blob) {
+    try {
+        const pdf = await pdfjsLib.getDocument({ data: await blob.arrayBuffer() }).promise;
+        let text = '';
+        for (let n = 1; n <= pdf.numPages; n++) {
+            const page = await pdf.getPage(n);
+            const viewport = page.getViewport({ scale: 2 });
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+            await page.render({ canvasContext: ctx, viewport }).promise;
+            const result = await Tesseract.recognize(canvas, 'fra');
+            text += result.data.text + '\n';
+        }
+        return text;
+    } catch (e) {
+        console.error('OCR error:', e);
+        throw e;
+    }
+}
+
+window.runOcr = async function () {
+    const btn = document.getElementById('ocr-btn');
+    if (btn) btn.disabled = true;
+    try {
+        const resp = await fetch(pdfUrl);
+        const blob = await resp.blob();
+        const text = await extractTextFromPdf(blob);
+        const txtBlob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(txtBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${capitalize(genus)}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 30000);
+    } catch (err) {
+        alert('Erreur OCR');
+    } finally {
+        if (btn) btn.disabled = false;
+    }
+};
