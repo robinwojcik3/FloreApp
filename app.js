@@ -4,6 +4,7 @@
 const MAX_RESULTS = 5;
 const MAX_MULTI_IMAGES = 5;
 const PROXY_ENDPOINT = '/.netlify/functions/api-proxy';
+const FLORA_TEXT_ENDPOINT = '/.netlify/functions/flora-gallica-text';
 
 /* ================================================================
     INITIALISATION ET GESTION DES DONNÉES
@@ -459,7 +460,7 @@ window.handleSynthesisClick = async function(event, element, speciesName) {
     parentCell.innerHTML = `<a href="#" onclick="handleSynthesisClick(event, this, '${speciesName.replace(/'/g, "\\'")}')">Générer</a>`;
 };
 
-window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
+window.handleFloraGallicaClick = async function(event, pdfFile, startPage, genus) {
     event.preventDefault();
     try {
         toggleSpinner(true);
@@ -488,6 +489,25 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
         setTimeout(() => URL.revokeObjectURL(url), 30000);
+
+        try {
+            const res = await fetch(FLORA_TEXT_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pdfFile, startPage, endPage, genus })
+            });
+            if (res.ok) {
+                const txtBlob = await res.blob();
+                const txtUrl = URL.createObjectURL(txtBlob);
+                const a = document.createElement('a');
+                a.href = txtUrl;
+                a.download = `FloraGallica_${genus}.txt`;
+                a.click();
+                setTimeout(() => URL.revokeObjectURL(txtUrl), 30000);
+            }
+        } catch (e) {
+            console.error('Erreur extraction texte Flora Gallica:', e);
+        }
     } catch (err) {
         console.error('Flora Gallica extraction error:', err);
         showNotification('Erreur lors de la génération du PDF.', 'error');
@@ -713,7 +733,7 @@ function buildTable(items){
     if (tocEntryFloraGallica && tocEntryFloraGallica.pdfFile && tocEntryFloraGallica.page) {
       const pdfFile = tocEntryFloraGallica.pdfFile;
       const startPage = tocEntryFloraGallica.page;
-      const handler = `handleFloraGallicaClick(event,'${pdfFile}',${startPage})`;
+      const handler = `handleFloraGallicaClick(event,'${pdfFile}',${startPage},'${genus}')`;
       floraGallicaLink = `<a href="#" onclick=\"${handler}\">` +
                          `<img src="assets/Flora Gallica.png" alt="Flora Gallica"></a>`;
     }
