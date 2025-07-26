@@ -12,6 +12,8 @@ try {
 
 const viewerContainer = document.getElementById('pdf-viewer');
 const ocrBtn = document.getElementById('ocr-btn');
+const downloadBtn = document.getElementById('download-btn');
+let pdfUrlGlobal = '';
 let pdfDoc = null;
 let genusName = '';
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -69,20 +71,21 @@ async function renderPageOnCanvas(page, canvas) {
  */
 async function loadPdfViewer() {
     const urlParams = new URLSearchParams(window.location.search);
-    const pdfUrl = urlParams.get('file');
+    pdfUrlGlobal = urlParams.get('file');
     const initialPageNum = parseInt(urlParams.get('page'), 10) || 1;
     const genParam = urlParams.get('genus');
     if (genParam) genusName = genParam;
 
-    if (!pdfUrl) {
+    if (!pdfUrlGlobal) {
         viewerContainer.innerHTML = '<div class="error-message"><h1>Erreur : Aucun fichier PDF spécifié.</h1></div>';
         return;
     }
 
     try {
-        const loadingTask = pdfjsLib.getDocument(pdfUrl);
+        const loadingTask = pdfjsLib.getDocument(pdfUrlGlobal);
         pdfDoc = await loadingTask.promise;
         if (ocrBtn) ocrBtn.style.display = 'inline-block';
+        if (downloadBtn) downloadBtn.style.display = 'inline-block';
 
         const observer = new IntersectionObserver(async (entries, self) => {
             for (const entry of entries) {
@@ -185,6 +188,25 @@ if (ocrBtn) {
         }
     });
 }
+
+if (downloadBtn) {
+    downloadBtn.addEventListener('click', () => {
+        if (!pdfUrlGlobal) return;
+        const a = document.createElement('a');
+        const name = genusName ? capitalizeGenus(genusName) : 'extrait';
+        a.href = pdfUrlGlobal;
+        a.download = `${name}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    });
+}
+
+window.addEventListener('unload', () => {
+    if (pdfUrlGlobal && pdfUrlGlobal.startsWith('blob:')) {
+        URL.revokeObjectURL(pdfUrlGlobal);
+    }
+});
 
 // Lancement de l'application
 loadPdfViewer();
