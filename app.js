@@ -459,7 +459,7 @@ window.handleSynthesisClick = async function(event, element, speciesName) {
     parentCell.innerHTML = `<a href="#" onclick="handleSynthesisClick(event, this, '${speciesName.replace(/'/g, "\\'")}')">Générer</a>`;
 };
 
-window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
+window.handleFloraGallicaClick = async function(event, pdfFile, startPage, genus) {
     event.preventDefault();
     try {
         toggleSpinner(true);
@@ -488,6 +488,14 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
         setTimeout(() => URL.revokeObjectURL(url), 30000);
+
+        let text = await extractPdfText(newBytes);
+        if (!text || looksLikeBinary(text)) {
+            text = await ocrPdf(newBytes);
+        }
+        if (text) {
+            downloadTextFile(text, `FloraGallica_${genus}.txt`);
+        }
     } catch (err) {
         console.error('Flora Gallica extraction error:', err);
         showNotification('Erreur lors de la génération du PDF.', 'error');
@@ -496,10 +504,69 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
     }
 };
 
+async function extractPdfText(bytes) {
+    try {
+        const pdfjsLib = await import('./pdfjs/build/pdf.mjs');
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdfjs/build/pdf.worker.mjs';
+        pdfjsLib.GlobalWorkerOptions.wasmUrl = 'pdfjs/wasm/';
+        const loadingTask = pdfjsLib.getDocument({ data: bytes });
+        const pdfDoc = await loadingTask.promise;
+        let text = '';
+        for (let i = 1; i <= pdfDoc.numPages; i++) {
+            const page = await pdfDoc.getPage(i);
+            const content = await page.getTextContent();
+            text += content.items.map(it => it.str).join(' ') + '\n';
+        }
+        return text.trim();
+    } catch (err) {
+        return null;
+    }
+}
+
+function looksLikeBinary(str) {
+    if (!str) return true;
+    const cleaned = str.replace(/[\x09\x0A\x0D\x20-\x7E\u00A0-\u024F]/g, '');
+    return cleaned.length / str.length > 0.3;
+}
+
+async function ocrPdf(bytes) {
+    if (typeof Tesseract === 'undefined') return null;
+    const pdfjsLib = await import('./pdfjs/build/pdf.mjs');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'pdfjs/build/pdf.worker.mjs';
+    pdfjsLib.GlobalWorkerOptions.wasmUrl = 'pdfjs/wasm/';
+    const loadingTask = pdfjsLib.getDocument({ data: bytes });
+    const pdfDoc = await loadingTask.promise;
+    let text = '';
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+        const page = await pdfDoc.getPage(i);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        const res = await Tesseract.recognize(canvas, 'fra+lat');
+        text += res.data.text + '\n';
+    }
+    return text.trim();
+}
+
+function downloadTextFile(text, name) {
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
+}
+
 
 /* ================================================================
-    NOUVEAU : FONCTIONS POUR L'ANALYSE COMPARATIVE
-    ================================================================ */
+    NOUVEAU : FONCTIONS POUR L'ANALYSE COMPARATIVE
+    ================================================================ */
 async function getComparisonFromGemini(speciesData) {
     const speciesDataString = speciesData.map(s => `Espèce: ${s.species}\nDonnées morphologiques (Physionomie): ${s.physio || 'Non renseignée'}\nDonnées écologiques: ${s.eco || 'Non renseignée'}`).join('\n\n');
     
@@ -710,12 +777,17 @@ function buildTable(items){
     
     const tocEntryFloraGallica = floraToc[genus];
     let floraGallicaLink = "—";
-    if (tocEntryFloraGallica && tocEntryFloraGallica.pdfFile && tocEntryFloraGallica.page) {
+    if (
+      tocEntryFloraGallica &&
+      tocEntryFloraGallica.pdfFile &&
+      tocEntryFloraGallica.page
+    ) {
       const pdfFile = tocEntryFloraGallica.pdfFile;
       const startPage = tocEntryFloraGallica.page;
-      const handler = `handleFloraGallicaClick(event,'${pdfFile}',${startPage})`;
-      floraGallicaLink = `<a href="#" onclick=\"${handler}\">` +
-                         `<img src="assets/Flora Gallica.png" alt="Flora Gallica"></a>`;
+      const handler = `handleFloraGallicaClick(event,'${pdfFile}',${startPage},'${genus}')`;
+      floraGallicaLink =
+        `<a href="#" onclick=\"${handler}\">` +
+        `<img src="assets/Flora Gallica.png" alt="Flora Gallica"></a>`;
     }
 
     const tocEntryRegalVegetal = regalVegetalToc[genus];
