@@ -12,11 +12,19 @@ try {
 
 const viewerContainer = document.getElementById('pdf-viewer');
 const ocrBtn = document.getElementById('ocr-btn');
+const ocrStatus = document.getElementById('ocr-status');
+const progressBar = document.getElementById('progress-bar');
+const progressPercent = document.getElementById('progress-percent');
 let pdfDoc = null;
 let genusName = '';
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 // Increase render scale for crisper text in generated excerpts
 const RENDER_SCALE = isIOS ? 2.5 : 3.0;
+
+function updateProgress(value = 0) {
+    if (progressBar) progressBar.style.width = `${Math.min(100, Math.max(0, value))}%`;
+    if (progressPercent) progressPercent.textContent = `${Math.round(value)}%`;
+}
 
 function capitalizeGenus(name) {
     if (typeof name !== 'string') return name;
@@ -143,9 +151,10 @@ async function loadPdfViewer() {
     }
 }
 
-async function extractTextFromDocument(doc) {
+async function extractTextFromDocument(doc, onProgress) {
     let text = '';
-    for (let n = 1; n <= doc.numPages; n++) {
+    const total = doc.numPages;
+    for (let n = 1; n <= total; n++) {
         const page = await doc.getPage(n);
         const viewport = page.getViewport({ scale: 2 });
         const canvas = document.createElement('canvas');
@@ -153,8 +162,16 @@ async function extractTextFromDocument(doc) {
         canvas.width = viewport.width;
         canvas.height = viewport.height;
         await page.render({ canvasContext: ctx, viewport }).promise;
-        const result = await Tesseract.recognize(canvas, 'fra');
+        const result = await Tesseract.recognize(canvas, 'fra', {
+            logger: m => {
+                if (m.status === 'recognizing text' && onProgress) {
+                    const perc = ((n - 1 + m.progress) / total) * 100;
+                    onProgress(perc);
+                }
+            }
+        });
         text += result.data.text + '\n';
+        if (onProgress) onProgress((n / total) * 100);
     }
     return text;
 }
@@ -165,8 +182,12 @@ if (ocrBtn) {
         ocrBtn.disabled = true;
         const original = ocrBtn.textContent;
         ocrBtn.textContent = 'OCR en cours...';
+        if (ocrStatus) {
+            updateProgress(0);
+            ocrStatus.style.display = 'flex';
+        }
         try {
-            const txt = await extractTextFromDocument(pdfDoc);
+            const txt = await extractTextFromDocument(pdfDoc, updateProgress);
             const blob = new Blob([txt], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -182,6 +203,7 @@ if (ocrBtn) {
         } finally {
             ocrBtn.textContent = original;
             ocrBtn.disabled = false;
+            if (ocrStatus) ocrStatus.style.display = 'none';
         }
     });
 }
