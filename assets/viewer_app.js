@@ -11,12 +11,14 @@ try {
 }
 
 const viewerContainer = document.getElementById('pdf-viewer');
+const downloadBtn = document.getElementById('download-btn');
 const ocrBtn = document.getElementById('ocr-btn');
 const progressWrap = document.getElementById('ocr-progress');
 const progressBar = document.getElementById('ocr-progress-bar');
 const progressText = document.getElementById('ocr-progress-text');
 let pdfDoc = null;
 let genusName = '';
+let pdfUrlCurrent = '';
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 // Increase render scale for crisper text in generated excerpts
 const RENDER_SCALE = isIOS ? 2.5 : 3.0;
@@ -81,6 +83,7 @@ async function loadPdfViewer() {
     const initialPageNum = parseInt(urlParams.get('page'), 10) || 1;
     const genParam = urlParams.get('genus');
     if (genParam) genusName = genParam;
+    pdfUrlCurrent = pdfUrl;
 
     if (!pdfUrl) {
         viewerContainer.innerHTML = '<div class="error-message"><h1>Erreur : Aucun fichier PDF spécifié.</h1></div>';
@@ -91,6 +94,7 @@ async function loadPdfViewer() {
         const loadingTask = pdfjsLib.getDocument(pdfUrl);
         pdfDoc = await loadingTask.promise;
         if (ocrBtn) ocrBtn.style.display = 'inline-block';
+        if (downloadBtn) downloadBtn.style.display = 'inline-block';
 
         const observer = new IntersectionObserver(async (entries, self) => {
             for (const entry of entries) {
@@ -203,6 +207,19 @@ if (ocrBtn) {
             ocrBtn.disabled = false;
             if (progressWrap) progressWrap.style.display = 'none';
         }
+    });
+}
+
+if (downloadBtn) {
+    downloadBtn.addEventListener('click', () => {
+        if (!pdfUrlCurrent) return;
+        const a = document.createElement('a');
+        const name = genusName ? capitalizeGenus(genusName) : 'extrait';
+        a.href = pdfUrlCurrent;
+        a.download = `${name}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
     });
 }
 
