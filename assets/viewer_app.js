@@ -12,8 +12,10 @@ try {
 
 const viewerContainer = document.getElementById('pdf-viewer');
 const ocrBtn = document.getElementById('ocr-btn');
+const downloadBtn = document.getElementById('download-pdf-btn');
 let pdfDoc = null;
 let genusName = '';
+let pdfUrlOriginal = '';
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 // Increase render scale for crisper text in generated excerpts
 const RENDER_SCALE = isIOS ? 2.5 : 3.0;
@@ -80,9 +82,11 @@ async function loadPdfViewer() {
     }
 
     try {
+        pdfUrlOriginal = pdfUrl;
         const loadingTask = pdfjsLib.getDocument(pdfUrl);
         pdfDoc = await loadingTask.promise;
         if (ocrBtn) ocrBtn.style.display = 'inline-block';
+        if (downloadBtn) downloadBtn.style.display = 'inline-block';
 
         const observer = new IntersectionObserver(async (entries, self) => {
             for (const entry of entries) {
@@ -185,6 +189,25 @@ if (ocrBtn) {
         }
     });
 }
+
+if (downloadBtn) {
+    downloadBtn.addEventListener('click', () => {
+        if (!pdfUrlOriginal) return;
+        const a = document.createElement('a');
+        const name = genusName ? capitalizeGenus(genusName) : 'extrait';
+        a.href = pdfUrlOriginal;
+        a.download = `${name}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    });
+}
+
+window.addEventListener('beforeunload', () => {
+    if (pdfUrlOriginal && pdfUrlOriginal.startsWith('blob:')) {
+        URL.revokeObjectURL(pdfUrlOriginal);
+    }
+});
 
 // Lancement de l'application
 loadPdfViewer();
