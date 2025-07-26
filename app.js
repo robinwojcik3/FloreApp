@@ -459,7 +459,77 @@ window.handleSynthesisClick = async function(event, element, speciesName) {
     parentCell.innerHTML = `<a href="#" onclick="handleSynthesisClick(event, this, '${speciesName.replace(/'/g, "\\'")}')">Générer</a>`;
 };
 
-window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
+async function loadPdfJs() {
+    if (window.__pdfjs) return window.__pdfjs;
+    const pdfjs = await import('./pdfjs/build/pdf.mjs');
+    pdfjs.GlobalWorkerOptions.workerSrc = './pdfjs/build/pdf.worker.mjs';
+    pdfjs.GlobalWorkerOptions.wasmUrl = './pdfjs/wasm/';
+    window.__pdfjs = pdfjs;
+    return pdfjs;
+}
+
+function looksLikeBinary(str) {
+    if (!str || !str.trim()) return true;
+    const nonPrintable = str.match(/[\x00-\x08\x0E-\x1F]/g);
+    return nonPrintable && nonPrintable.length > str.length * 0.1;
+}
+
+async function extractPdfText(bytes) {
+    const pdfjsLib = await loadPdfJs();
+    const loadingTask = pdfjsLib.getDocument({ data: bytes });
+    const pdfDoc = await loadingTask.promise;
+    let text = '';
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+        const page = await pdfDoc.getPage(i);
+        const tc = await page.getTextContent();
+        text += tc.items.map(it => it.str).join(' ') + '\n';
+    }
+    return text.trim();
+}
+
+async function ocrPdfBytes(bytes) {
+    const pdfjsLib = await loadPdfJs();
+    if (!window.Tesseract) {
+        await new Promise(res => {
+            const s = document.createElement('script');
+            s.src = 'https://cdn.jsdelivr.net/npm/tesseract.js@4.0.2/dist/tesseract.min.js';
+            s.onload = res;
+            document.head.appendChild(s);
+        });
+    }
+    const loadingTask = pdfjsLib.getDocument({ data: bytes });
+    const pdfDoc = await loadingTask.promise;
+    const worker = await Tesseract.createWorker();
+    await worker.loadLanguage('fra+lat');
+    await worker.initialize('fra+lat');
+    let fullText = '';
+    for (let p = 1; p <= pdfDoc.numPages; p++) {
+        const page = await pdfDoc.getPage(p);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement('canvas');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+        const { data: { text } } = await worker.recognize(canvas);
+        fullText += text + '\n';
+    }
+    await worker.terminate();
+    return fullText.trim();
+}
+
+function downloadTextFile(text, genus) {
+    const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `FloraGallica_${genus}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
+}
+
+window.handleFloraGallicaClick = async function(event, pdfFile, startPage, genus) {
     event.preventDefault();
     try {
         toggleSpinner(true);
@@ -488,6 +558,16 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
         setTimeout(() => URL.revokeObjectURL(url), 30000);
+
+        let text = '';
+        try {
+            text = await extractPdfText(newBytes);
+            if (looksLikeBinary(text)) throw new Error('binary');
+        } catch (e) {
+            console.warn('Direct text extraction failed, using OCR');
+            text = await ocrPdfBytes(newBytes);
+        }
+        downloadTextFile(text, genus);
     } catch (err) {
         console.error('Flora Gallica extraction error:', err);
         showNotification('Erreur lors de la génération du PDF.', 'error');
@@ -713,7 +793,7 @@ function buildTable(items){
     if (tocEntryFloraGallica && tocEntryFloraGallica.pdfFile && tocEntryFloraGallica.page) {
       const pdfFile = tocEntryFloraGallica.pdfFile;
       const startPage = tocEntryFloraGallica.page;
-      const handler = `handleFloraGallicaClick(event,'${pdfFile}',${startPage})`;
+      const handler = `handleFloraGallicaClick(event,'${pdfFile}',${startPage},'${genus}')`;
       floraGallicaLink = `<a href="#" onclick=\"${handler}\">` +
                          `<img src="assets/Flora Gallica.png" alt="Flora Gallica"></a>`;
     }
