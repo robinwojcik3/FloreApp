@@ -54,10 +54,12 @@
     </style>
 </head>
 <body>
+    <div style="text-align:center;margin-top:10px;">
+        <button id="ocr-btn">Extraction OCR</button>
+    </div>
+    <div id="pdf-viewer"></div>
 
-    <div id="pdf-viewer">
-        </div>
-
+    <script src="https://unpkg.com/tesseract.js@5.0.1/dist/tesseract.min.js"></script>
     <script src="pdfjs/build/pdf.mjs" type="module"></script>
     <script src="assets/viewer_app.js" type="module"></script>
     <script src="sw-register.js"></script>

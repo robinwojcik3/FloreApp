@@ -11,6 +11,9 @@ try {
 }
 
 const viewerContainer = document.getElementById('pdf-viewer');
+const ocrBtn = document.getElementById('ocr-btn');
+let pdfUrl = '';
+let genusName = '';
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 // Increase render scale for crisper text in generated excerpts
 const RENDER_SCALE = isIOS ? 2.5 : 3.0;
@@ -61,7 +64,8 @@ async function renderPageOnCanvas(page, canvas) {
  */
 async function loadPdfViewer() {
     const urlParams = new URLSearchParams(window.location.search);
-    const pdfUrl = urlParams.get('file');
+    pdfUrl = urlParams.get('file');
+    genusName = urlParams.get('name') || 'extrait';
     const initialPageNum = parseInt(urlParams.get('page'), 10) || 1;
 
     if (!pdfUrl) {
@@ -132,5 +136,49 @@ async function loadPdfViewer() {
     }
 }
 
+async function extractTextFromPdf(blob) {
+    const buffer = await blob.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+    let text = '';
+    for (let n = 1; n <= pdf.numPages; n++) {
+        const page = await pdf.getPage(n);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        const result = await Tesseract.recognize(canvas, 'fra');
+        text += result.data.text + '\n';
+    }
+    return text;
+}
+
+async function runOcr() {
+    try {
+        ocrBtn.disabled = true;
+        const resp = await fetch(pdfUrl);
+        const blob = await resp.blob();
+        const text = await extractTextFromPdf(blob);
+        const txtBlob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(txtBlob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${genusName}.txt`;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 30000);
+    } catch (err) {
+        console.error('OCR error:', err);
+    } finally {
+        ocrBtn.disabled = false;
+    }
+}
+
 // Lancement de l'application
 loadPdfViewer();
+if (ocrBtn) {
+    ocrBtn.addEventListener('click', runOcr);
+}
