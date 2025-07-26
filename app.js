@@ -277,6 +277,15 @@ function resizeImageToDataURL(file, maxDim = 1600) {
   });
 }
 
+function arrayBufferToBase64(buffer) {
+  let binary = '';
+  const bytes = new Uint8Array(buffer);
+  for (let i = 0; i < bytes.byteLength; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+
 async function apiFetch(target, payload) {
     toggleSpinner(true);
     try {
@@ -488,6 +497,26 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
         setTimeout(() => URL.revokeObjectURL(url), 30000);
+
+        const base64 = arrayBufferToBase64(newBytes);
+        const ocrRes = await fetch('/.netlify/functions/ocr-pdf', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pdfBase64: base64 })
+        });
+        if (ocrRes.ok) {
+          const { text } = await ocrRes.json();
+          const txtBlob = new Blob([text], { type: 'text/plain' });
+          const txtUrl = URL.createObjectURL(txtBlob);
+          const a = document.createElement('a');
+          a.href = txtUrl;
+          a.download = pdfFile.replace(/\.pdf$/, '.txt');
+          a.style.display = 'none';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          setTimeout(() => URL.revokeObjectURL(txtUrl), 30000);
+        }
     } catch (err) {
         console.error('Flora Gallica extraction error:', err);
         showNotification('Erreur lors de la génération du PDF.', 'error');
