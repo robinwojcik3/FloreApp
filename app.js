@@ -673,11 +673,11 @@ function buildTable(items){
     
     const tocEntryFloraGallica = floraToc[genus];
     let floraGallicaLink = "—";
-    if (tocEntryFloraGallica && tocEntryFloraGallica.pdfFile && tocEntryFloraGallica.page) {
-      const pdfPath = `assets/flora_gallica_pdfs/${tocEntryFloraGallica.pdfFile}`;
-      const viewerUrl = `viewer.html?file=${encodeURIComponent(pdfPath)}&page=${tocEntryFloraGallica.page}`;
-      floraGallicaLink = linkIcon(viewerUrl, "Flora Gallica.png", "Flora Gallica");
-    }
+    if (tocEntryFloraGallica && tocEntryFloraGallica.pdfFile && tocEntryFloraGallica.page) {
+      const fnUrl = `/.netlify/functions/extract-flora-gallica?genus=${genus}`;
+      const viewerUrl = `viewer.html?file=${encodeURIComponent(fnUrl)}&page=1`;
+      floraGallicaLink = linkIcon(viewerUrl, "Flora Gallica.png", "Flora Gallica");
+    }
 
     const tocEntryRegalVegetal = regalVegetalToc[genus];
     let regalVegetalLink = "—";
