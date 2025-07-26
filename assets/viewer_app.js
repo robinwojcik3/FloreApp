@@ -12,8 +12,10 @@ try {
 
 const viewerContainer = document.getElementById('pdf-viewer');
 const ocrBtn = document.getElementById('ocr-btn');
+const downloadBtn = document.getElementById('download-btn');
 let pdfDoc = null;
 let genusName = '';
+let pdfUrlGlobal = '';
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 // Increase render scale for crisper text in generated excerpts
 const RENDER_SCALE = isIOS ? 2.5 : 3.0;
@@ -70,6 +72,7 @@ async function renderPageOnCanvas(page, canvas) {
 async function loadPdfViewer() {
     const urlParams = new URLSearchParams(window.location.search);
     const pdfUrl = urlParams.get('file');
+    pdfUrlGlobal = pdfUrl;
     const initialPageNum = parseInt(urlParams.get('page'), 10) || 1;
     const genParam = urlParams.get('genus');
     if (genParam) genusName = genParam;
@@ -83,6 +86,7 @@ async function loadPdfViewer() {
         const loadingTask = pdfjsLib.getDocument(pdfUrl);
         pdfDoc = await loadingTask.promise;
         if (ocrBtn) ocrBtn.style.display = 'inline-block';
+        if (downloadBtn) downloadBtn.style.display = 'inline-block';
 
         const observer = new IntersectionObserver(async (entries, self) => {
             for (const entry of entries) {
@@ -157,6 +161,19 @@ async function extractTextFromDocument(doc) {
         text += result.data.text + '\n';
     }
     return text;
+}
+
+if (downloadBtn) {
+    downloadBtn.addEventListener('click', () => {
+        if (!pdfUrlGlobal) return;
+        const name = genusName ? capitalizeGenus(genusName) : 'extrait';
+        const a = document.createElement('a');
+        a.href = pdfUrlGlobal;
+        a.download = `${name}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    });
 }
 
 if (ocrBtn) {
