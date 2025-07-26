@@ -115,3 +115,14 @@ L.tileLayer('/tiles/{z}/{x}/{y}.png', {
 
 Activez la compression (gzip ou brotli) pour limiter le poids des transferts.
 
+
+## Clés dichotomiques OCR
+
+Le script `scripts/generate_key.py` transforme les fichiers OCR stockés dans `data/ocr/<genre>_ocr.txt` en clés JSON interactives. Exécutez :
+
+```bash
+python scripts/generate_key.py lamium
+```
+
+Un fichier `data/keys/lamium_key.json` et une page `data/keys/lamium_key.html` seront générés.
+
