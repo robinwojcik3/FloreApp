@@ -12,11 +12,19 @@ try {
 
 const viewerContainer = document.getElementById('pdf-viewer');
 const ocrBtn = document.getElementById('ocr-btn');
+const statusContainer = document.getElementById('ocr-status');
+const progressBar = document.getElementById('progress-bar');
+const progressText = document.getElementById('progress-text');
 let pdfDoc = null;
 let genusName = '';
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 // Increase render scale for crisper text in generated excerpts
 const RENDER_SCALE = isIOS ? 2.5 : 3.0;
+
+function updateProgress(percent) {
+    if (progressBar) progressBar.style.width = `${percent}%`;
+    if (progressText) progressText.textContent = `${Math.round(percent)}%`;
+}
 
 function capitalizeGenus(name) {
     if (typeof name !== 'string') return name;
@@ -143,7 +151,7 @@ async function loadPdfViewer() {
     }
 }
 
-async function extractTextFromDocument(doc) {
+async function extractTextFromDocument(doc, progressCb) {
     let text = '';
     for (let n = 1; n <= doc.numPages; n++) {
         const page = await doc.getPage(n);
@@ -153,8 +161,16 @@ async function extractTextFromDocument(doc) {
         canvas.width = viewport.width;
         canvas.height = viewport.height;
         await page.render({ canvasContext: ctx, viewport }).promise;
-        const result = await Tesseract.recognize(canvas, 'fra');
+        const result = await Tesseract.recognize(canvas, 'fra', {
+            logger: m => {
+                if (m.status === 'recognizing text' && progressCb) {
+                    const percent = ((n - 1) + m.progress) / doc.numPages * 100;
+                    progressCb(percent);
+                }
+            }
+        });
         text += result.data.text + '\n';
+        if (progressCb) progressCb(n / doc.numPages * 100);
     }
     return text;
 }
@@ -165,8 +181,10 @@ if (ocrBtn) {
         ocrBtn.disabled = true;
         const original = ocrBtn.textContent;
         ocrBtn.textContent = 'OCR en cours...';
+        if (statusContainer) statusContainer.style.display = 'flex';
+        updateProgress(0);
         try {
-            const txt = await extractTextFromDocument(pdfDoc);
+            const txt = await extractTextFromDocument(pdfDoc, updateProgress);
             const blob = new Blob([txt], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -182,6 +200,7 @@ if (ocrBtn) {
         } finally {
             ocrBtn.textContent = original;
             ocrBtn.disabled = false;
+            if (statusContainer) statusContainer.style.display = 'none';
         }
     });
 }
