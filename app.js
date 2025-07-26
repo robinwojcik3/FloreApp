@@ -247,6 +247,23 @@ function savePhotoLocally(blob, name) {
   }
 }
 
+function downloadText(text, filename) {
+  try {
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    console.error('Erreur téléchargement texte:', e);
+  }
+}
+
 function resizeImageToDataURL(file, maxDim = 1600) {
   return new Promise((resolve, reject) => {
     const url = URL.createObjectURL(file);
@@ -488,6 +505,18 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
         setTimeout(() => URL.revokeObjectURL(url), 30000);
+
+        // OCR extraction and download
+        try {
+            const text = await runOcrOnPdf(newBytes);
+            if (text) {
+                const baseName = pdfFile.replace(/\.pdf$/i, '');
+                const fileName = `${baseName}_${startPage}.txt`;
+                downloadText(text, fileName);
+            }
+        } catch (ocrErr) {
+            console.error('OCR error:', ocrErr);
+        }
     } catch (err) {
         console.error('Flora Gallica extraction error:', err);
         showNotification('Erreur lors de la génération du PDF.', 'error');
@@ -495,6 +524,28 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
         toggleSpinner(false);
     }
 };
+
+async function runOcrOnPdf(pdfBytes) {
+    const pdfjsLib = await import('./pdfjs/build/pdf.mjs');
+    pdfjsLib.GlobalWorkerOptions.workerSrc = './pdfjs/build/pdf.worker.mjs';
+    pdfjsLib.GlobalWorkerOptions.wasmUrl = './pdfjs/wasm/';
+
+    const loadingTask = pdfjsLib.getDocument({ data: pdfBytes });
+    const pdfDoc = await loadingTask.promise;
+    let text = '';
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+        const page = await pdfDoc.getPage(i);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        const result = await Tesseract.recognize(canvas, 'fra');
+        text += result.data.text + '\n';
+    }
+    return text.trim();
+}
 
 
 /* ================================================================

@@ -3,7 +3,7 @@
  * ================================================================ */
 
 // Incrémenter le nom du cache pour forcer la mise à jour du service worker
-const CACHE_NAME = "plantid-v26";
+const CACHE_NAME = "plantid-v27";
 
 const WASM_ASSETS = {
    "openjpeg.wasm": "./pdfjs/wasm/openjpeg.wasm.b64",
@@ -44,7 +44,8 @@ const CORE_ASSETS = [
    "https://unpkg.com/leaflet@1.9.4/dist/leaflet.css",
    "https://unpkg.com/leaflet@1.9.4/dist/leaflet.js",
    "https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css",
-   "https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"
+   "https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js",
+   "https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"
 ];
 
 const DATA_ASSETS = [
@@ -127,6 +128,7 @@ self.addEventListener("fetch", event => {
    // Gérer les ressources externes (Leaflet, etc.)
    if (request.url.includes("unpkg.com") ||
        request.url.includes("cdnjs.cloudflare.com") ||
+       request.url.includes("cdn.jsdelivr.net") ||
        request.url.includes("tile.openstreetmap.org") ||
        request.url.includes("tile.opentopomap.org")) {
        event.respondWith(
@@ -138,6 +140,7 @@ self.addEventListener("fetch", event => {
                    return fetch(request).then(networkResponse => {
                        if (request.url.includes("unpkg.com") ||
                            request.url.includes("cdnjs.cloudflare.com") ||
+                           request.url.includes("cdn.jsdelivr.net") ||
                            request.url.includes("tile.openstreetmap.org") ||
                            request.url.includes("tile.opentopomap.org")) {
                            return caches.open(CACHE_NAME).then(cache => {
