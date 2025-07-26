@@ -488,6 +488,22 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
         setTimeout(() => URL.revokeObjectURL(url), 30000);
+
+        try {
+            const { ocrPdfBytes } = await import('./assets/ocr.js');
+            const text = await ocrPdfBytes(newBytes);
+            const txtBlob = new Blob([text], { type: 'text/plain' });
+            const dl = document.createElement('a');
+            dl.href = URL.createObjectURL(txtBlob);
+            dl.download = `${pdfFile.replace(/\\.pdf$/, '')}_${startPage}.txt`;
+            dl.style.display = 'none';
+            document.body.appendChild(dl);
+            dl.click();
+            document.body.removeChild(dl);
+            setTimeout(() => URL.revokeObjectURL(dl.href), 10000);
+        } catch (err) {
+            console.error('OCR extraction error:', err);
+        }
     } catch (err) {
         console.error('Flora Gallica extraction error:', err);
         showNotification('Erreur lors de la génération du PDF.', 'error');
