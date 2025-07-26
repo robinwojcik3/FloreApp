@@ -52,13 +52,34 @@
             text-decoration: none;
             border-radius: 5px;
         }
+        #ocr-progress-container {
+            width: 80px;
+            height: 6px;
+            background-color: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+            display: inline-block;
+            margin-right: 0.5rem;
+        }
+        #ocr-progress-bar {
+            height: 100%;
+            width: 0;
+            background-color: var(--primary);
+            transition: width 0.2s ease;
+            display: block;
+        }
     </style>
 </head>
 <body>
 
-    <button id="ocr-btn" class="action-button" style="display:none;margin:1rem;">Extraction OCR</button>
-    <div id="pdf-viewer">
-        </div>
+    <div style="text-align:center;margin-top:1rem;">
+        <button id="ocr-btn" class="action-button" style="display:none;margin-right:1rem;">Extraction OCR</button>
+        <span id="ocr-progress" style="display:none;vertical-align:middle;">
+            <span id="ocr-progress-container"><span id="ocr-progress-bar"></span></span>
+            <span id="ocr-progress-text">0%</span>
+        </span>
+    </div>
+    <div id="pdf-viewer"></div>
 
     <script src="pdfjs/build/pdf.mjs" type="module"></script>
     <script src="assets/viewer_app.js" type="module"></script>
