@@ -37,8 +37,8 @@ function loadHandler(mockFetch) {
   const patched = code.replace(
     /const fetch = \(\.\.\.args\) => import\("node-fetch"\)\.then\(\(\{default: f\}\) => f\(\.\.\.args\)\);/,
     'const fetch = (...args) => global.__fetch(...args);'
-  );
-  const context = { require, console, exports: {}, __fetch: mockFetch };
+  ).replace("const fetch = require('./utils/fetch');", 'const fetch = global.__fetch;');
+  const context = { require, console, exports: {}, __fetch: mockFetch, URL };
   context.global = context;
   vm.createContext(context);
   vm.runInContext(patched, context);
@@ -50,8 +50,8 @@ function loadAuraHandler(mockFetch) {
   const patched = code.replace(
     /const fetch = \(\.\.\.args\) => import\(['"]node-fetch['"]\)\.then\(\(\{default: f\}\) => f\(\.\.\.args\)\);/,
     'const fetch = (...args) => global.__fetch(...args);'
-  );
-  const context = { require, console, exports: {}, __fetch: mockFetch };
+  ).replace("const fetch = require('./utils/fetch');", 'const fetch = global.__fetch;');
+  const context = { require, console, exports: {}, __fetch: mockFetch, URL };
   context.global = context;
   vm.createContext(context);
   vm.runInContext(patched, context);
@@ -63,8 +63,8 @@ function loadGbifHandler(mockFetch) {
   const patched = code.replace(
     /const fetch = \(\.\.\.args\) => import\("node-fetch"\)\.then\(\(\{default: f\}\) => f\(\.\.\.args\)\);/,
     'const fetch = (...args) => global.__fetch(...args);'
-  );
-  const context = { require, console, exports: {}, __fetch: mockFetch };
+  ).replace("const fetch = require('./utils/fetch');", 'const fetch = global.__fetch;');
+  const context = { require, console, exports: {}, __fetch: mockFetch, URL };
   context.global = context;
   vm.createContext(context);
   vm.runInContext(patched, context);
@@ -82,8 +82,9 @@ function loadApiProxyHandler(mockFetch, env = {}, FormDataCtor = class { getHead
   const code = fs.readFileSync('netlify/functions/api-proxy.js', 'utf-8');
   const patched = code
     .replace("const fetch = require('node-fetch');", 'const fetch = global.__fetch;')
+    .replace("const fetch = require('./utils/fetch');", 'const fetch = global.__fetch;')
     .replace("const FormData = require('form-data');", 'const FormData = global.__FormData;');
-  const context = { require, console, exports: {}, __fetch: mockFetch, __FormData: FormDataCtor, process: { env } };
+  const context = { require, console, exports: {}, __fetch: mockFetch, __FormData: FormDataCtor, process: { env }, Buffer };
   context.global = context;
   vm.createContext(context);
   vm.runInContext(patched, context);
@@ -95,7 +96,7 @@ function loadAnalyzeHandler(mockFetch, env = {}) {
   const patched = code.replace(
     /const fetch = \(\.\.\.args\) => import\('node-fetch'\)\.then\(\(\{default: f\}\) => f\(\.\.\.args\)\);/,
     'const fetch = (...args) => global.__fetch(...args);'
-  );
+  ).replace("const fetch = require('./utils/fetch');", 'const fetch = global.__fetch;');
   const context = { require, console, exports: {}, __fetch: mockFetch, process: { env } };
   context.global = context;
   vm.createContext(context);
@@ -103,4 +104,17 @@ function loadAnalyzeHandler(mockFetch, env = {}) {
   return context.exports.handler;
 }
 
-module.exports = { loadApp, loadHandler, loadAuraHandler, loadGbifHandler, loadApiProxyHandler, loadAnalyzeHandler, mockFetch };
+function loadFloraGallicaHandler() {
+  return require('./netlify/functions/flora-gallica.js').handler;
+}
+
+module.exports = {
+  loadApp,
+  loadHandler,
+  loadAuraHandler,
+  loadGbifHandler,
+  loadApiProxyHandler,
+  loadAnalyzeHandler,
+  loadFloraGallicaHandler,
+  mockFetch
+};

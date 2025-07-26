@@ -1,0 +1,4758 @@
+{
+  "adoxa": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 2
+  },
+  "sambucus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 2
+  },
+  "viburnum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 2
+  },
+  "aptenia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 3
+  },
+  "carpobrotus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 3
+  },
+  "delosperma": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 4
+  },
+  "disphyma": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 4
+  },
+  "drosanthemum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 4
+  },
+  "erepsia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 4
+  },
+  "lampranthus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 4
+  },
+  "malephora": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 4
+  },
+  "mesembryanthemum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 5
+  },
+  "oscularia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 5
+  },
+  "ruschia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 5
+  },
+  "tetragonia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 5
+  },
+  "liquidambar": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 5
+  },
+  "alternanthera": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 7
+  },
+  "amaranthus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 7
+  },
+  "arthrocnemum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 9
+  },
+  "atriplex": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 9
+  },
+  "bassia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 11
+  },
+  "beta": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 11
+  },
+  "blitum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 11
+  },
+  "camphorosma": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 11
+  },
+  "chenopodiastrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 12
+  },
+  "chenopodium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 12
+  },
+  "corispermum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 13
+  },
+  "cycloloma": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 13
+  },
+  "dysphania": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 13
+  },
+  "halimione": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 14
+  },
+  "kali": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 14
+  },
+  "lipandra": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 15
+  },
+  "oxybasis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 15
+  },
+  "polycnemum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 15
+  },
+  "salicornia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 16
+  },
+  "salsola": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 17
+  },
+  "sarcocornia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 17
+  },
+  "spirobassia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 17
+  },
+  "suaeda": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 17
+  },
+  "cotinus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 18
+  },
+  "pistacia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 18
+  },
+  "rhus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 18
+  },
+  "schinus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 18
+  },
+  "aegopodium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 30
+  },
+  "aethusa": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 30
+  },
+  "ammi": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 31
+  },
+  "ammoides": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 31
+  },
+  "anethum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 31
+  },
+  "angelica": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 31
+  },
+  "anthriscus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 32
+  },
+  "apium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 33
+  },
+  "astrantia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 33
+  },
+  "athamanta": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 34
+  },
+  "berula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 34
+  },
+  "bifora": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 34
+  },
+  "bunium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 34
+  },
+  "bupleurum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 35
+  },
+  "caropsis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 38
+  },
+  "carum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 38
+  },
+  "caucalis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 38
+  },
+  "cervaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 38
+  },
+  "chaerophyllum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 38
+  },
+  "cicuta": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 40
+  },
+  "conium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 40
+  },
+  "conopodium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 40
+  },
+  "coriandrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 40
+  },
+  "coristospermum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 40
+  },
+  "crithmum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 41
+  },
+  "cyclospermum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 41
+  },
+  "daucus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 41
+  },
+  "dethawia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 44
+  },
+  "dichoropetalum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 44
+  },
+  "echinophora": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 44
+  },
+  "elaeoselinum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 44
+  },
+  "endressia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 45
+  },
+  "epikeros": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 45
+  },
+  "eryngium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 45
+  },
+  "falcaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 46
+  },
+  "ferula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 46
+  },
+  "ferulago": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 47
+  },
+  "foeniculum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 47
+  },
+  "gasparrinia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 47
+  },
+  "helosciadium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 47
+  },
+  "heracleum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 48
+  },
+  "kadenia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 50
+  },
+  "katapsuxis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 50
+  },
+  "kundmannia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 51
+  },
+  "laser": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 51
+  },
+  "laserpitium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 51
+  },
+  "levisticum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 52
+  },
+  "libanotis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 52
+  },
+  "magydaris": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 53
+  },
+  "meum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 53
+  },
+  "molopospermum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 53
+  },
+  "mutellina": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 53
+  },
+  "myrrhis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 53
+  },
+  "oenanthe": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 53
+  },
+  "opopanax": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 55
+  },
+  "oreoselinum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 55
+  },
+  "orlaya": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 55
+  },
+  "pachypleurum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 56
+  },
+  "pastinaca": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 56
+  },
+  "petroselinum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 57
+  },
+  "peucedanum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 57
+  },
+  "physospermum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 58
+  },
+  "pimpinella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 58
+  },
+  "pleurospermum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 60
+  },
+  "prangos": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 60
+  },
+  "pseudorlaya": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 60
+  },
+  "pteroselinum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 60
+  },
+  "ptychotis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 60
+  },
+  "ridolfia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 60
+  },
+  "rouya": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 60
+  },
+  "sanicula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 61
+  },
+  "scandix": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 61
+  },
+  "selinum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 61
+  },
+  "seseli": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 62
+  },
+  "silaum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 63
+  },
+  "sison": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 64
+  },
+  "sium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 64
+  },
+  "smyrnium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 64
+  },
+  "thapsia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 64
+  },
+  "thysselinum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 65
+  },
+  "tordylium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 65
+  },
+  "torilis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 65
+  },
+  "trinia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 67
+  },
+  "trochiscanthes": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 67
+  },
+  "trocdaris": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 67
+  },
+  "turgenia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 67
+  },
+  "visnaga": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 67
+  },
+  "xanthoselinum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 68
+  },
+  "xatartia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 68
+  },
+  "araujia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 69
+  },
+  "asclepias": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 69
+  },
+  "cynanchum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 69
+  },
+  "gomphocarpus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 69
+  },
+  "nerium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 69
+  },
+  "orbea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 69
+  },
+  "periploca": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 70
+  },
+  "vinca": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 70
+  },
+  "vincetoxicum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 70
+  },
+  "hedera": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 71
+  },
+  "hydrocotyle": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 71
+  },
+  "aristolochia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 71
+  },
+  "asarum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 72
+  },
+  "achillea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 75
+  },
+  "adenostyles": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 226
+  },
+  "ageratina": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 216
+  },
+  "ambrosia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 216
+  },
+  "anacyclus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 78
+  },
+  "andryala": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 126
+  },
+  "antennaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 209
+  },
+  "anthemis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 79
+  },
+  "aposeris": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 126
+  },
+  "arctium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 102
+  },
+  "arctotheca": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 93
+  },
+  "arnica": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 216
+  },
+  "arnoseris": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 126
+  },
+  "artemisia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 80
+  },
+  "aster": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 94
+  },
+  "asteriscus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 222
+  },
+  "atractylis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 103
+  },
+  "baccharis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 94
+  },
+  "bellidiastrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 94
+  },
+  "bellis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 94
+  },
+  "bellium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 95
+  },
+  "berardia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 103
+  },
+  "bidens": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 217
+  },
+  "bombycilaena": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 209
+  },
+  "buphthalmum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 222
+  },
+  "calendula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 100
+  },
+  "carduus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 103
+  },
+  "carlina": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 106
+  },
+  "carpesium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 223
+  },
+  "carthamus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 107
+  },
+  "castroviejoa": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 209
+  },
+  "catananche": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 126
+  },
+  "centaurea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 108
+  },
+  "centipeda": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 218
+  },
+  "chamaemelum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 84
+  },
+  "cheirolophus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 114
+  },
+  "chiliadenus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 223
+  },
+  "chondrilla": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 126
+  },
+  "chrysanthemoides": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 100
+  },
+  "cichorium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 127
+  },
+  "cirsium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 115
+  },
+  "cladanthus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 84
+  },
+  "coleostephus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 84
+  },
+  "coreopsis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 218
+  },
+  "cosmos": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 218
+  },
+  "cota": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 84
+  },
+  "cotula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 85
+  },
+  "crepis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 127
+  },
+  "crupina": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 118
+  },
+  "cyanus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 118
+  },
+  "cynara": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 119
+  },
+  "delairea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 227
+  },
+  "dittrichia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 223
+  },
+  "doronicum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 227
+  },
+  "echinops": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 120
+  },
+  "eclipta": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 219
+  },
+  "erigeron": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 95
+  },
+  "eupatorium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 219
+  },
+  "euthamia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 98
+  },
+  "filago": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 210
+  },
+  "galactites": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 120
+  },
+  "galatella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 98
+  },
+  "galinsoga": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 219
+  },
+  "gazania": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 93
+  },
+  "geropogon": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 131
+  },
+  "glebionis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 85
+  },
+  "gnaphalium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 211
+  },
+  "guizotia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 219
+  },
+  "hedypnois": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 131
+  },
+  "helianthus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 219
+  },
+  "helichrysum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 212
+  },
+  "helminthotheca": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 131
+  },
+  "hieracium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 132
+  },
+  "groupe": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 134
+  },
+  "homogyne": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 228
+  },
+  "hyoseris": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 161
+  },
+  "hypochaeris": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 161
+  },
+  "inula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 223
+  },
+  "jacobaea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 228
+  },
+  "jasonia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 224
+  },
+  "jurinea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 120
+  },
+  "klasea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 120
+  },
+  "lactuca": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 162
+  },
+  "lapsana": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 164
+  },
+  "laphangium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 212
+  },
+  "leontodon": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 164
+  },
+  "leontopodium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 213
+  },
+  "leucanthemella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 85
+  },
+  "leucanthemopsis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 85
+  },
+  "leucanthemum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 86
+  },
+  "ligularia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 230
+  },
+  "limbarda": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 224
+  },
+  "mantisalca": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 120
+  },
+  "matricaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 90
+  },
+  "nananthea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 90
+  },
+  "notobasis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 121
+  },
+  "onopordum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 121
+  },
+  "pallenis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 225
+  },
+  "petasites": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 230
+  },
+  "phagnalon": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 213
+  },
+  "picnomon": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 121
+  },
+  "picris": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 165
+  },
+  "pilosella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 165
+  },
+  "podospermum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 171
+  },
+  "plagius": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 90
+  },
+  "prenanthes": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 171
+  },
+  "pseudognaphalium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 214
+  },
+  "ptilostemon": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 121
+  },
+  "pulicaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 225
+  },
+  "reichardia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 171
+  },
+  "rhagadiolus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 171
+  },
+  "rhaponticoides": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 122
+  },
+  "rhaponticum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 122
+  },
+  "roldana": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 231
+  },
+  "rudbeckia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 220
+  },
+  "santolina": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 91
+  },
+  "saussurea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 123
+  },
+  "schkuhria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 220
+  },
+  "scolymus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 171
+  },
+  "scorzonera": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 172
+  },
+  "scorzoneroides": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 173
+  },
+  "senecio": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 231
+  },
+  "serratula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 123
+  },
+  "sigesbeckia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 220
+  },
+  "silybum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 123
+  },
+  "solidago": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 98
+  },
+  "soliva": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 91
+  },
+  "sonchus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 174
+  },
+  "staehelina": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 123
+  },
+  "symphyotrichum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 99
+  },
+  "tagetes": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 220
+  },
+  "tanacetum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 91
+  },
+  "taraxacum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 175
+  },
+  "telekia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 225
+  },
+  "tolpis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 206
+  },
+  "tragopogon": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 207
+  },
+  "tripleurospermum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 92
+  },
+  "tripolium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 100
+  },
+  "tussilago": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 236
+  },
+  "tyrimnus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 123
+  },
+  "urospermum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 208
+  },
+  "verbesina": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 220
+  },
+  "vogtia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 93
+  },
+  "willemetia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 208
+  },
+  "xanthium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 221
+  },
+  "xeranthemum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 123
+  },
+  "zinnia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 222
+  },
+  "impatiens": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 236
+  },
+  "anredera": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 237
+  },
+  "berberis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 237
+  },
+  "epimedium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 237
+  },
+  "alnus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 238
+  },
+  "betula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 238
+  },
+  "carpinus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 239
+  },
+  "corylus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 239
+  },
+  "ostrya": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 239
+  },
+  "campsis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 239
+  },
+  "catalpa": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 239
+  },
+  "podranea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 239
+  },
+  "alkanna": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 242
+  },
+  "amsinckia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 242
+  },
+  "anchusa": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 242
+  },
+  "asperugo": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 243
+  },
+  "borago": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 243
+  },
+  "buglossoides": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 243
+  },
+  "cerinthe": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 244
+  },
+  "cynoglossum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 245
+  },
+  "echium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 246
+  },
+  "eritrichium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 247
+  },
+  "glandora": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 247
+  },
+  "hackelia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 247
+  },
+  "heliotropium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 247
+  },
+  "lappula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 248
+  },
+  "lithodora": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 248
+  },
+  "lithospermum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 248
+  },
+  "lycopsis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 248
+  },
+  "myosotis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 248
+  },
+  "neatostema": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 252
+  },
+  "nonea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 252
+  },
+  "omphalodes": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 253
+  },
+  "onosma": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 253
+  },
+  "pardoglossum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 254
+  },
+  "pentaglottis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 254
+  },
+  "phacelia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 254
+  },
+  "plagiobothrys": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 254
+  },
+  "pulmonaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 255
+  },
+  "symphytum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 256
+  },
+  "trachystemon": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 257
+  },
+  "wigandia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 257
+  },
+  "alliaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 262
+  },
+  "alyssoides": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 263
+  },
+  "alyssum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 263
+  },
+  "arabidopsis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 265
+  },
+  "arabis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 266
+  },
+  "armoracia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 268
+  },
+  "aubrieta": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 268
+  },
+  "aurinia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 268
+  },
+  "barbarea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 268
+  },
+  "berteroa": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 269
+  },
+  "biscutella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 269
+  },
+  "brassica": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 272
+  },
+  "bunias": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 274
+  },
+  "cakile": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 275
+  },
+  "calepina": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 275
+  },
+  "camelina": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 275
+  },
+  "capsella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 275
+  },
+  "cardamine": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 276
+  },
+  "clypeola": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 278
+  },
+  "cochlearia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 279
+  },
+  "coincya": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 279
+  },
+  "conringia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 280
+  },
+  "crambe": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 280
+  },
+  "descurainia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 280
+  },
+  "diplotaxis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 280
+  },
+  "draba": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 281
+  },
+  "eruca": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 283
+  },
+  "erucastrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 283
+  },
+  "erysimum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 283
+  },
+  "euclidium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 285
+  },
+  "fibigia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 285
+  },
+  "fourraea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 285
+  },
+  "hesperis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 285
+  },
+  "hormathophylla": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 286
+  },
+  "hornungia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 286
+  },
+  "iberis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 287
+  },
+  "isatis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 289
+  },
+  "kernera": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 289
+  },
+  "lepidium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 290
+  },
+  "lobularia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 291
+  },
+  "lunaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 292
+  },
+  "malcolmia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 292
+  },
+  "maresia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 292
+  },
+  "matthiola": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 292
+  },
+  "microthlaspi": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 293
+  },
+  "moricandia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 293
+  },
+  "morisia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 294
+  },
+  "murbeckiella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 294
+  },
+  "myagrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 294
+  },
+  "nasturtium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 294
+  },
+  "neslia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 294
+  },
+  "noccaea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 294
+  },
+  "petrocallis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 296
+  },
+  "pseudoturritis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 296
+  },
+  "raphanus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 296
+  },
+  "rapistrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 296
+  },
+  "rorippa": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 297
+  },
+  "sinapis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 298
+  },
+  "sisymbrella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 299
+  },
+  "sisymbrium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 299
+  },
+  "subularia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 300
+  },
+  "succowia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 300
+  },
+  "teesdalia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 300
+  },
+  "thlaspi": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 301
+  },
+  "turritis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 301
+  },
+  "buxus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 301
+  },
+  "opuntia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 302
+  },
+  "campanula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 303
+  },
+  "jasione": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 307
+  },
+  "legousia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 308
+  },
+  "lobelia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 309
+  },
+  "phyteuma": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 309
+  },
+  "solenopsis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 311
+  },
+  "trachelium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 311
+  },
+  "wahlenbergia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 312
+  },
+  "cannabis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 312
+  },
+  "celtis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 312
+  },
+  "humulus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 312
+  },
+  "centranthus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 314
+  },
+  "cephalaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 314
+  },
+  "dipsacus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 315
+  },
+  "fedia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 315
+  },
+  "knautia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 316
+  },
+  "linnaea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 317
+  },
+  "lomelosia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 317
+  },
+  "lonicera": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 318
+  },
+  "scabiosa": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 319
+  },
+  "succisa": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 320
+  },
+  "succisella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 320
+  },
+  "symphoricarpos": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 320
+  },
+  "valeriana": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 321
+  },
+  "valerianella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 323
+  },
+  "agrostemma": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 326
+  },
+  "arenaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 326
+  },
+  "atocion": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 329
+  },
+  "bufonia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 329
+  },
+  "cerastium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 329
+  },
+  "chaetonychia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 334
+  },
+  "corrigiola": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 334
+  },
+  "dianthus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 334
+  },
+  "eudianthe": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 339
+  },
+  "gypsophila": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 339
+  },
+  "heliosperma": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 339
+  },
+  "herniaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 340
+  },
+  "holosteum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 341
+  },
+  "honckenya": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 341
+  },
+  "illecebrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 341
+  },
+  "loeflingia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 341
+  },
+  "lychnis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 341
+  },
+  "minuartia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 342
+  },
+  "moehringia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 345
+  },
+  "moenchia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 346
+  },
+  "myosoton": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 346
+  },
+  "paronychia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 346
+  },
+  "petrocoptis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 347
+  },
+  "petrorhagia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 347
+  },
+  "polycarpon": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 348
+  },
+  "sagina": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 348
+  },
+  "saponaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 349
+  },
+  "scleranthus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 350
+  },
+  "silene": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 351
+  },
+  "spergula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 358
+  },
+  "stellaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 360
+  },
+  "telephium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 362
+  },
+  "vaccaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 362
+  },
+  "velezia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 362
+  },
+  "viscaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 362
+  },
+  "euonymus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 363
+  },
+  "parnassia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 363
+  },
+  "ceratophyllum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 363
+  },
+  "cistus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 364
+  },
+  "diatelia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 366
+  },
+  "fumana": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 366
+  },
+  "helianthemum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 366
+  },
+  "tuberaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 368
+  },
+  "convolvulus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 369
+  },
+  "cressa": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 371
+  },
+  "cuscuta": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 371
+  },
+  "dichondra": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 372
+  },
+  "coriaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 373
+  },
+  "cornus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 373
+  },
+  "aeonium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 374
+  },
+  "cotyledon": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 374
+  },
+  "crassula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 374
+  },
+  "hylotelephium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 375
+  },
+  "phedimus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 376
+  },
+  "rhodiala": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 376
+  },
+  "sedum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 376
+  },
+  "sempervivum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 380
+  },
+  "umbilicus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 382
+  },
+  "bryonia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 382
+  },
+  "cucumis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 383
+  },
+  "cucurbita": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 383
+  },
+  "ecballium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 383
+  },
+  "sicyos": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 383
+  },
+  "cytinus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 383
+  },
+  "aldrovanda": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 384
+  },
+  "drosera": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 384
+  },
+  "diospyros": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 384
+  },
+  "elaeagnus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 385
+  },
+  "elatine": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 386
+  },
+  "andromeda": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 388
+  },
+  "arbutus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 388
+  },
+  "arctostaphylos": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 388
+  },
+  "calluna": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 388
+  },
+  "chimaphila": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 388
+  },
+  "corema": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 389
+  },
+  "daboecia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 389
+  },
+  "empetrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 389
+  },
+  "erica": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 389
+  },
+  "kalmia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 390
+  },
+  "moneses": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 390
+  },
+  "monotropa": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 390
+  },
+  "orthilia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 391
+  },
+  "phyllodoce": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 391
+  },
+  "pyrola": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 391
+  },
+  "rhododendron": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 391
+  },
+  "vaccinium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 392
+  },
+  "chrozophora": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 393
+  },
+  "euphorbia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 393
+  },
+  "mercurialis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 402
+  },
+  "ricinus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 402
+  },
+  "acacia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 406
+  },
+  "adenocarpus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 407
+  },
+  "amorpha": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 407
+  },
+  "anagyris": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 408
+  },
+  "anthyllis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 408
+  },
+  "argyrolobium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 409
+  },
+  "astragalus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 410
+  },
+  "biserrula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 414
+  },
+  "bituminaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 414
+  },
+  "ceratonia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 414
+  },
+  "cercis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 414
+  },
+  "cicer": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 414
+  },
+  "colutea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 414
+  },
+  "coronilla": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 415
+  },
+  "cytisophyllum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 416
+  },
+  "cytisus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 416
+  },
+  "dorycnopsis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 419
+  },
+  "erinacea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 419
+  },
+  "ervilia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 419
+  },
+  "ervum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 420
+  },
+  "galega": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 420
+  },
+  "genista": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 420
+  },
+  "gleditsia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 424
+  },
+  "glycine": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 424
+  },
+  "glycyrrhiza": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 424
+  },
+  "hedysarum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 424
+  },
+  "hippocrepis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 425
+  },
+  "laburnum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 426
+  },
+  "lathyrus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 426
+  },
+  "lotus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 432
+  },
+  "lupinus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 435
+  },
+  "medicago": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 436
+  },
+  "onobrychis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 440
+  },
+  "ononis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 442
+  },
+  "ornithopus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 444
+  },
+  "oxytropis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 445
+  },
+  "paraserianthes": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 447
+  },
+  "phaseolus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 447
+  },
+  "robinia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 447
+  },
+  "scorpiurus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 447
+  },
+  "sesbania": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 447
+  },
+  "spartium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 447
+  },
+  "trifolium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 447
+  },
+  "trigonella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 455
+  },
+  "tripodion": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 457
+  },
+  "ulex": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 457
+  },
+  "vicia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 458
+  },
+  "castanea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 465
+  },
+  "fagus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 465
+  },
+  "quercus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 465
+  },
+  "frankenia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 467
+  },
+  "blackstonia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 469
+  },
+  "centaurium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 469
+  },
+  "cicendia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 471
+  },
+  "comastoma": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 471
+  },
+  "exaculum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 471
+  },
+  "gentiana": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 471
+  },
+  "gentianella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 475
+  },
+  "gentianopsis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 475
+  },
+  "schenkia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 476
+  },
+  "swertia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 476
+  },
+  "erodium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 476
+  },
+  "geranium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 479
+  },
+  "pelargonium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 482
+  },
+  "ramonda": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 482
+  },
+  "ribes": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 482
+  },
+  "myriophyllum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 484
+  },
+  "philadelphus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 484
+  },
+  "hypericum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 484
+  },
+  "juglans": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 488
+  },
+  "pterocarya": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 488
+  },
+  "acanthoprasium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 491
+  },
+  "ajuga": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 491
+  },
+  "ballota": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 492
+  },
+  "betonica": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 492
+  },
+  "chaiturus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 492
+  },
+  "clinopodium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 492
+  },
+  "dracocephalum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 494
+  },
+  "galeopsis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 494
+  },
+  "glechoma": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 496
+  },
+  "horminum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 496
+  },
+  "hyssopus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 496
+  },
+  "lamium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 496
+  },
+  "lavandula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 498
+  },
+  "leonurus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 499
+  },
+  "lycopus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 499
+  },
+  "marrubium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 499
+  },
+  "melissa": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 499
+  },
+  "melittis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 500
+  },
+  "mentha": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 500
+  },
+  "micromeria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 501
+  },
+  "nepeta": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 502
+  },
+  "origanum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 502
+  },
+  "phlomis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 503
+  },
+  "physostegia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 503
+  },
+  "prasium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 503
+  },
+  "prunella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 503
+  },
+  "rosmarinus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 504
+  },
+  "salvia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 504
+  },
+  "satureja": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 506
+  },
+  "scutellaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 506
+  },
+  "sideritis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 507
+  },
+  "stachys": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 509
+  },
+  "teucrium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 511
+  },
+  "thymus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 514
+  },
+  "vitex": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 517
+  },
+  "ziziphora": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 517
+  },
+  "akebia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 517
+  },
+  "laurus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 518
+  },
+  "pinguicula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 518
+  },
+  "utricularia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 520
+  },
+  "linum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 521
+  },
+  "radiola": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 524
+  },
+  "lindernia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 524
+  },
+  "ammannia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 524
+  },
+  "lythrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 525
+  },
+  "punica": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 525
+  },
+  "trapa": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 525
+  },
+  "liriodendron": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 526
+  },
+  "abutilon": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 527
+  },
+  "alcea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 527
+  },
+  "althaea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 527
+  },
+  "anoda": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 527
+  },
+  "brachychiton": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 527
+  },
+  "hibiscus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 527
+  },
+  "kosteletzkya": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 527
+  },
+  "malope": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 528
+  },
+  "malva": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 528
+  },
+  "malvella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 530
+  },
+  "modiola": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 530
+  },
+  "tilia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 530
+  },
+  "melia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 531
+  },
+  "menyanthes": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 531
+  },
+  "nymphoides": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 531
+  },
+  "glinus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 531
+  },
+  "mollugo": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 531
+  },
+  "claytonia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 532
+  },
+  "montia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 532
+  },
+  "broussonetia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 533
+  },
+  "ficus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 533
+  },
+  "maclura": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 533
+  },
+  "morus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 533
+  },
+  "corymbia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 534
+  },
+  "eucalyptus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 534
+  },
+  "myrtus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 537
+  },
+  "nuphar": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 537
+  },
+  "nymphaea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 538
+  },
+  "fraxinus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 538
+  },
+  "jasminum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 539
+  },
+  "ligustrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 539
+  },
+  "olea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 540
+  },
+  "phillyrea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 540
+  },
+  "syringa": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 540
+  },
+  "circaea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 541
+  },
+  "epilobium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 541
+  },
+  "ludwigia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 544
+  },
+  "oenothera": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 545
+  },
+  "bartsia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 551
+  },
+  "euphrasia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 551
+  },
+  "lathraea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 554
+  },
+  "macrosyringion": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 554
+  },
+  "melampyrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 554
+  },
+  "nothobartsia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 555
+  },
+  "odontites": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 555
+  },
+  "orobanche": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 557
+  },
+  "parentucellia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 562
+  },
+  "pedicularis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 563
+  },
+  "phelipanche": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 565
+  },
+  "rhinanthus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 566
+  },
+  "tozzia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 568
+  },
+  "triphysaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 568
+  },
+  "oxalis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 568
+  },
+  "paeonia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 569
+  },
+  "ceratocapnos": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 571
+  },
+  "chelidonium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 571
+  },
+  "corydalis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 571
+  },
+  "eschscholzia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 572
+  },
+  "fumaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 572
+  },
+  "glaucium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 574
+  },
+  "hypecoum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 574
+  },
+  "papaver": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 574
+  },
+  "platycapnos": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 576
+  },
+  "pseudofumaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 576
+  },
+  "roemeria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 576
+  },
+  "sarcocapnos": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 576
+  },
+  "erythranthe": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 577
+  },
+  "andrachne": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 578
+  },
+  "anarrhinum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 580
+  },
+  "antirrhinum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 580
+  },
+  "asarina": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 581
+  },
+  "callitriche": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 581
+  },
+  "chaenorrhinum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 583
+  },
+  "cymbalaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 583
+  },
+  "digitalis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 584
+  },
+  "erinus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 584
+  },
+  "globularia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 584
+  },
+  "gratiola": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 585
+  },
+  "hippuris": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 585
+  },
+  "kickxia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 586
+  },
+  "linaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 586
+  },
+  "littorella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 589
+  },
+  "misopates": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 589
+  },
+  "plantago": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 589
+  },
+  "sibthorpia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 593
+  },
+  "veronica": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 593
+  },
+  "armeria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 601
+  },
+  "limoniastrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 603
+  },
+  "limonium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 604
+  },
+  "myriolimon": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 608
+  },
+  "plumbago": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 608
+  },
+  "collomia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 609
+  },
+  "polemonium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 609
+  },
+  "polygala": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 609
+  },
+  "aconogonon": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 612
+  },
+  "bistorta": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 612
+  },
+  "emex": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 613
+  },
+  "fagopyrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 613
+  },
+  "fallopia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 613
+  },
+  "oxyria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 614
+  },
+  "persicaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 614
+  },
+  "polygonum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 615
+  },
+  "reynoutria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 616
+  },
+  "rubrivena": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 617
+  },
+  "rumex": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 617
+  },
+  "androsace": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 624
+  },
+  "coris": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 627
+  },
+  "cyclamen": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 627
+  },
+  "hottonia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 627
+  },
+  "lysimachia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 627
+  },
+  "primula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 629
+  },
+  "samolus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 632
+  },
+  "soldanella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 632
+  },
+  "hakea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 632
+  },
+  "aconitum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 634
+  },
+  "actaea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 636
+  },
+  "adonis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 636
+  },
+  "anemone": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 636
+  },
+  "aquilegia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 640
+  },
+  "callianthemum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 641
+  },
+  "caltha": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 641
+  },
+  "ceratocephala": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 642
+  },
+  "clematis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 642
+  },
+  "delphinium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 642
+  },
+  "eranthis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 644
+  },
+  "ficaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 644
+  },
+  "helleborus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 644
+  },
+  "myosurus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 645
+  },
+  "nigella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 645
+  },
+  "ranunculus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 646
+  },
+  "staphisagria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 656
+  },
+  "thalictrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 656
+  },
+  "trollius": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 658
+  },
+  "reseda": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 658
+  },
+  "sesamoides": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 659
+  },
+  "frangula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 660
+  },
+  "paliurus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 660
+  },
+  "rhamnus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 660
+  },
+  "ziziphus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 661
+  },
+  "agrimonia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 663
+  },
+  "alchemilla": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 664
+  },
+  "amelanchier": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 674
+  },
+  "aphanes": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 675
+  },
+  "argentina": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 675
+  },
+  "aruncus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 675
+  },
+  "comarum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 675
+  },
+  "cotoneaster": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 675
+  },
+  "crataegus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 679
+  },
+  "cydonia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 680
+  },
+  "dasiphora": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 681
+  },
+  "dryas": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 681
+  },
+  "drymocallis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 681
+  },
+  "filipendula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 681
+  },
+  "fragaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 681
+  },
+  "geum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 682
+  },
+  "malus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 683
+  },
+  "physocarpus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 683
+  },
+  "potentilla": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 683
+  },
+  "poterium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 690
+  },
+  "prunus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 691
+  },
+  "pyracantha": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 693
+  },
+  "pyrus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 694
+  },
+  "rosa": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 694
+  },
+  "sect": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 697
+  },
+  "subsect": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 697
+  },
+  "rubus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 701
+  },
+  "sanguisorba": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 710
+  },
+  "sibbaldia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 710
+  },
+  "sorbaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 711
+  },
+  "sorbus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 711
+  },
+  "spiraea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 713
+  },
+  "asperula": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 716
+  },
+  "crucianella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 717
+  },
+  "cruciata": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 718
+  },
+  "galium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 718
+  },
+  "rubia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 726
+  },
+  "sherardia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 727
+  },
+  "theligonum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 727
+  },
+  "valantia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 727
+  },
+  "cneorum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 727
+  },
+  "dictamnus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 727
+  },
+  "ruta": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 727
+  },
+  "populus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 728
+  },
+  "salix": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 730
+  },
+  "arceuthobium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 736
+  },
+  "osyris": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 736
+  },
+  "thesium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 736
+  },
+  "viscum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 737
+  },
+  "acer": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 738
+  },
+  "aesculus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 739
+  },
+  "koelreuteria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 739
+  },
+  "chrysosplenium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 740
+  },
+  "micranthes": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 741
+  },
+  "saxifraga": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 741
+  },
+  "buddleja": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 750
+  },
+  "limosella": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 750
+  },
+  "scrophularia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 750
+  },
+  "verbascum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 752
+  },
+  "ailanthus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 754
+  },
+  "toxicodendron": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 755
+  },
+  "atropa": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 755
+  },
+  "cestrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 756
+  },
+  "datura": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 756
+  },
+  "hyoscyamus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 756
+  },
+  "lycianthes": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 756
+  },
+  "lycium": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 756
+  },
+  "nicandra": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 757
+  },
+  "nicotiana": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 757
+  },
+  "physalis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 757
+  },
+  "salpichroa": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 758
+  },
+  "solanum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 758
+  },
+  "myricaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 761
+  },
+  "tamarix": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 761
+  },
+  "daphne": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 762
+  },
+  "thymelaea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 763
+  },
+  "ulmus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 765
+  },
+  "laportea": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 766
+  },
+  "parietaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 766
+  },
+  "soleirolia": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 766
+  },
+  "urtica": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 767
+  },
+  "lantana": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 768
+  },
+  "phyla": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 768
+  },
+  "verbena": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 768
+  },
+  "viola": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 769
+  },
+  "parthenocissus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 775
+  },
+  "vitis": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 776
+  },
+  "tribulus": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 778
+  },
+  "zygophyllum": {
+    "pdfFile": "Flora Gallica - Angiospermes Dicotylédon.pdf",
+    "page": 778
+  },
+  "alisma": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 2
+  },
+  "baldellia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 2
+  },
+  "caldesia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 2
+  },
+  "damasonium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 2
+  },
+  "luronium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 2
+  },
+  "sagittaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 3
+  },
+  "allium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 4
+  },
+  "galanthus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 13
+  },
+  "leucojum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 14
+  },
+  "narcissus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 14
+  },
+  "nothoscordum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 16
+  },
+  "pancratium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 16
+  },
+  "sternbergia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 17
+  },
+  "tristagma": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 17
+  },
+  "ambrosina": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 18
+  },
+  "arisarum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 18
+  },
+  "arum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 18
+  },
+  "calla": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 19
+  },
+  "colocasia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 19
+  },
+  "dracunculus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 19
+  },
+  "helicodiceros": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 19
+  },
+  "lemna": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 19
+  },
+  "lysichiton": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 20
+  },
+  "spirodela": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 20
+  },
+  "wolffia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 20
+  },
+  "zantedeschia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 20
+  },
+  "chamaerops": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 21
+  },
+  "phoenix": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 21
+  },
+  "agave": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 23
+  },
+  "anthericum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 23
+  },
+  "aphyllanthes": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 23
+  },
+  "asparagus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 23
+  },
+  "belleva": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 24
+  },
+  "brimeura": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 24
+  },
+  "charybdis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 25
+  },
+  "convallaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 25
+  },
+  "dipcadi": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 25
+  },
+  "honorius": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 25
+  },
+  "hyacinthoides": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 25
+  },
+  "hyacinthus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 26
+  },
+  "loncomelos": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 26
+  },
+  "maianthemum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 26
+  },
+  "melomphis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 26
+  },
+  "muscari": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 26
+  },
+  "nectaroscilla": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 27
+  },
+  "oncostema": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 28
+  },
+  "omithogalum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 28
+  },
+  "paradisea": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 29
+  },
+  "polygonatum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 29
+  },
+  "prospero": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 29
+  },
+  "ruscus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 30
+  },
+  "scilla": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 30
+  },
+  "tractema": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 30
+  },
+  "urginea": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 31
+  },
+  "yucca": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 31
+  },
+  "colchicum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 31
+  },
+  "commelina": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 33
+  },
+  "tradescantia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 33
+  },
+  "blysmus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 34
+  },
+  "bolboschoenus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 35
+  },
+  "carex": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 35
+  },
+  "cladium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 55
+  },
+  "cyperus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 55
+  },
+  "eleocharis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 58
+  },
+  "eriophorum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 60
+  },
+  "fimbristylis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 61
+  },
+  "fuirena": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 61
+  },
+  "isolepis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 61
+  },
+  "rhynchospora": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 61
+  },
+  "schoenoplectus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 61
+  },
+  "schoenus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 63
+  },
+  "scirpoides": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 63
+  },
+  "scirpus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 63
+  },
+  "trichophorum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 64
+  },
+  "egeria": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 66
+  },
+  "elodea": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 66
+  },
+  "hydrocharis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 66
+  },
+  "lagarosiphon": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 66
+  },
+  "najas": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 66
+  },
+  "stratiotes": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 67
+  },
+  "vallisneria": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 67
+  },
+  "chasmanthe": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 68
+  },
+  "crocosmia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 68
+  },
+  "crocus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 69
+  },
+  "freesia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 69
+  },
+  "gladiolus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 70
+  },
+  "iris": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 71
+  },
+  "ixia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 73
+  },
+  "moraea": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 73
+  },
+  "romulea": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 74
+  },
+  "sisyrinchium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 75
+  },
+  "tritonia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 76
+  },
+  "juncus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 76
+  },
+  "luzula": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 82
+  },
+  "erythronium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 86
+  },
+  "fritillaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 86
+  },
+  "gagea": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 87
+  },
+  "lilium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 89
+  },
+  "streptopus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 90
+  },
+  "tulipa": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 90
+  },
+  "paris": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 92
+  },
+  "veratrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 92
+  },
+  "anacamptis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 94
+  },
+  "cephalanthera": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 97
+  },
+  "chamorchis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 97
+  },
+  "coeloglossum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 97
+  },
+  "corallorhiza": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 97
+  },
+  "cypripedium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 97
+  },
+  "dactylorhiza": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 98
+  },
+  "epipactis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 101
+  },
+  "epipogium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 104
+  },
+  "gennaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 104
+  },
+  "goodyera": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 104
+  },
+  "gymnadenia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 104
+  },
+  "hammarbya": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 105
+  },
+  "herminium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 105
+  },
+  "himantoglossum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 105
+  },
+  "limodorum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 106
+  },
+  "liparis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 106
+  },
+  "neotinea": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 106
+  },
+  "neottia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 107
+  },
+  "ophrys": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 107
+  },
+  "orchis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 116
+  },
+  "platanthera": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 118
+  },
+  "pseudorchis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 118
+  },
+  "serapias": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 118
+  },
+  "spiranthes": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 119
+  },
+  "traunsteinera": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 119
+  },
+  "achnatherum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 130
+  },
+  "aegilops": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 131
+  },
+  "aeluropus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 131
+  },
+  "agropyron": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 132
+  },
+  "agrostis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 132
+  },
+  "aira": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 136
+  },
+  "airopsis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 137
+  },
+  "alopecurus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 137
+  },
+  "amelichloa": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 138
+  },
+  "ammophila": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 138
+  },
+  "ampelodesmos": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 138
+  },
+  "andropogon": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 139
+  },
+  "anisantha": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 139
+  },
+  "anthoxanthum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 140
+  },
+  "antinoria": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 141
+  },
+  "apera": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 141
+  },
+  "aristavena": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 141
+  },
+  "aristida": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 141
+  },
+  "arrhenatherum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 141
+  },
+  "arundinaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 142
+  },
+  "arundo": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 143
+  },
+  "avellinia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 143
+  },
+  "avena": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 143
+  },
+  "avenella": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 145
+  },
+  "avenula": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 145
+  },
+  "bellardiochloa": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 146
+  },
+  "bothriochloa": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 146
+  },
+  "brachypodium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 146
+  },
+  "briza": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 147
+  },
+  "bromopsis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 148
+  },
+  "bromus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 149
+  },
+  "calamagrostis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 152
+  },
+  "catabrosa": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 154
+  },
+  "catapodium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 154
+  },
+  "cenchrus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 155
+  },
+  "ceratochloa": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 156
+  },
+  "chimonobambusa": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 156
+  },
+  "chloris": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 156
+  },
+  "chrysopogon": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 157
+  },
+  "coleanthus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 157
+  },
+  "cortaderia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 157
+  },
+  "corynephorus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 157
+  },
+  "crypsis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 157
+  },
+  "cutandia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 158
+  },
+  "cynodon": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 158
+  },
+  "cynosurus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 158
+  },
+  "dactylis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 158
+  },
+  "danthonia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 160
+  },
+  "dasypyrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 160
+  },
+  "deschampsia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 160
+  },
+  "dichanthelium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 161
+  },
+  "digitaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 161
+  },
+  "diplachne": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 162
+  },
+  "distichlis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 163
+  },
+  "drymochloa": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 163
+  },
+  "echinaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 163
+  },
+  "echinochloa": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 163
+  },
+  "ehrharta": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 164
+  },
+  "eleusine": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 164
+  },
+  "elymus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 164
+  },
+  "elytrigia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 164
+  },
+  "eragrostis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 168
+  },
+  "festuca": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 170
+  },
+  "gastridium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 180
+  },
+  "gaudinia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 180
+  },
+  "glyceria": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 181
+  },
+  "hainardia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 182
+  },
+  "helictochloa": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 182
+  },
+  "helictotrichon": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 183
+  },
+  "heteropogon": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 184
+  },
+  "holcus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 184
+  },
+  "hordelymus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 185
+  },
+  "hordeum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 185
+  },
+  "hyparrhenia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 186
+  },
+  "kengia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 187
+  },
+  "koeleria": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 187
+  },
+  "lagurus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 188
+  },
+  "lamarckia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 188
+  },
+  "leersia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 188
+  },
+  "leucopoa": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 188
+  },
+  "leymus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 188
+  },
+  "lolium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 189
+  },
+  "lygeum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 190
+  },
+  "macrochloa": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 190
+  },
+  "melica": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 190
+  },
+  "mibora": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 191
+  },
+  "micropyrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 191
+  },
+  "milium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 191
+  },
+  "miscanthus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 192
+  },
+  "molineriella": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 192
+  },
+  "molinia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 192
+  },
+  "muhlenbergia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 192
+  },
+  "narduroides": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 192
+  },
+  "nardus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 192
+  },
+  "nassella": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 192
+  },
+  "neoschischkinia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 193
+  },
+  "oloptum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 193
+  },
+  "oreochloa": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 193
+  },
+  "oryza": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 194
+  },
+  "panicum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 194
+  },
+  "parapholis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 195
+  },
+  "paspalum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 196
+  },
+  "patzkea": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 197
+  },
+  "phalaris": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 197
+  },
+  "phleum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 198
+  },
+  "phragmites": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 200
+  },
+  "phyllostachys": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 200
+  },
+  "plptatherum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 202
+  },
+  "poa": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 202
+  },
+  "polypogon": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 206
+  },
+  "pseudarrhenatherum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 207
+  },
+  "pseudosclerochloa": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 207
+  },
+  "psilurus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 208
+  },
+  "puccinellia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 208
+  },
+  "rostraria": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 209
+  },
+  "saccharum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 209
+  },
+  "sasa": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 209
+  },
+  "schedonorus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 210
+  },
+  "schismus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 211
+  },
+  "sclerochloa": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 211
+  },
+  "secale": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 211
+  },
+  "sesleria": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 212
+  },
+  "setaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 212
+  },
+  "shibataea": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 214
+  },
+  "sorghum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 214
+  },
+  "spartina": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 214
+  },
+  "sphenopus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 215
+  },
+  "sporobolus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 215
+  },
+  "stenotaphrum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 216
+  },
+  "stipa": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 216
+  },
+  "stipella": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 217
+  },
+  "taeniatherum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 217
+  },
+  "tragus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 217
+  },
+  "tripidium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 217
+  },
+  "trisetaria": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 217
+  },
+  "trisetum": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 218
+  },
+  "ventenata": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 220
+  },
+  "vulpia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 220
+  },
+  "zea": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 222
+  },
+  "eichhornia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 222
+  },
+  "heteranthera": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 222
+  },
+  "pontederia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 222
+  },
+  "althenia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 223
+  },
+  "groenlandia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 223
+  },
+  "potamogeton": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 223
+  },
+  "stuckenia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 227
+  },
+  "zannichellia": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 227
+  },
+  "sparganium": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 228
+  },
+  "typha": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 230
+  },
+  "asphodelus": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 232
+  },
+  "hemerocallis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 233
+  },
+  "simethis": {
+    "pdfFile": "Flora Gallica - Angiospermes Monocotylédon.pdf",
+    "page": 233
+  },
+  "calocedrus": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 3
+  },
+  "chamaecyparis": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 3
+  },
+  "cryptomeria": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 3
+  },
+  "cupressus": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 3
+  },
+  "juniperus": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 4
+  },
+  "metasequoia": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 6
+  },
+  "platycladus": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 6
+  },
+  "sequoia": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 6
+  },
+  "sequoiadendron": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 6
+  },
+  "taxodium": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 6
+  },
+  "tetraclinis": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 6
+  },
+  "thuja": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 6
+  },
+  "abies": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 8
+  },
+  "cedrus": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 9
+  },
+  "larix": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 10
+  },
+  "picea": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 10
+  },
+  "pinus": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 10
+  },
+  "pseudotsuga": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 14
+  },
+  "tsuga": {
+    "pdfFile": "Flora Gallica - Gymnospermes.pdf",
+    "page": 14
+  },
+  "blechnum": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 8
+  },
+  "woodwardia": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 8
+  },
+  "cystopteris": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 8
+  },
+  "gymnocarpium": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 9
+  },
+  "cyrtomium": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 10
+  },
+  "dryopteris": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 10
+  },
+  "polystichum": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 12
+  },
+  "huperzia": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 17
+  },
+  "lycopodiella": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 18
+  },
+  "lycopodium": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 18
+  },
+  "marsilea": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 19
+  },
+  "pilularia": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 20
+  },
+  "matteuccia": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 20
+  },
+  "botrychium": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 20
+  },
+  "ophioglossum": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 21
+  },
+  "adiantum": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 23
+  },
+  "allosorus": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 23
+  },
+  "anogramma": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 24
+  },
+  "cosentinia": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 24
+  },
+  "cryptogramma": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 24
+  },
+  "paragymnopteris": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 24
+  },
+  "pteris": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 24
+  },
+  "azolla": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 25
+  },
+  "cyclosorus": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 26
+  },
+  "oreopteris": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 26
+  },
+  "phegopteris": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 26
+  },
+  "thelypteris": {
+    "pdfFile": "Flora Gallica - Ptéridophytes.pdf",
+    "page": 26
+  }
+}
