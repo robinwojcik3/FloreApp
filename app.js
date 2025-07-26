@@ -485,6 +485,27 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
         }
         const newBytes = await newDoc.save({ useObjectStreams: false });
         const blob = new Blob([newBytes], { type: 'application/pdf' });
+
+        // Lancement de l'OCR pour extraire le texte visible
+        let ocrText = '';
+        try {
+            ocrText = await window.extractTextFromPdfBlob(blob);
+        } catch (ocrErr) {
+            console.error('OCR error:', ocrErr);
+        }
+
+        if (ocrText) {
+            const textBlob = new Blob([ocrText], { type: 'text/plain' });
+            const textUrl = URL.createObjectURL(textBlob);
+            const link = document.createElement('a');
+            link.href = textUrl;
+            link.download = pdfFile.replace(/\.pdf$/, '') + '_' + startPage + '.txt';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            setTimeout(() => URL.revokeObjectURL(textUrl), 30000);
+        }
+
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
         setTimeout(() => URL.revokeObjectURL(url), 30000);
