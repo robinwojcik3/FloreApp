@@ -232,19 +232,68 @@ function makeTimestampedName(prefix = "") {
 }
 
 function savePhotoLocally(blob, name) {
-  try {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.style.display = "none";
-    a.href = url;
-    a.download = makeTimestampedName(name);
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  } catch (e) {
-    console.error("Erreur sauvegarde photo:", e);
-  }
+  try {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.style.display = "none";
+    a.href = url;
+    a.download = makeTimestampedName(name);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    console.error("Erreur sauvegarde photo:", e);
+  }
+}
+
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Failed to read blob'));
+    reader.onload = () => {
+      const dataUrl = reader.result;
+      resolve(dataUrl.split(',')[1]);
+    };
+    reader.readAsDataURL(blob);
+  });
+}
+
+function saveTextLocally(text, name) {
+  try {
+    const safeName = name.replace(/[\\/:*?"<>|]/g, '_') + '.txt';
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = safeName;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    console.error('Erreur sauvegarde texte:', e);
+  }
+}
+
+async function performOcrOnPdf(pdfBlob, genus) {
+  try {
+    const base64Pdf = await blobToBase64(pdfBlob);
+    const resp = await fetch('/.netlify/functions/pdf-ocr', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ base64Pdf })
+    });
+    const data = await resp.json();
+    if (resp.ok && data.text) {
+      saveTextLocally(data.text, genus);
+    } else {
+      console.error('OCR failed:', data);
+    }
+  } catch (err) {
+    console.error('Erreur OCR:', err);
+  }
 }
 
 function resizeImageToDataURL(file, maxDim = 1600) {
@@ -459,7 +508,7 @@ window.handleSynthesisClick = async function(event, element, speciesName) {
     parentCell.innerHTML = `<a href="#" onclick="handleSynthesisClick(event, this, '${speciesName.replace(/'/g, "\\'")}')">Générer</a>`;
 };
 
-window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
+window.handleFloraGallicaClick = async function(event, pdfFile, startPage, genus) {
     event.preventDefault();
     try {
         toggleSpinner(true);
@@ -488,6 +537,7 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
         setTimeout(() => URL.revokeObjectURL(url), 30000);
+        performOcrOnPdf(blob, genus);
     } catch (err) {
         console.error('Flora Gallica extraction error:', err);
         showNotification('Erreur lors de la génération du PDF.', 'error');
@@ -713,7 +763,7 @@ function buildTable(items){
     if (tocEntryFloraGallica && tocEntryFloraGallica.pdfFile && tocEntryFloraGallica.page) {
       const pdfFile = tocEntryFloraGallica.pdfFile;
       const startPage = tocEntryFloraGallica.page;
-      const handler = `handleFloraGallicaClick(event,'${pdfFile}',${startPage})`;
+      const handler = `handleFloraGallicaClick(event,'${pdfFile}',${startPage},'${genus}')`;
       floraGallicaLink = `<a href="#" onclick=\"${handler}\">` +
                          `<img src="assets/Flora Gallica.png" alt="Flora Gallica"></a>`;
     }
