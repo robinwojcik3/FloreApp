@@ -1775,10 +1775,25 @@ const initializeSelectionMap = (coords) => {
         grid.style.display = 'grid';
     };
 
-    const openResourcesPopup = (latlng) => {
+    const getAltitudeStage = (alt) => {
+        if (alt < 300) return 'étage planitiaire';
+        if (alt < 800) return 'étage collinéen';
+        if (alt < 1600) return 'étage montagnard';
+        if (alt < 2300) return 'étage subalpin';
+        if (alt < 3000) return 'étage alpin';
+        return 'étage nival';
+    };
+
+    const openResourcesPopup = async (latlng) => {
         const grid = document.getElementById('resources-grid');
         if (grid) grid.style.display = 'none';
         const container = L.DomUtil.create('div', 'resources-popup');
+        const altitude = await fetchAltitude(latlng.lat, latlng.lng);
+        if (altitude !== null) {
+            const info = L.DomUtil.create('div', 'altitude-info', container);
+            const stage = getAltitudeStage(altitude);
+            info.textContent = `Altitude : ${Math.round(altitude)} m (${stage})`;
+        }
         Object.values(SERVICES).forEach(s => {
             const url = s.buildUrl(latlng.lat, latlng.lng);
             const link = L.DomUtil.create('a', 'resource-btn', container);
