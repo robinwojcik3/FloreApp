@@ -1,66 +1,74 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="fr" data-theme="dark">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Visualiseur - Flora Gallica</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style.css" />
     <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            background: var(--bg);
-            color: var(--text);
-            font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-        }
-        #pdf-viewer {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-top: 20px;
-            padding-bottom: 20px;
-        }
-        .page-container {
-            /* Correction: La largeur est gérée par CSS pour un affichage responsive */
-            width: 95%;
-            max-width: 1000px; 
-            margin-bottom: 20px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            line-height: 0; /* Empêche les espaces indésirables sous le canvas */
-        }
-        .page-container canvas {
-            /* Le canvas remplit son conteneur */
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        .error-message {
-            padding: 20px; 
-            text-align: center; 
-            color: #333;
-        }
-        .error-message h1, .error-message h2 {
-            margin-bottom: 10px;
-        }
-        .error-message a {
-            display: inline-block;
-            margin: 20px;
-            padding: 10px 20px;
-            background: var(--primary);
-            color: #fff;
-            text-decoration: none;
-            border-radius: 5px;
-        }
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        background: var(--bg);
+        color: var(--text);
+        font-family:
+          system-ui,
+          -apple-system,
+          'Segoe UI',
+          Roboto,
+          sans-serif;
+      }
+      #pdf-viewer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 20px;
+        padding-bottom: 20px;
+      }
+      .page-container {
+        /* Correction: La largeur est gérée par CSS pour un affichage responsive */
+        width: 95%;
+        max-width: 1000px;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        line-height: 0; /* Empêche les espaces indésirables sous le canvas */
+      }
+      .page-container canvas {
+        /* Le canvas remplit son conteneur */
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+      .error-message {
+        padding: 20px;
+        text-align: center;
+        color: #333;
+      }
+      .error-message h1,
+      .error-message h2 {
+        margin-bottom: 10px;
+      }
+      .error-message a {
+        display: inline-block;
+        margin: 20px;
+        padding: 10px 20px;
+        background: var(--primary);
+        color: #fff;
+        text-decoration: none;
+        border-radius: 5px;
+      }
     </style>
-</head>
-<body>
-
-    <div id="pdf-viewer">
-        </div>
+  </head>
+  <body>
+    <div id="pdf-viewer"></div>
+    <div style="text-align: center; margin: 20px">
+      <button id="ocr-btn">Extraction OCR</button>
+    </div>
 
     <script src="pdfjs/build/pdf.mjs" type="module"></script>
+    <script src="https://unpkg.com/tesseract.js@5.0.1/dist/tesseract.min.js"></script>
     <script src="assets/viewer_app.js" type="module"></script>
     <script src="sw-register.js"></script>
-
-</body>
+  </body>
 </html>
