@@ -1,4 +1,4 @@
-const fetch = require('./utils/fetch');
+const fetch = (...args) => import("node-fetch").then(({default: f}) => f(...args));
 
 const ENDPOINTS = {
   match: 'https://api.gbif.org/v1/species/match',
