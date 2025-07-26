@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="fr" data-theme="dark">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Clé interactive</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;margin:0;padding:1rem;}
+        #choices button{display:block;margin:0.5rem 0;padding:0.5rem 1rem;background:var(--card);color:var(--text);border:1px solid var(--border);cursor:pointer;}
+        #choices button:hover{background:var(--border);}
+        #back{margin-top:1rem;padding:0.3rem 0.8rem;}
+    </style>
+</head>
+<body>
+    <h1>Clé interactive</h1>
+    <div id="path"></div>
+    <div id="choices"></div>
+    <button id="back">Retour</button>
+    <script src="key.js"></script>
+</body>
+</html>
