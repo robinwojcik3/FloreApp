@@ -198,6 +198,40 @@ const isIOS = () => typeof navigator !== 'undefined' &&
   /iPad|iPhone|iPod/.test(navigator.userAgent);
 const isAndroid = () => typeof navigator !== 'undefined' && /Android/.test(navigator.userAgent);
 
+if (typeof window !== 'undefined') {
+  window.extractTextFromPdf = async function(bytes) {
+    if (!window.pdfjsLib || !window.Tesseract) return '';
+    const pdf = await window.pdfjsLib.getDocument({ data: bytes }).promise;
+    let text = '';
+    for (let i = 1; i <= pdf.numPages; i++) {
+      const page = await pdf.getPage(i);
+      const content = await page.getTextContent();
+      const txt = content.items.map(it => it.str).join(' ').trim();
+      if (txt) {
+        text += txt + '\n';
+        continue;
+      }
+      const viewport = page.getViewport({ scale: 2 });
+      const canvas = document.createElement('canvas');
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+      const { data: { text: ocr } } = await Tesseract.recognize(canvas, 'fra');
+      text += ocr.trim() + '\n';
+    }
+    return text.trim();
+  };
+
+  window.downloadTextFile = function(text, name) {
+    const blob = new Blob([text], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = name;
+    link.click();
+    setTimeout(() => URL.revokeObjectURL(link.href), 10000);
+  };
+}
+
 function enableDragScroll(el) {
   if (!el) return;
   let isDown = false;
@@ -488,6 +522,17 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
         setTimeout(() => URL.revokeObjectURL(url), 30000);
+        if (window.extractTextFromPdf) {
+            try {
+                const txt = await window.extractTextFromPdf(newBytes);
+                if (txt) {
+                    const name = pdfFile.replace(/\.pdf$/, '') + '.txt';
+                    window.downloadTextFile(txt, name);
+                }
+            } catch (e) {
+                console.error('OCR error:', e);
+            }
+        }
     } catch (err) {
         console.error('Flora Gallica extraction error:', err);
         showNotification('Erreur lors de la génération du PDF.', 'error');
