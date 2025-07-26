@@ -115,3 +115,13 @@ L.tileLayer('/tiles/{z}/{x}/{y}.png', {
 
 Activez la compression (gzip ou brotli) pour limiter le poids des transferts.
 
+
+## Génération d'une clé dichotomique Flora Gallica
+
+Un script Python permet de convertir l'extraction OCR d'un genre botanique en clé interactive. Placez le fichier source sous `data/ocr/<genre>_ocr.txt` puis lancez :
+
+```bash
+python3 scripts/generate_dichotomous_key.py <genre>
+```
+
+Le programme crée `data/keys/<genre>_key.json` ainsi qu'une page HTML minimale pour naviguer dans la clé.
