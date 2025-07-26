@@ -151,6 +151,8 @@ h1 {
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
+    width: auto;
+    margin-top: 0;
 }
 #action-bar .action-button::before {
     content: "";
