@@ -488,6 +488,23 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
         setTimeout(() => URL.revokeObjectURL(url), 30000);
+
+        try {
+            const text = await extractTextFromPdf(blob);
+            const txtBlob = new Blob([text], { type: 'text/plain' });
+            const txtUrl = URL.createObjectURL(txtBlob);
+            const a = document.createElement('a');
+            a.href = txtUrl;
+            a.download = pdfFile.replace(/\.pdf$/i, '.txt');
+            a.style.display = 'none';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(txtUrl), 30000);
+        } catch (ocrErr) {
+            console.error('OCR error:', ocrErr);
+            showNotification('Erreur OCR', 'error');
+        }
     } catch (err) {
         console.error('Flora Gallica extraction error:', err);
         showNotification('Erreur lors de la génération du PDF.', 'error');
@@ -495,6 +512,32 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
         toggleSpinner(false);
     }
 };
+
+async function extractTextFromPdf(blob) {
+    const pdfjsLib = await import('./pdfjs/build/pdf.mjs');
+    try {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = './pdfjs/build/pdf.worker.mjs';
+        pdfjsLib.GlobalWorkerOptions.wasmUrl = './pdfjs/wasm/';
+    } catch (e) {
+        console.error('PDF.js worker config error:', e);
+    }
+
+    const buffer = await blob.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+    let text = '';
+    for (let n = 1; n <= pdf.numPages; n++) {
+        const page = await pdf.getPage(n);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        const result = await Tesseract.recognize(canvas, 'fra');
+        text += result.data.text + '\n';
+    }
+    return text;
+}
 
 
 /* ================================================================
