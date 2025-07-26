@@ -459,7 +459,7 @@ window.handleSynthesisClick = async function(event, element, speciesName) {
     parentCell.innerHTML = `<a href="#" onclick="handleSynthesisClick(event, this, '${speciesName.replace(/'/g, "\\'")}')">Générer</a>`;
 };
 
-window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
+window.handleFloraGallicaClick = async function(event, pdfFile, startPage, genus) {
     event.preventDefault();
     try {
         toggleSpinner(true);
@@ -486,25 +486,16 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
         const newBytes = await newDoc.save({ useObjectStreams: false });
         const blob = new Blob([newBytes], { type: 'application/pdf' });
         const url = URL.createObjectURL(blob);
-        window.open(url, '_blank');
+        const viewerUrl = `viewer.html?file=${encodeURIComponent(url)}&name=${encodeURIComponent(genus)}`;
+        window.open(viewerUrl, '_blank');
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${genus}.pdf`;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
         setTimeout(() => URL.revokeObjectURL(url), 30000);
-
-        try {
-            const text = await extractTextFromPdf(blob);
-            const txtBlob = new Blob([text], { type: 'text/plain' });
-            const txtUrl = URL.createObjectURL(txtBlob);
-            const a = document.createElement('a');
-            a.href = txtUrl;
-            a.download = pdfFile.replace(/\.pdf$/i, '.txt');
-            a.style.display = 'none';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            setTimeout(() => URL.revokeObjectURL(txtUrl), 30000);
-        } catch (ocrErr) {
-            console.error('OCR error:', ocrErr);
-            showNotification('Erreur OCR', 'error');
-        }
     } catch (err) {
         console.error('Flora Gallica extraction error:', err);
         showNotification('Erreur lors de la génération du PDF.', 'error');
@@ -749,14 +740,15 @@ function buildTable(items){
     const crit = criteresOf(sci);
     const phys = physioOf(sci);
     const pheno = phenoOf(sci);
-    const genus = sci.split(' ')[0].toLowerCase();
+    const genus = sci.split(' ')[0].toLowerCase();
+    const genusCap = capitalizeGenus(genus);
     
     const tocEntryFloraGallica = floraToc[genus];
     let floraGallicaLink = "—";
     if (tocEntryFloraGallica && tocEntryFloraGallica.pdfFile && tocEntryFloraGallica.page) {
       const pdfFile = tocEntryFloraGallica.pdfFile;
       const startPage = tocEntryFloraGallica.page;
-      const handler = `handleFloraGallicaClick(event,'${pdfFile}',${startPage})`;
+      const handler = `handleFloraGallicaClick(event,'${pdfFile}',${startPage},'${genusCap}')`;
       floraGallicaLink = `<a href="#" onclick=\"${handler}\">` +
                          `<img src="assets/Flora Gallica.png" alt="Flora Gallica"></a>`;
     }

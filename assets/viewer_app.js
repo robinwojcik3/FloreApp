@@ -14,6 +14,8 @@ const viewerContainer = document.getElementById('pdf-viewer');
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 // Increase render scale for crisper text in generated excerpts
 const RENDER_SCALE = isIOS ? 2.5 : 3.0;
+let loadedPdfDoc = null;
+let genusName = '';
 
 /**
  * Affiche un message d'erreur et un lien de secours.
@@ -63,6 +65,7 @@ async function loadPdfViewer() {
     const urlParams = new URLSearchParams(window.location.search);
     const pdfUrl = urlParams.get('file');
     const initialPageNum = parseInt(urlParams.get('page'), 10) || 1;
+    genusName = urlParams.get('name') || '';
 
     if (!pdfUrl) {
         viewerContainer.innerHTML = '<div class="error-message"><h1>Erreur : Aucun fichier PDF spécifié.</h1></div>';
@@ -72,6 +75,7 @@ async function loadPdfViewer() {
     try {
         const loadingTask = pdfjsLib.getDocument(pdfUrl);
         const pdfDoc = await loadingTask.promise;
+        loadedPdfDoc = pdfDoc;
 
         const observer = new IntersectionObserver(async (entries, self) => {
             for (const entry of entries) {
@@ -134,3 +138,44 @@ async function loadPdfViewer() {
 
 // Lancement de l'application
 loadPdfViewer();
+
+async function extractTextFromLoadedPdf() {
+    if (!loadedPdfDoc) return '';
+    let text = '';
+    for (let n = 1; n <= loadedPdfDoc.numPages; n++) {
+        const page = await loadedPdfDoc.getPage(n);
+        const viewport = page.getViewport({ scale: 2 });
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        await page.render({ canvasContext: ctx, viewport }).promise;
+        const result = await Tesseract.recognize(canvas, 'fra');
+        text += result.data.text + '\n';
+    }
+    return text;
+}
+
+async function handleOcrClick() {
+    const btn = document.getElementById('ocr-btn');
+    if (!btn || !loadedPdfDoc) return;
+    btn.disabled = true;
+    try {
+        const text = await extractTextFromLoadedPdf();
+        const blob = new Blob([text], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${genusName || 'extrait'}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 30000);
+    } catch (e) {
+        console.error('OCR error:', e);
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+document.getElementById('ocr-btn')?.addEventListener('click', handleOcrClick);
