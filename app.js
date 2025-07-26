@@ -483,7 +483,10 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
             const [pg] = await newDoc.copyPages(srcDoc, [p - 1]);
             newDoc.addPage(pg);
         }
-        const newBytes = await newDoc.save();
+        const newBytes = await newDoc.save({
+            useObjectStreams: false,
+            compress: false
+        });
         const url = URL.createObjectURL(new Blob([newBytes], { type: 'application/pdf' }));
         window.open(`viewer.html?file=${encodeURIComponent(url)}`, '_blank');
     } catch (err) {
