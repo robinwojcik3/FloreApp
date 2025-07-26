@@ -12,11 +12,19 @@ try {
 
 const viewerContainer = document.getElementById('pdf-viewer');
 const ocrBtn = document.getElementById('ocr-btn');
+const statusContainer = document.getElementById('ocr-status');
+const progressBar = document.getElementById('progress-bar');
+const statusMessage = document.getElementById('status-message');
 let pdfDoc = null;
 let genusName = '';
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 // Increase render scale for crisper text in generated excerpts
 const RENDER_SCALE = isIOS ? 2.5 : 3.0;
+
+function updateProgress(value = 0) {
+    if (progressBar) progressBar.style.width = `${Math.min(100, Math.max(0, value))}%`;
+    if (statusMessage) statusMessage.textContent = `${Math.round(Math.min(100, Math.max(0, value)))}%`;
+}
 
 function capitalizeGenus(name) {
     if (typeof name !== 'string') return name;
@@ -153,8 +161,16 @@ async function extractTextFromDocument(doc) {
         canvas.width = viewport.width;
         canvas.height = viewport.height;
         await page.render({ canvasContext: ctx, viewport }).promise;
-        const result = await Tesseract.recognize(canvas, 'fra');
+        const result = await Tesseract.recognize(canvas, 'fra', {
+            logger: m => {
+                if (m.status === 'recognizing text') {
+                    const progress = ((n - 1 + m.progress) / doc.numPages) * 100;
+                    updateProgress(progress);
+                }
+            }
+        });
         text += result.data.text + '\n';
+        updateProgress((n / doc.numPages) * 100);
     }
     return text;
 }
@@ -165,6 +181,10 @@ if (ocrBtn) {
         ocrBtn.disabled = true;
         const original = ocrBtn.textContent;
         ocrBtn.textContent = 'OCR en cours...';
+        if (statusContainer) {
+            statusContainer.style.display = 'flex';
+            updateProgress(0);
+        }
         try {
             const txt = await extractTextFromDocument(pdfDoc);
             const blob = new Blob([txt], { type: 'text/plain' });
@@ -180,6 +200,12 @@ if (ocrBtn) {
         } catch (e) {
             console.error('OCR error:', e);
         } finally {
+            if (statusContainer) {
+                updateProgress(100);
+                setTimeout(() => {
+                    if (statusContainer) statusContainer.style.display = 'none';
+                }, 500);
+            }
             ocrBtn.textContent = original;
             ocrBtn.disabled = false;
         }
