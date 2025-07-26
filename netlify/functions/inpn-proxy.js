@@ -1,6 +1,6 @@
 // Fichier : netlify/functions/inpn-proxy.js
 
-const fetch = require('./utils/fetch');
+const fetch = (...args) => import("node-fetch").then(({default: f}) => f(...args));
 
 exports.handler = async function(event, context) {
     console.log('--- Fonction Proxy WMS Déclenchée ---');
