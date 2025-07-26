@@ -115,3 +115,14 @@ L.tileLayer('/tiles/{z}/{x}/{y}.png', {
 
 Activez la compression (gzip ou brotli) pour limiter le poids des transferts.
 
+
+## Génération de clés dichotomiques
+
+Un script Python est fourni pour transformer les fichiers OCR de la *Flora Gallica* en clés interactives. Placez les extractions dans `data/ocr/<genre>_ocr.txt` puis lancez :
+
+```bash
+python3 scripts/generate_key.py lamium
+```
+
+Le fichier JSON obtenu est enregistré dans `data/keys/lamium_key.json`. Ouvrez `key.html` avec un navigateur pour parcourir la clé (paramètre `?genus=lamium`).
+

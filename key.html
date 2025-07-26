@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Clé interactive</title>
+<style>
+body{font-family:sans-serif;margin:2em;}
+#alternatives button{display:block;margin:0.5em 0;}
+</style>
+</head>
+<body>
+<h1 id="step-title"></h1>
+<div id="alternatives"></div>
+<button id="back">Retour</button>
+<script>
+let key={},groups={},history=[];
+function loadKey(genus){
+ fetch(`data/keys/${genus}_key.json`)
+  .then(r=>r.json())
+  .then(data=>{
+    key=data.reduce((acc,n)=>{acc[n.id]=n;return acc;},{});
+    groups={};
+    data.forEach(n=>{
+      const base=n.id.replace(/'+$/,'');
+      (groups[base]=groups[base]||[]).push(n);
+    });
+    show('1');
+  })
+  .catch(err=>{document.getElementById('step-title').textContent=err;});
+}
+function show(base){
+ const list=groups[base];
+ document.getElementById('alternatives').innerHTML='';
+ if(!list){
+   document.getElementById('step-title').textContent='Fin';
+   return;
+ }
+ document.getElementById('step-title').textContent='Étape '+base;
+ list.forEach(n=>{
+   const btn=document.createElement('button');
+   btn.textContent=n.texte;
+   btn.onclick=()=>{
+     history.push(base);
+     if(n.goto==='END'){
+       document.getElementById('step-title').textContent='Fin';
+       document.getElementById('alternatives').innerHTML='';
+     }else{
+       const next=n.goto.replace(/'+$/,'');
+       show(next);
+     }
+   };
+   document.getElementById('alternatives').appendChild(btn);
+ });
+}
+document.getElementById('back').onclick=()=>{
+ const prev=history.pop();
+ if(prev) show(prev);
+};
+const genus=new URLSearchParams(location.search).get('genus')||prompt('Genre ?');
+if(genus) loadKey(genus.toLowerCase());
+</script>
+</body>
+</html>
