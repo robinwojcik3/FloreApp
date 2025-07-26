@@ -17,7 +17,10 @@
 
 [functions]
   # Conserve l'inclusion de vos fichiers PDF pour d'autres fonctions
-  included_files = ["netlify/functions/flora_gallica_pdfs/**"]
+  included_files = [
+    "netlify/functions/flora_gallica_pdfs/**",
+    "assets/flora_gallica_toc.json"
+  ]
 
 # =================================================================
 # NOUVEAU : Règle de redirection pour le proxy WMS
