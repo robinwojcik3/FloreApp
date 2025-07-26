@@ -483,9 +483,11 @@ window.handleFloraGallicaClick = async function(event, pdfFile, startPage) {
             const [pg] = await newDoc.copyPages(srcDoc, [p - 1]);
             newDoc.addPage(pg);
         }
-        const newBytes = await newDoc.save();
-        const url = URL.createObjectURL(new Blob([newBytes], { type: 'application/pdf' }));
-        window.open(`viewer.html?file=${encodeURIComponent(url)}`, '_blank');
+        const newBytes = await newDoc.save({ useObjectStreams: false });
+        const blob = new Blob([newBytes], { type: 'application/pdf' });
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+        setTimeout(() => URL.revokeObjectURL(url), 30000);
     } catch (err) {
         console.error('Flora Gallica extraction error:', err);
         showNotification('Erreur lors de la génération du PDF.', 'error');

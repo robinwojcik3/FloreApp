@@ -12,7 +12,8 @@ try {
 
 const viewerContainer = document.getElementById('pdf-viewer');
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-const RENDER_SCALE = isIOS ? 1.8 : 2.0;
+// Increase render scale for crisper text in generated excerpts
+const RENDER_SCALE = isIOS ? 2.5 : 3.0;
 
 /**
  * Affiche un message d'erreur et un lien de secours.
