@@ -12,7 +12,8 @@ try {
 
 const viewerContainer = document.getElementById('pdf-viewer');
 const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-const RENDER_SCALE = isIOS ? 1.8 : 2.0;
+// Increase render scale for sharper display of extracted PDFs
+const RENDER_SCALE = isIOS ? 2.4 : 3.0;
 
 /**
  * Affiche un message d'erreur et un lien de secours.
