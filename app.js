@@ -459,6 +459,20 @@ window.handleSynthesisClick = async function(event, element, speciesName) {
     parentCell.innerHTML = `<a href="#" onclick="handleSynthesisClick(event, this, '${speciesName.replace(/'/g, "\\'")}')">Générer</a>`;
 };
 
+window.handleFloraGallicaClick = async function(event, genus) {
+    event.preventDefault();
+    try {
+        const resp = await fetch(`/.netlify/functions/flora-extract?genus=${encodeURIComponent(genus)}`);
+        if (!resp.ok) throw new Error('Échec serveur');
+        const blob = await resp.blob();
+        const url = URL.createObjectURL(blob);
+        window.open(`viewer.html?file=${url}&page=1`, '_blank');
+        setTimeout(() => URL.revokeObjectURL(url), 60000);
+    } catch (err) {
+        showNotification('Erreur extraction Flora Gallica: ' + err.message, 'error');
+    }
+};
+
 
 /* ================================================================
     NOUVEAU : FONCTIONS POUR L'ANALYSE COMPARATIVE
@@ -671,13 +685,12 @@ function buildTable(items){
     const pheno = phenoOf(sci);
     const genus = sci.split(' ')[0].toLowerCase();
     
-    const tocEntryFloraGallica = floraToc[genus];
-    let floraGallicaLink = "—";
-    if (tocEntryFloraGallica && tocEntryFloraGallica.pdfFile && tocEntryFloraGallica.page) {
-      const pdfPath = `assets/flora_gallica_pdfs/${tocEntryFloraGallica.pdfFile}`;
-      const viewerUrl = `viewer.html?file=${encodeURIComponent(pdfPath)}&page=${tocEntryFloraGallica.page}`;
-      floraGallicaLink = linkIcon(viewerUrl, "Flora Gallica.png", "Flora Gallica");
-    }
+    const tocEntryFloraGallica = floraToc[genus];
+    let floraGallicaLink = "—";
+    if (tocEntryFloraGallica && tocEntryFloraGallica.page) {
+      const encoded = "Flora Gallica.png".split('/').map(s => encodeURIComponent(s)).join('/');
+      floraGallicaLink = `<a href="#" onclick="handleFloraGallicaClick(event, '${genus}')"><img src="assets/${encoded}" alt="Flora Gallica" class="logo-icon"></a>`;
+    }
 
     const tocEntryRegalVegetal = regalVegetalToc[genus];
     let regalVegetalLink = "—";
